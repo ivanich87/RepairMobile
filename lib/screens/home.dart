@@ -1,5 +1,5 @@
 import 'dart:convert';
-
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 
 class scrHomeScreen extends StatefulWidget {
@@ -10,7 +10,34 @@ class scrHomeScreen extends StatefulWidget {
 }
 
 class _scrHomeScreenState extends State<scrHomeScreen> {
+  Future httpGetInfo() async {
+    var _url=Uri(path: '/a/centrremonta/hs/v1/info/', host: 's1.rntx.ru', scheme: 'https');
+    var _headers = <String, String> {
+      'Accept': 'application/json',
+      'Authorization': 'Basic YWNlOkF4V3lJdnJBS1prdzY2UzdTMEJP'
+    };
+    try {
+      var response = await http.get(_url, headers: _headers);
+      if (response.statusCode == 200) {
+        var notesJson = json.decode(response.body);
+        print(notesJson);
+      }
+    } catch (error) {
+      print("Ошибка при формировании списка: $error");
+    }
+  }
+
+
   @override
+  void initState() {
+    httpGetInfo().then((value) {
+      setState(() {
+      });
+    });
+    // TODO: implement initState
+    super.initState();
+  }
+
   Widget build(BuildContext context) {
     int CashSummaAll = 2201455;
     return Scaffold(
@@ -52,7 +79,7 @@ class _scrHomeScreenState extends State<scrHomeScreen> {
                     'Финансы',
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
                   ),
-                  subtitle: Text('Денег в кассе'),
+                  subtitle: Text('Баланс по организации'),
                   leading: Icon(Icons.currency_ruble_rounded),
                   trailing: Text('$CashSummaAll', style: TextStyle(fontSize: 18, color: Colors.green),
                   ),
