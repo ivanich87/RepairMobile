@@ -7,6 +7,7 @@ import 'package:repairmodule/screens/object_view.dart';
 import 'package:repairmodule/screens/plat_view.dart';
 
 import '../screens/cashList.dart';
+import '../screens/objectsListSelectedDog.dart';
 
 class CardCategorySums extends StatefulWidget {
   const CardCategorySums({
@@ -129,12 +130,65 @@ class _CardObjectListState extends State<CardObjectList> {
                   MaterialPageRoute(
                       builder: (context) =>
                           scrObjectsViewScreen(id: widget.event.id)));
-            } else {
+            }
+            if (widget.onType=='SelectDogovor') {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          objectsListSelectedDog(id: widget.event.id)));
+            }
+            else {
               Navigator.pop(
                 context, widget.event.id);
                     };
           },
         onLongPress: () {})
+    );
+  }
+}
+
+class CardDogObjectList extends StatefulWidget {
+  const CardDogObjectList({
+    super.key,
+    required this.event,
+    required this.onType
+  });
+
+  final DogListObject event;
+  final String onType;
+
+  @override
+  State<CardObjectList> createState() => _CardObjectListState();
+}
+
+class _CardDogObjectListState extends State<CardDogObjectList> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+        child: ListTile(
+            title: Text('${widget.event.Number} от ${widget.event.Date}', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),),
+            subtitle: Text(widget.event.TipName),
+            trailing: Text(widget.event.summa.toString(), style: TextStyle(fontSize: 16, color: Colors.green)),
+            onTap: () async {
+              if (widget.onType=='push') {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            scrObjectsViewScreen(id: widget.event.id)));
+              } else {
+                Navigator.pop(
+                    context, widget.event.id);
+              };
+            },
+            onLongPress: () {})
     );
   }
 }

@@ -7,6 +7,9 @@ import 'package:repairmodule/screens/profileMan.dart';
 import 'package:repairmodule/models/Lists.dart';
 import 'package:repairmodule/screens/object_view.dart';
 
+import 'objects.dart';
+import 'objectsListSelected.dart';
+
 class scrPlatEditScreen extends StatefulWidget {
   //final String id;
   //final ListPlat plat;
@@ -76,13 +79,13 @@ class _scrPlatEditScreenState extends State<scrPlatEditScreen> {
                         title: 'Объект: ',
                         icon: Icons.location_on_outlined,
                         id: '',
-                        idType: ''),
+                        idType: 'objectsListSelected'),
                     _CustomListTile(
                         title: 'Договор № 111 от ${DateFormat('dd.MM.yyyy').format(DateTime.now())}',
                         icon: Icons.paste_rounded,
                         trailing: Icon(Icons.label_important_sharp),
                         id: '',
-                        idType: ''),
+                        idType: 'objectsListSelected'),
                   ],
                 ),
                 Divider(),
@@ -136,7 +139,7 @@ class _CustomListTile extends StatelessWidget {
       leading: Icon(icon),
       trailing: trailing,
       onTap: () {
-        if (id != '') {
+        if (id == '') {
           print(id);
           Navigator.push(
               context,
@@ -147,6 +150,9 @@ class _CustomListTile extends StatelessWidget {
                     };
                     if (idType=='scrObjectsViewScreen') {
                       return scrObjectsViewScreen(id: id,);
+                    };
+                    if (idType=='objectsListSelected') {
+                      return objectsListSelected();
                     };
                     return scrProfileMan(id: id,);
                   } ));

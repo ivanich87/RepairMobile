@@ -92,6 +92,44 @@ class ListObject {
 
 }
 
+class DogListObject {
+  late String id;
+  late String Number;
+  late DateTime Date;
+  late DateTime StartDate;
+  late DateTime StopDate;
+  late String nameProrab;
+  late String Status;
+  late int TipId;
+  late String TipName;
+  late String nameMan;
+  late int summaAkt;
+  late int summaOplata;
+  late int summa;
+
+  DogListObject(this.id, this.Number, this.Date, this.StartDate, this.StopDate, this.nameProrab, this.Status, this.TipId, this.nameMan, this.summaAkt, this.summaOplata, this.summa);
+
+  DogListObject.fromJson(Map<String, dynamic> json) {
+    id = json['id'] ?? '0';
+    Number = json['Number'] ?? 'Number';
+    Date = DateTime.tryParse(json['Date'])!;
+    StartDate = DateTime.tryParse(json['StartDate'])!;
+    StopDate = DateTime.tryParse(json['StopDate'])!;
+    nameProrab = json['nameProrab'] ?? 'nameProrab';
+    Status = json['Status'] ?? 'Status';
+    TipId = json['TipId'] ?? 0;
+    TipName = json['TipName'] ?? 'TipName';
+    nameMan = json['nameMan'] ?? 'nameMan';
+    summaAkt=1;
+    summaOplata=1;
+    summa=1;
+    //summaAkt = double.parse(json['summaAkt']);
+    //summaOplata = double.parse(json['summaOplata']);
+    //summa = double.parse(json['summa']);
+
+  }
+
+}
 
 class InfoObject {
   late String id;
