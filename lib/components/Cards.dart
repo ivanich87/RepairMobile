@@ -93,7 +93,48 @@ class _CardCashListState extends State<CardCashList> {
   }
 }
 
+class sprCardList extends StatefulWidget {
+  const sprCardList({
+    super.key,
+    required this.event,
+    required this.onType
+  });
 
+  final sprList event;
+  final String onType;
+
+  @override
+  State<sprCardList> createState() => _sprCardListState();
+}
+
+class _sprCardListState extends State<sprCardList> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+        child: ListTile(
+            title: Text(widget.event.name, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),),
+            subtitle: Text(widget.event.comment),
+            onTap: () async {
+              if (widget.onType=='push') {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            scrObjectsViewScreen(id: widget.event.id)));
+              }
+              else {
+                Navigator.pop(context, SelectedSPR(widget.event.id, widget.event.name));};
+            },
+            onLongPress: () {})
+    );
+  }
+}
 
 class CardObjectList extends StatefulWidget {
   const CardObjectList({
@@ -132,16 +173,18 @@ class _CardObjectListState extends State<CardObjectList> {
                           scrObjectsViewScreen(id: widget.event.id)));
             }
             if (widget.onType=='SelectDogovor') {
-              Navigator.push(
+              final result = await Navigator.push(
                   context,
                   MaterialPageRoute(
                       builder: (context) =>
                           objectsListSelectedDog(id: widget.event.id)));
+              if (result != null) {
+                SelectedDogovor resultSelected = SelectedDogovor(widget.event.id, widget.event.name, result.id, result.Number, result.Date);
+                Navigator.pop(context, resultSelected);
+              }
             }
             else {
-              Navigator.pop(
-                context, widget.event.id);
-                    };
+              Navigator.pop(context, widget.event.id);};
           },
         onLongPress: () {})
     );
@@ -159,7 +202,7 @@ class CardDogObjectList extends StatefulWidget {
   final String onType;
 
   @override
-  State<CardObjectList> createState() => _CardObjectListState();
+  State<CardDogObjectList> createState() => _CardDogObjectListState();
 }
 
 class _CardDogObjectListState extends State<CardDogObjectList> {
@@ -173,9 +216,9 @@ class _CardDogObjectListState extends State<CardDogObjectList> {
   Widget build(BuildContext context) {
     return Card(
         child: ListTile(
-            title: Text('${widget.event.Number} от ${widget.event.Date}', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),),
+            title: Text('${widget.event.Number} от ${DateFormat('dd.MM.yyyy').format(widget.event.Date)}', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),),
             subtitle: Text(widget.event.TipName),
-            trailing: Text(widget.event.summa.toString(), style: TextStyle(fontSize: 16, color: Colors.green)),
+            trailing: Text(NumberFormat.simpleCurrency(locale: 'ru-RU', decimalDigits: 2).format(widget.event.summa), style: TextStyle(fontSize: 16, color: Colors.green)),
             onTap: () async {
               if (widget.onType=='push') {
                 Navigator.push(
@@ -185,7 +228,7 @@ class _CardDogObjectListState extends State<CardDogObjectList> {
                             scrObjectsViewScreen(id: widget.event.id)));
               } else {
                 Navigator.pop(
-                    context, widget.event.id);
+                    context, widget.event);
               };
             },
             onLongPress: () {})

@@ -7,21 +7,20 @@ import 'package:repairmodule/models/Lists.dart';
 import 'package:http/http.dart' as http;
 
 
-class objectsListSelectedDog extends StatefulWidget {
-  final String id;
+class scrListScreen extends StatefulWidget {
+  final String sprName;
 
-  objectsListSelectedDog({super.key, required this.id});
+  scrListScreen({super.key, required this.sprName});
 
   @override
-  State<objectsListSelectedDog> createState() => _scrobjectsListSelectedDogState();
+  State<scrListScreen> createState() => _scrListScreenState();
 }
 
-class _scrobjectsListSelectedDogState extends State<objectsListSelectedDog> {
+class _scrListScreenState extends State<scrListScreen> {
   var objectList = [];
-  //List <DogListObject> objectList = [];
 
   Future httpGetListObject() async {
-    var _url=Uri(path: '/a/centrremonta/hs/v1/dogList/${widget.id}/', host: 's1.rntx.ru', scheme: 'https');
+    var _url=Uri(path: '/a/centrremonta/hs/v1/sprList/${widget.sprName}', host: 's1.rntx.ru', scheme: 'https');
     var _headers = <String, String> {
       'Accept': 'application/json',
       'Authorization': 'Basic YWNlOkF4V3lJdnJBS1prdzY2UzdTMEJP'
@@ -31,11 +30,8 @@ class _scrobjectsListSelectedDogState extends State<objectsListSelectedDog> {
       if (response.statusCode == 200) {
         var notesJson = json.decode(response.body);
         for (var noteJson in notesJson) {
-          objectList.add(DogListObject.fromJson(noteJson));
+          objectList.add(sprList.fromJson(noteJson));
         }
-      }
-      else {
-        print('Код ответа от сервера: ${response.statusCode}');
       }
     } catch (error) {
       print("Ошибка при формировании списка: $error");
@@ -54,7 +50,7 @@ class _scrobjectsListSelectedDogState extends State<objectsListSelectedDog> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Выбор договора'),
+        title: Text('Справочник'),
         centerTitle: true,
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         actions: [
@@ -66,8 +62,11 @@ class _scrobjectsListSelectedDogState extends State<objectsListSelectedDog> {
           physics: BouncingScrollPhysics(),
           reverse: false,
           itemCount: objectList.length,
-            itemBuilder: (_, index) => CardDogObjectList(event: objectList[index], onType: 'pop',),
+            itemBuilder: (_, index) => sprCardList(event: objectList[index], onType: 'pop',),
           ),
+          floatingActionButton: FloatingActionButton(
+            onPressed: () {},
+            child: Text('+'),)
           //backgroundColor: Colors.grey[900]),
     );
   }

@@ -94,6 +94,7 @@ class _scrPlatsViewScreenState extends State<scrPlatsViewScreen> {
   //   super.initState();
   // }
   Widget build(BuildContext context) {
+    print('Идентификатор платежа: $widget.plat.id');
     return Scaffold(
         appBar: AppBar(
           title: Text('Платеж'),
@@ -160,18 +161,21 @@ class _scrPlatsViewScreenState extends State<scrPlatsViewScreen> {
                         idType: ''),
                   ],
                 ),
-                Text('${widget.plat.summa} руб.', style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold, color: Colors.green))
+                Text('${widget.plat.summa} руб.', style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold, color: (widget.plat.summa>=0) ? Colors.green : Colors.red))
               ],
             )
 
           ],
         ),
         floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            Navigator.push(
+          onPressed: () async{
+            await Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => scrPlatEditScreen()));
+                    builder: (context) => scrPlatEditScreen(plat2: widget.plat,)));
+            setState(() {
+
+            });
           },
           child: Icon(Icons.edit),
         )
