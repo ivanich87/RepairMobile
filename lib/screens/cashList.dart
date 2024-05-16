@@ -122,7 +122,7 @@ class _AddMenuIcon extends StatelessWidget {
           Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) => scrPlatEditScreen(plat2: ListPlat('', '', DateTime.now(), false, '', true, '', '', '', true, '', '', 0, 0, 0, '', 'Не выбран', '', '', DateTime.now(), true,'', '', '', '', 0, '', '', '', 'Приход', ''),)));
+                  builder: (context) => scrPlatEditScreen(plat2: ListPlat('', '', DateTime.now(), false, '', true, '', '', '', true, '', '', 0, 0, 0, '', 'Не выбран', '', '', DateTime.now(), true,'', '', '', '', 0, '', '', '', 'Приход', '', '', '', '', '',0),)));
         },
         itemBuilder: (BuildContext context) => <PopupMenuEntry<Menu>>[
           const PopupMenuItem<Menu>(

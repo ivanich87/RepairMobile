@@ -255,8 +255,13 @@ class ListPlat {
   late String companyName;
   late String platType;
   late String type;
+  late String kassaId2;
+  late String kassaName2;
+  late String kassaSotrId2;
+  late String kassaSotrName2;
+  late int kassaType2;
 
-  ListPlat(this.id, this.name, this.date, this.del, this.number, this.accept, this.comment, this.contractorId, this.contractorName, this.contractorUse, this.analyticId, this.analyticName, this.summaUp, this.summaDown, this.summa, this.objectId, this.objectName, this.dogId, this.dogNumber, this.dogDate, this.dogUse, this.kassaId, this.kassaName, this.kassaSotrId, this.kassaSotrName, this.kassaType, this.kassa, this.companyId, this.companyName, this.platType, this.type);
+  ListPlat(this.id, this.name, this.date, this.del, this.number, this.accept, this.comment, this.contractorId, this.contractorName, this.contractorUse, this.analyticId, this.analyticName, this.summaUp, this.summaDown, this.summa, this.objectId, this.objectName, this.dogId, this.dogNumber, this.dogDate, this.dogUse, this.kassaId, this.kassaName, this.kassaSotrId, this.kassaSotrName, this.kassaType, this.kassa, this.companyId, this.companyName, this.platType, this.type, this.kassaId2, this.kassaName2, this.kassaSotrId2, this.kassaSotrName2, this.kassaType2);
 
   ListPlat copyWith({
     String? id,
@@ -289,7 +294,12 @@ class ListPlat {
     String? companyId,
     String? companyName,
     String? platType,
-    String? type
+    String? type,
+    String? kassaId2,
+    String? kassaName2,
+    String? kassaSotrId2,
+    String? kassaSotrName2,
+    int? kassaType2
   }) {
     return ListPlat(
         id = id ?? this.id,
@@ -322,7 +332,12 @@ class ListPlat {
         companyId = companyId ?? this.companyId,
         companyName = companyName ?? this.companyName,
         platType = platType ?? this.platType,
-        type = type ?? this.type
+        type = type ?? this.type,
+        kassaId2 = kassaId2 ?? this.kassaId2,
+        kassaName2 = kassaName2 ?? this.kassaName2,
+        kassaSotrId2 = kassaSotrId2 ?? this.kassaSotrId2,
+        kassaSotrName2 = kassaSotrName2 ?? this.kassaSotrName2,
+        kassaType2 = kassaType2 ?? this.kassaType2
     );
   }
 
@@ -352,17 +367,58 @@ class ListPlat {
     kassaType = json['kassaType'] ?? 0;
     companyId = json['companyId'] ?? 'Пусто';
     companyName = json['companyName'] ?? 'Пусто';
-
-    //summaUp = (double.parse(json['summaUp']) ?? 0.00) as Double;
-    //summaDown = (double.parse(json['summaDown']) ?? 0.00) as Double;
     summaUp = json['summaUp'] ?? 0;
     summaDown = json['summaDown'] ?? 0;
-    //summa = json['summa'] ?? 0;
     summa = (summaUp>0 ? summaUp : -summaDown);
     platType = json['platType'] ?? '';
     type = json['type'] ?? '';
     kassa = (kassaType==1 ? kassaSotrName:kassaName);
+    kassaId2 = json['kassaId2'] ?? 'Пусто';
+    kassaName2 = json['kassaName2'] ?? 'Пусто';
+    kassaSotrId2 = json['kassaSotrId2'] ?? 'Пусто';
+    kassaSotrName2 = json['kassaSotrName2'] ?? 'Пусто';
+    kassaType2 = json['kassaType2'] ?? 0;
   }
+
+  Map<String, dynamic> toJson() =>
+  {
+    'id': id,
+    'name': name,
+    'date': date.toIso8601String(),
+    'del': del,
+    'number': number,
+    'accept': accept,
+    'comment': comment,
+    'contractorId': contractorId,
+    'contractorName': contractorName ?? '',
+    'contractorUse': contractorUse ?? false,
+    'analyticId': analyticId ?? '',
+    'analyticName': analyticName ?? '',
+    'objectId': objectId ?? '',
+    'objectName': objectName ?? '',
+    'dogId': dogId ?? '',
+    'dogNumber': dogNumber ?? 'Пусто',
+    'dogDate': dogDate.toIso8601String(),
+    'dogUse': dogUse,
+    'kassaId': kassaId,
+    'kassaName': kassaName,
+    'kassaSotrId': kassaSotrId,
+    'kassaSotrName': kassaSotrName,
+    'kassaType': kassaType,
+    'companyId': companyId,
+    'companyName': companyName,
+    'summaUp': summaUp,
+    'summaDown': summaDown,
+    'summa': summa,
+    'platType': platType,
+    'type': type,
+    'kassa': kassa,
+    'kassaId2': kassaId2,
+    'kassaName2': kassaName2 ,
+    'kassaSotrId2': kassaSotrId2,
+    'kassaSotrName2': kassaSotrName2,
+    'kassaType2': kassaType2
+  };
 
   ListPlat.from(ListPlat a) {
     id = a.id ?? this.id;
@@ -396,6 +452,11 @@ class ListPlat {
     companyName = a.companyName ?? this.companyName;
     platType = a.platType ?? this.platType;
     type = a.type ?? this.type;
+    kassaId2 = a.kassaId2 ?? this.kassaId2;
+    kassaName2 = a.kassaName2 ?? this.kassaName2;
+    kassaSotrId2 = a.kassaSotrId2 ?? this.kassaSotrId2;
+    kassaSotrName2 = a.kassaSotrName2 ?? this.kassaSotrName2;
+    kassaType2 = a.kassaType2 ?? this.kassaType2;
   }
 
   ListPlat.fromTo(ListPlat original, ListPlat a) {
@@ -430,5 +491,10 @@ class ListPlat {
     original.companyName = a.companyName ?? this.companyName;
     original.platType = a.platType ?? this.platType;
     original.type = a.type ?? this.type;
+    original.kassaId2 = a.kassaId2 ?? this.kassaId2;
+    original.kassaName2 = a.kassaName2 ?? this.kassaName2;
+    original.kassaSotrId2 = a.kassaSotrId2 ?? this.kassaSotrId2;
+    original.kassaSotrName2 = a.kassaSotrName2 ?? this.kassaSotrName2;
+    original.kassaType2 = a.kassaType2 ?? this.kassaType2;
   }
 }

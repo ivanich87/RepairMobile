@@ -27,6 +27,35 @@ class _scrPlatEditScreenState extends State<scrPlatEditScreen> {
   bool userDataEdit = false;
   late ListPlat plat4;
 
+  Future<bool> httpPlatUpdate(ListPlat _body) async {
+    bool _result=false;
+    var _url=Uri(path: '/a/centrremonta/hs/v1/platUpdate/', host: 's1.rntx.ru', scheme: 'https');
+    var _headers = <String, String> {
+      'Accept': 'application/json',
+      'Authorization': 'Basic YWNlOkF4V3lJdnJBS1prdzY2UzdTMEJP'
+    };
+    try {
+      print('Start export plat!!!!');
+      print(json.encode(_body.toJson()));
+      var response = await http.post(_url, headers: _headers, body: json.encode(_body.toJson()));
+      print('Код ответа: ${response.statusCode} Тело ответа: ${response.body}');
+      if (response.statusCode == 200) {
+        var data = json.decode(response.body);
+        String _id = data['Код'] ?? '';
+        _result = data['Успешно'] ?? '';
+        String _message = data['Сообщение'] ?? '';
+        if (widget.plat2.id=='')
+          _body.id = _id;
+
+        print('Платеж выгружен. Результат:  $_result. Сообщение:  $_message');
+      };
+    } catch (error) {
+      _result = false;
+      print("Ошибка при выгрузке платежа: $error");
+    }
+    return _result ?? false;
+  }
+
   @override
   Widget build(BuildContext context) {
     ListPlat plat3 = widget.plat2;
@@ -35,12 +64,13 @@ class _scrPlatEditScreenState extends State<scrPlatEditScreen> {
       print('Скопировали бэкап');
     }
     firstInit=false;
-
+    print(plat3.platType);
     return PopScope(
         canPop: true,
         onPopInvoked: (bool didPop) async {
       if (userDataEdit==false) {
         ListPlat.fromTo(plat3, plat4);
+        print('Вернули данные из бэкапа');
       }
       return;
     },
@@ -62,7 +92,7 @@ class _scrPlatEditScreenState extends State<scrPlatEditScreen> {
                   child: Column(
                     children: [
                       Text(
-                        'Оплата от клиента за работы',
+                        plat3.type,
                         style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                       ),
                       Text(
@@ -72,21 +102,23 @@ class _scrPlatEditScreenState extends State<scrPlatEditScreen> {
                     ],
                   ),
                 ),
-                Divider(),
+                //Divider(),
                 //_payer(widget: widget,),
                 Divider(),
+                if (plat3.platType!='Перемещение' && plat3.type!='Выдача денежных средств в подотчет')
                 SingleSection(
                   title: 'Сведения об объекте',
                   children: [
                     widgetDogovor(plat3)
                   ],
                 ),
-                Divider(),
+                //Divider(),
                 //_recipient(widget: widget,),
                 Divider(),
                 SingleSection(
                   title: 'Аналитика и комментарий',
                   children: [
+                    if (plat3.type!='Выдача денежных средств в подотчет' && plat3.platType!='Перемещение')
                     CustomTitle(plat: plat3,
                         titles: plat3.analyticName,
                         icon: Icons.analytics,
@@ -96,7 +128,7 @@ class _scrPlatEditScreenState extends State<scrPlatEditScreen> {
                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
                       child: TextField(
                         controller: TextEditingController(text: plat3.comment),
-                        keyboardType: TextInputType.multiline,
+                        keyboardType: TextInputType.text,
                         minLines: 3,
                         maxLines: 6,
                         decoration: InputDecoration(
@@ -104,6 +136,9 @@ class _scrPlatEditScreenState extends State<scrPlatEditScreen> {
                           border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(10))),
                           hintText: 'Комментарий к платежу',
                         ),
+                        onChanged: (value) {
+                          plat3.comment = value;
+                        },
                       ),
                     ),
                   ],
@@ -111,11 +146,11 @@ class _scrPlatEditScreenState extends State<scrPlatEditScreen> {
                 //],
                 Divider(),
                 SingleSection(
-                  title: (plat3.platType=='Расход') ? 'Списать деньги с' : 'Зачислить деньги на',
+                  title: (plat3.platType!='Приход') ? 'Списать деньги с' : 'Зачислить деньги на',
                   children: [
+                    if (plat3.type!='Выдача денежных средств в подотчет')
                     Column(
                       children: [
-
                         RadioListTile(title: Text('Касса/Банк'), value: 0, groupValue: plat3.kassaType, onChanged: (value){
                             setState(() {
                               plat3.kassaType = value!;
@@ -138,8 +173,49 @@ class _scrPlatEditScreenState extends State<scrPlatEditScreen> {
                 ],
               ),
                 Divider(),
+                if (plat3.platType=='Перемещение') //if ((plat3.platType=='Приход' || plat3.platType=='Перемещение') && plat3.type!='Выдача денежных средств в подотчет')
                 SingleSection(
-                  title: (plat3.platType=='Расход') ? 'Сведения о получателе' : 'Сведения о плательщике',
+                  title: 'Зачислить деньги на',
+                  children: [
+                    Column(
+                      children: [
+                        RadioListTile(title: Text('Касса/Банк'), value: 0, groupValue: plat3.kassaType2, onChanged: (value){
+                          setState(() {
+                            plat3.kassaType2 = value!;
+                          });
+                        }
+                        ),
+                        RadioListTile(title: Text('Подотчетные средства'), value: 1, groupValue: plat3.kassaType2, onChanged: (value) {
+                          setState(() {
+                            plat3.kassaType2 = value!;
+                          });
+                        }
+                        ),
+                      ],
+                    ),
+                    CustomTitle(plat: plat3,
+                        titles: (plat3.kassaType2==0) ? plat3.kassaName2 : plat3.kassaSotrName2,
+                        icon: Icons.payment_outlined,
+                        id: (plat3.kassaType2==0) ? 'Кассы' : 'Сотрудники',
+                        idType: (plat3.kassaType2==0) ? 'sprKassaListSelected2' : 'sprSotrListSelected2', trailing: null),
+                  ],
+                ),
+                if (plat3.type=='Выдача денежных средств в подотчет')
+                  SingleSection(
+                    title: (plat3.platType=='Приход') ? 'Сведения о плательщике' : 'Сведения о получателе',
+                    children: [
+                      if (plat3.type=='Движение денежных средтв')
+                        ListTile(title: Text('Учитывать в движениях по контрагенту'), trailing: CupertinoSwitch(value: plat3.contractorUse, onChanged: (bool val) => setState(() => plat3.contractorUse = val))),
+                      CustomTitle(plat: plat3,
+                          titles: plat3.kassaSotrName,
+                          icon: Icons.man,
+                          id: 'Сотрудники',
+                          idType: 'sprSotrListSelected', trailing: null)
+                    ],
+                  ),
+                if ((plat3.platType=='Расход' || plat3.platType=='Приход') && plat3.type!='Выдача денежных средств в подотчет')
+                SingleSection(
+                  title: (plat3.platType=='Приход') ? 'Сведения о плательщике' : 'Сведения о получателе',
                   children: [
                     if (plat3.type=='Движение денежных средтв')
                       ListTile(title: Text('Учитывать в движениях по контрагенту'), trailing: CupertinoSwitch(value: plat3.contractorUse, onChanged: (bool val) => setState(() => plat3.contractorUse = val))),
@@ -147,7 +223,8 @@ class _scrPlatEditScreenState extends State<scrPlatEditScreen> {
                         titles: plat3.contractorName,
                         icon: Icons.man,
                         id: 'Контрагенты',
-                        idType: 'sprContractorListSelected', trailing: null, Enabled: (plat3.dogUse==true) ? false : true)
+                        idType: 'sprContractorListSelected', trailing: null,
+                        Enabled: (plat3.dogUse==true && plat3.type!='Движение денежных средтв' && plat3.type!='Выдача денежных средств в подотчет') ? false : true)
                   ],
                 ),
                 Divider(),
@@ -158,6 +235,18 @@ class _scrPlatEditScreenState extends State<scrPlatEditScreen> {
                         controller: TextEditingController(text: (plat3.platType=='Расход') ? plat3.summaDown.toString() : plat3.summaUp.toString()),
                         keyboardType: TextInputType.number,
                         style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold, color: (plat3.summa>=0) ? Colors.green : Colors.red),
+                        onSubmitted: (value) {
+                          if (plat3.platType=='Расход')
+                            plat3.summaDown=num.tryParse(value) ?? 0;
+                          if (plat3.platType=='Приход')
+                            plat3.summaUp=num.tryParse(value) ?? 0;
+                          if (plat3.platType=='Перемещение') {
+                            plat3.summaDown=num.tryParse(value) ?? 0;
+                            plat3.summaUp=num.tryParse(value) ?? 0;
+                          }
+                          plat3.summa=plat3.summaUp - plat3.summaDown;
+                          print('изменили сумму платежа на ${plat3.summa}');
+                        },
                       )
                     ]),
           ],
@@ -166,7 +255,18 @@ class _scrPlatEditScreenState extends State<scrPlatEditScreen> {
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
+            if (plat3.platType=='Перемещение') {
+              plat3.contractorId = (plat3.kassaType2==1) ? plat3.kassaSotrId2 : plat3.kassaId2;
+              plat3.contractorName = (plat3.kassaType2==1) ? plat3.kassaSotrName2 : plat3.kassaName2;
+              plat3.kassa = (plat3.kassaType==1) ? plat3.kassaSotrName : plat3.kassaName;
+              plat3.summa = plat3.summaUp;
+            };
+            if (plat3.platType=='Расход' && plat3.type=='Выдача денежных средств в подотчет') {
+              plat3.kassa = plat3.kassaName;
+            }
+            httpPlatUpdate(plat3);
             userDataEdit = true;
+
             Navigator.pop(context);
             //widget.plat2.copyWith(plat.id, plat.name, plat.date, plat.del, plat.number, plat.accept, plat.comment, plat.contractorId, plat.contractorName, plat.analyticId, plat.analyticName, plat.summaUp, plat.summaDown, plat.summa, plat.objectId, plat.objectName, plat.dogId, plat.dogNumber, plat.dogDate, plat.kassaId, plat.kassaName, plat.kassaSotrId, plat.kassaSotrName, plat.kassaType, plat.kassa, plat.companyId, plat.companyName, plat.platType);
           },
@@ -224,10 +324,10 @@ class _scrPlatEditScreenState extends State<scrPlatEditScreen> {
                     if (idType=='sprAnalyticsListSelected') {
                       return scrListScreen(sprName: id);
                     };
-                    if (idType=='sprKassaListSelected') {
+                    if (idType=='sprKassaListSelected' || idType=='sprKassaListSelected2') {
                       return scrListScreen(sprName: id);
                     };
-                    if (idType=='sprSotrListSelected') {
+                    if (idType=='sprSotrListSelected' || idType=='sprSotrListSelected2') {
                       return scrListScreen(sprName: id);
                     };
                     if (idType=='sprContractorListSelected') {
@@ -263,6 +363,18 @@ class _scrPlatEditScreenState extends State<scrPlatEditScreen> {
           setState(() {
             plat.kassaSotrId = res.id;
             plat.kassaSotrName = res.name;
+          });
+        };
+        if (idType=='sprKassaListSelected2'){
+          setState(() {
+            plat.kassaId2 = res.id;
+            plat.kassaName2 = res.name;
+          });
+        };
+        if (idType=='sprSotrListSelected2'){
+          setState(() {
+            plat.kassaSotrId2 = res.id;
+            plat.kassaSotrName2 = res.name;
           });
         };
         if (idType=='sprContractorListSelected'){

@@ -94,7 +94,7 @@ class _scrPlatsViewScreenState extends State<scrPlatsViewScreen> {
   //   super.initState();
   // }
   Widget build(BuildContext context) {
-    print('Идентификатор платежа: $widget.plat.id');
+    print('Идентификатор платежа: ${widget.plat.id}');
     return Scaffold(
         appBar: AppBar(
           title: Text('Платеж'),
@@ -149,6 +149,7 @@ class _scrPlatsViewScreenState extends State<scrPlatsViewScreen> {
                 SingleSection(
                   title: 'Аналитика и комментарий',
                   children: [
+                    if (widget.plat.platType!='Перемещение' && widget.plat.type!='Выдача денежных средств в подотчет')
                     _CustomListTile(
                         title: "${widget.plat.analyticName}",
                         icon: Icons.analytics,
@@ -231,7 +232,7 @@ class _payer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.plat.summa<=0) {
+    if (widget.plat.platType!='Приход') {
       return SingleSection(
         title: 'Сведения о плательщике',
         children: [
@@ -242,6 +243,7 @@ class _payer extends StatelessWidget {
                   : Icons.credit_card),
               id: (widget.plat.kassaType == 1 ? widget.plat.kassaSotrId : ''),
               idType: 'scrProfileMan'),
+          if (widget.plat.companyName!='')
           _CustomListTile(
               title: '${widget.plat.companyName}',
               icon: Icons.account_balance,
@@ -254,7 +256,7 @@ class _payer extends StatelessWidget {
           title: 'Сведения о плательщике',
           children: [
             _CustomListTile(
-                title: widget.plat.contractorName,
+                title: (widget.plat.type=='Выдача денежных средств в подотчет') ? widget.plat.kassaSotrName : widget.plat.contractorName,
                 icon: Icons.man,
                 id: '',
                 idType: '')
@@ -272,17 +274,18 @@ class _recipient extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.plat.summa>0) {
+    if (widget.plat.platType=='Приход') {
       return SingleSection(
         title: 'Сведения о получателе',
         children: [
           _CustomListTile(
-              title: '${widget.plat.kassa}',
+              title: '${widget.plat.kassaName}', //было widget.plat.kassa
               icon: (widget.plat.kassaType == 1
                   ? Icons.account_balance_wallet
                   : Icons.credit_card),
               id: (widget.plat.kassaType == 1 ? widget.plat.kassaSotrId : ''),
               idType: 'scrProfileMan'),
+          if (widget.plat.companyName!='')
           _CustomListTile(
               title: '${widget.plat.companyName}',
               icon: Icons.account_balance,
@@ -295,7 +298,7 @@ class _recipient extends StatelessWidget {
         title: 'Сведения о получателе',
         children: [
           _CustomListTile(
-              title: widget.plat.contractorName,
+              title: (widget.plat.type=='Выдача денежных средств в подотчет') ? widget.plat.kassaSotrName : widget.plat.contractorName,
               icon: Icons.man,
               id: '',
               idType: '')
