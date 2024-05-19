@@ -48,10 +48,22 @@ class _scrPlatEditScreenState extends State<scrPlatEditScreen> {
           _body.id = _id;
 
         print('Платеж выгружен. Результат:  $_result. Сообщение:  $_message');
-      };
+      }
+      else {
+        _result = false;
+        final snackBar = SnackBar(
+          content: Text('${response.body}'),
+        );
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    }
     } catch (error) {
       _result = false;
       print("Ошибка при выгрузке платежа: $error");
+      _result = false;
+      final snackBar = SnackBar(
+        content: Text('$error'),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
     return _result ?? false;
   }
@@ -264,12 +276,14 @@ class _scrPlatEditScreenState extends State<scrPlatEditScreen> {
             if (plat3.platType=='Расход' && plat3.type=='Выдача денежных средств в подотчет') {
               plat3.kassa = plat3.kassaName;
             }
-            httpPlatUpdate(plat3);
-            userDataEdit = true;
-
-            Navigator.pop(context);
-            //widget.plat2.copyWith(plat.id, plat.name, plat.date, plat.del, plat.number, plat.accept, plat.comment, plat.contractorId, plat.contractorName, plat.analyticId, plat.analyticName, plat.summaUp, plat.summaDown, plat.summa, plat.objectId, plat.objectName, plat.dogId, plat.dogNumber, plat.dogDate, plat.kassaId, plat.kassaName, plat.kassaSotrId, plat.kassaSotrName, plat.kassaType, plat.kassa, plat.companyId, plat.companyName, plat.platType);
-          },
+            //httpPlatUpdate(plat3);
+            httpPlatUpdate(plat3).then((value) {
+              userDataEdit = value;
+              print('userDataEdit = $value');
+              if (userDataEdit==true)
+                Navigator.pop(context);
+            });
+            },
           child: Icon(Icons.save),
         )
       //backgroundColor: Colors.grey[900]),
@@ -335,6 +349,7 @@ class _scrPlatEditScreenState extends State<scrPlatEditScreen> {
                     };
                     return scrProfileMan(id: id,);
                   } ));
+        print(idType);
           if (idType=='objectsListSelected'){
             setState(() {
               plat.dogId = res.dogId;
@@ -342,6 +357,8 @@ class _scrPlatEditScreenState extends State<scrPlatEditScreen> {
               plat.dogDate = res.dogDate;
               plat.objectId = res.objectId;
               plat.objectName = res.objectName;
+              if (plat.type=='Оплата по договору' || plat.type=='Оплата стройматериалов')
+                plat.contractorName=res.objectContractor;
             });
           };
           if (idType=='sprAnalyticsListSelected'){

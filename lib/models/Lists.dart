@@ -59,7 +59,7 @@ class ListCash {
   late String id;
   late String name;
   late int tip;
-  late int summa;
+  late num summa;
 
   ListCash(this.id, this.name, this.tip, this.summa);
 
@@ -67,8 +67,9 @@ class ListCash {
     id = json['id'] ?? '0';
     name = json['name'] ?? 'Пусто';
     tip = json['tip'] ?? 1;
-    final s = double.parse(json['summa'].toString());
-    summa = s.toInt();
+    summa = json['summa'];
+    // final s = double.parse(json['summa'].toString());
+    // summa = s.toInt();
   }
 
 }
@@ -111,11 +112,12 @@ class ListObject {
 class SelectedDogovor{
   late String objectName;
   late String objectId;
+  late String objectContractor;
   late String dogId;
   late String dogNumber;
   late DateTime dogDate;
 
-  SelectedDogovor(this.objectId, this.objectName, this.dogId, this.dogNumber, this.dogDate);
+  SelectedDogovor(this.objectId, this.objectName, this.objectContractor, this.dogId, this.dogNumber, this.dogDate);
 
 }
 

@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:repairmodule/components/SingleSelections.dart';
 import 'package:repairmodule/models/Lists.dart';
 import 'package:repairmodule/screens/cashCategories.dart';
@@ -57,7 +58,7 @@ class _scrCashHomeScreenState extends State<scrCashHomeScreen> {
   }
   Widget build(BuildContext context) {
     final arg = (ModalRoute.of(context)?.settings.arguments ?? <String, dynamic> {'summa': 0, 'title': 'Пусто'}) as Map<String, dynamic>;
-    int allSumma = arg['summa'];
+    num allSumma = arg['summa'];
     return Scaffold(
         appBar: AppBar(
           title: Text('Финансы'),
@@ -115,7 +116,7 @@ class _scrCashHomeScreenState extends State<scrCashHomeScreen> {
                     ListTile(
                       title: Text.rich(TextSpan(children: [
                         TextSpan(text: 'Всего: ', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-                        TextSpan(text: '' + allSumma.toInt().toString() +' руб.', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.green)),
+                        TextSpan(text: NumberFormat.simpleCurrency(locale: 'ru-RU', decimalDigits: 2).format(allSumma), style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.green)),
                         ],
                       )
                       ),

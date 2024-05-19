@@ -5,6 +5,7 @@ import 'package:repairmodule/screens/object_view.dart';
 import 'package:repairmodule/screens/cashHome.dart';
 import 'package:repairmodule/screens/cashCategories.dart';
 import 'package:repairmodule/screens/testMenu.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -28,6 +29,15 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
         title: 'Flutter Demo',
         debugShowCheckedModeBanner: false,
+        localizationsDelegates: [
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: [
+          Locale('en', ''),  //code
+          Locale('ru', ''), // arabic, no country code
+        ],
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
           useMaterial3: true,

@@ -81,13 +81,13 @@ class _CardCashListState extends State<CardCashList> {
           widget.event.name,
           style: TextStyle(fontSize: 17),
         ),
-        trailing: Text(widget.event.summa.toString(), style: TextStyle(fontSize: 20, color: Colors.green)),
+        trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(widget.event.summa), style: TextStyle(fontSize: 20, color: Colors.green)),
         leading: Icon(widget.event.tip == 1 ? Icons.credit_card: Icons.home_filled),
         onTap: () async {
           Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => scrCashListScreen(idCash: '0', cashName: 'Все',)));},
+            builder: (context) => scrCashListScreen(idCash: widget.event.id, cashName: 'Все',)));},
         onLongPress: () {});
     //scrCashCategoriesScreen(idCash: widget.event.id, cashName: widget.event.name)
   }
@@ -163,29 +163,32 @@ class _CardObjectListState extends State<CardObjectList> {
         child: ListTile(
           title: Text(widget.event.name, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),),
           subtitle: Text(widget.event.addres),
-          trailing: Text(widget.event.summa.toString(), style: TextStyle(fontSize: 16, color: Colors.green)),
+          trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 0).format(widget.event.summa), style: TextStyle(fontSize: 16, color: Colors.green)),
           onTap: () async {
             if (widget.onType=='push') {
+              print('push');
               Navigator.push(
                   context,
                   MaterialPageRoute(
                       builder: (context) =>
                           scrObjectsViewScreen(id: widget.event.id)));
             }
-            if (widget.onType=='SelectDogovor') {
-              final result = await Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) =>
-                          objectsListSelectedDog(id: widget.event.id)));
-              if (result != null) {
-                SelectedDogovor resultSelected = SelectedDogovor(widget.event.id, widget.event.name, result.id, result.Number, result.Date);
-                Navigator.pop(context, resultSelected);
-              }
-            }
             else {
-              Navigator.pop(context, widget.event.id);};
-          },
+              if (widget.onType=='SelectDogovor') {
+                final result = await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            objectsListSelectedDog(id: widget.event.id)));
+                if (result != null) {
+                  SelectedDogovor resultSelected = SelectedDogovor(widget.event.id, widget.event.addres, widget.event.name, result.id, result.Number, result.Date);
+                  Navigator.pop(context, resultSelected);
+                }
+              }
+              else {
+                Navigator.pop(context, widget.event.id);};
+            }
+            },
         onLongPress: () {})
     );
   }
@@ -261,7 +264,13 @@ class _PlatObjectListState extends State<PlatObjectList> {
       child: ListTile(
           title: Text('${widget.event.name} № ${widget.event.number} от ${DateFormat('dd.MM.yyyy').format(widget.event.date)}', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),),
           subtitle: Text(widget.event.comment),
-          trailing: Text(widget.event.summa.toString(), style: TextStyle(fontSize: 16, color: textColors(widget.event.summa))),
+          // Column(
+          //   children: [
+          //     Text(widget.event.comment),
+          //     Text(widget.event.analyticName),
+          //   ],
+          // ),
+          trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(widget.event.summa), style: TextStyle(fontSize: 16, color: textColors(widget.event.summa))),
           onTap: () async {
             Navigator.push(
                 context,
