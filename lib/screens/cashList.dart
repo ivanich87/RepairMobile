@@ -21,7 +21,9 @@ class scrCashListScreen extends StatefulWidget {
 }
 
 class _scrCashListScreenState extends State<scrCashListScreen> {
-  var objectList = [];
+  //var objectList = [];
+  List<ListPlat> objectList = [];
+
   DateTimeRange dateRange = DateTimeRange(
       start: DateTime.now(), end: DateTime.now());
 

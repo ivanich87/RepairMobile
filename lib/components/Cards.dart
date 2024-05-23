@@ -272,10 +272,14 @@ class _PlatObjectListState extends State<PlatObjectList> {
           // ),
           trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(widget.event.summa), style: TextStyle(fontSize: 16, color: textColors(widget.event.summa))),
           onTap: () async {
-            Navigator.push(
+            await Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => scrPlatsViewScreen(plat: widget.event)));},
+                    builder: (context) => scrPlatsViewScreen(plat: widget.event)));
+            setState(() {
+              print('Пересчет формы');
+            });
+            },
           onLongPress: () {}),
     );
   }
