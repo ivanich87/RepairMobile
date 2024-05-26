@@ -27,6 +27,7 @@ class _scrProfileManState extends State<scrProfileMan> {
     };
     try {
       var response = await http.get(_url, headers: _headers);
+      print('Запрос к профилю человека ${widget.id}');
       if (response.statusCode == 200) {
         var data = json.decode(response.body);
 
@@ -39,7 +40,9 @@ class _scrProfileManState extends State<scrProfileMan> {
         final a = double.parse(data['kol'].toString());
         kol = a.toInt();
 
-      };
+      }
+      else
+        throw response.body;
     } catch (error) {
       print("Ошибка при формировании списка: $error");
     }
@@ -100,7 +103,7 @@ class _scrProfileManState extends State<scrProfileMan> {
                     ],
                   ),
                   const SizedBox(height: 16),
-                  const _ProfileInfoRow(),
+                  //const _ProfileInfoRow(),
                   const SizedBox(height: 16),
                   Divider(),
                   ListTile(
@@ -221,8 +224,7 @@ class _TopPortion extends StatelessWidget {
                     shape: BoxShape.circle,
                     image: DecorationImage(
                         fit: BoxFit.cover,
-                        image: NetworkImage(
-                            'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80')),
+                        image: NetworkImage('https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80')),
                   ),
                 ),
                 Positioned(
