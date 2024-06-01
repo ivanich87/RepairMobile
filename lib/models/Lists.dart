@@ -500,3 +500,173 @@ class ListPlat {
     original.kassaType2 = a.kassaType2 ?? this.kassaType2;
   }
 }
+
+
+class Receipt {
+  String id = '';
+  String number = '';
+  DateTime date = DateTime.now();
+  bool accept = true;
+  bool del = false;
+  bool acceptClient = false;
+  String clientId = '';
+  String clientNmame = '';
+  String objectId = '';
+  String objectName = '';
+  bool dogUse = true;
+  String dogId = '';
+  String dogNumber = '';
+  DateTime dogDate = DateTime.now();
+  num summaClient = 0;
+  num summaOrg = 0;
+  num summa = 0;
+  bool tovarUse = false;
+  String comment = '';
+  String contractorId = '';
+  String contractorName = '';
+  String platType = 'Расход';
+  int status = 0;
+  String analyticId = '';
+  String analyticName = '';
+  String kassaId = '';
+  String kassaName = '';
+  String kassaSotrId = '';
+  String kassaSotrName = '';
+  int kassaType = 0;
+
+
+  Receipt(this.id, this.number, this.date, this.accept, this.del, this.acceptClient, this.clientId, this.clientNmame, this.objectId, this.objectName, this.dogUse, this.dogId, this.dogNumber, this.dogDate, this.summaClient, this.summaOrg, this.summa, this.tovarUse, this.comment, this.contractorId, this.contractorName, this.platType, this.status, this.analyticId, this.analyticName, this.kassaId, this.kassaName, this.kassaSotrId, this.kassaSotrName, this.kassaType);
+
+  Map<String, dynamic> toJson() =>
+      {
+        'id': id,
+        'number': number,
+        'date': date.toIso8601String(),
+        'accept': accept,
+        'del': del,
+        'acceptClient': acceptClient,
+        'clientId': clientId,
+        'clientName': clientNmame ?? '',
+        'objectId': objectId ?? '',
+        'objectName': objectName ?? '',
+        'dogUse': dogUse,
+        'dogId': dogId ?? '',
+        'dogNumber': dogNumber ?? 'Пусто',
+        'dogDate': dogDate.toIso8601String(),
+        'summaClient': summaClient,
+        'summaOrg': summaOrg,
+        'summa': summa,
+        'tovarUse': tovarUse,
+        'comment': comment,
+        'contractorId': contractorId,
+        'contractorName': contractorName ,
+        'platType': platType,
+        'status': status,
+        'analyticId': analyticId ?? '',
+        'analyticName': analyticName ?? '',
+        'kassaId': kassaId,
+        'kassaName': kassaName,
+        'kassaSotrId': kassaSotrId,
+        'kassaSotrName': kassaSotrName,
+        'kassaType': kassaType
+      };
+
+  Receipt copyWith({
+    String? id,
+    String? number,
+    DateTime? date,
+    bool? accept,
+    bool? del,
+    bool? acceptClient,
+    String? clientId,
+    String? clientNmame,
+    String? objectId,
+    String? objectName,
+    bool? dogUse,
+    String? dogId,
+    String? dogNumber,
+    DateTime? dogDate,
+    num? summaClient,
+    num? summaOrg,
+    num? summa,
+    bool? tovarUse,
+    String? comment,
+    String? contractorId,
+    String? contractorName,
+    String? platType,
+    int? status,
+    String? analyticId,
+    String? analyticName,
+    String? kassaId,
+    String? kassaName,
+    String? kassaSotrId,
+    String? kassaSotrName,
+    int? kassaType
+  }) {
+    return Receipt(
+        id = id ?? this.id,
+        number = number ?? this.number,
+        date = date ?? this.date,
+        accept = accept ?? this.accept,
+        del = del ?? this.del,
+        acceptClient = acceptClient ?? this.acceptClient,
+        clientId = clientId ?? this.clientId,
+        clientNmame = clientNmame ?? this.clientNmame,
+        objectId = objectId ?? this.objectId,
+        objectName = objectName ?? this.objectName,
+        dogUse = dogUse ?? this.dogUse,
+        dogId = dogId ?? this.dogId,
+        dogNumber = dogNumber ?? this.dogNumber,
+        dogDate = dogDate ?? this.dogDate,
+        summaClient = summaClient ?? this.summaClient,
+        summaOrg = summaOrg ?? this.summaOrg,
+        summa = summa ?? this.summa,
+        tovarUse = tovarUse ?? this.tovarUse,
+        comment = comment ?? this.comment,
+        contractorId = contractorId ?? this.contractorId,
+        contractorName = contractorName ?? this.contractorName,
+        platType = platType ?? this.platType,
+        status = status ?? this.status,
+        analyticId = analyticId ?? this.analyticId,
+        analyticName = analyticName ?? this.analyticName,
+        kassaId = kassaId ?? this.kassaId,
+        kassaName = kassaName ?? this.kassaName,
+        kassaSotrId = kassaSotrId ?? this.kassaSotrId,
+        kassaSotrName = kassaSotrName ?? this.kassaSotrName,
+        kassaType = kassaType ?? this.kassaType
+    );
+  }
+
+  Receipt.fromTo(Receipt original, Receipt a) {
+    original.id = a.id ?? this.id;
+    original.number = a.number ?? this.number;
+    original.date = a.date ?? this.date;
+    original.accept = a.accept ?? this.accept;
+    original.del = a.del ?? this.del;
+    original.acceptClient = a.acceptClient ?? this.acceptClient;
+    original.clientId = a.clientId ?? this.clientId;
+    original.clientNmame = a.clientNmame ?? this.clientNmame;
+    original.objectId = a.objectId ?? this.objectId;
+    original.objectName = a.objectName ?? this.objectName;
+    original.dogUse = a.dogUse ?? this.dogUse;
+    original.dogId = a.dogId ?? this.dogId;
+    original.dogNumber = a.dogNumber ?? this.dogNumber;
+    original.dogDate = a.dogDate ?? this.dogDate;
+    original.summaClient = a.summaClient ?? this.summaClient;
+    original.summaOrg = a.summaOrg ?? this.summaOrg;
+    original.summa = a.summa ?? this.summa;
+    original.tovarUse = a.tovarUse ?? this.tovarUse;
+    original.comment = a.comment ?? this.comment;
+    original.contractorId = a.contractorId ?? this.contractorId;
+    original.contractorName = a.contractorName ?? this.contractorName;
+    original.platType = a.platType ?? this.platType;
+    original.status = a.status ?? this.status;
+    original.analyticId = a.analyticId ?? this.analyticId;
+    original.analyticName = a.analyticName ?? this.analyticName;
+    original.kassaId = a.kassaId ?? this.kassaId;
+    original.kassaName = a.kassaName ?? this.kassaName;
+    original.kassaSotrId = a.kassaSotrId ?? this.kassaSotrId;
+    original.kassaSotrName = a.kassaSotrName ?? this.kassaSotrName;
+    original.kassaType = a.kassaType ?? this.kassaType;
+  }
+}

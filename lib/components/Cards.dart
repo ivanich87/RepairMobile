@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:repairmodule/models/Lists.dart';
-import 'package:repairmodule/screens/cashCategories.dart';
+import 'package:repairmodule/screens/ReceiptView.dart';
 import 'package:repairmodule/screens/object_view.dart';
 import 'package:repairmodule/screens/plat_view.dart';
 
@@ -275,7 +275,13 @@ class _PlatObjectListState extends State<PlatObjectList> {
             await Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => scrPlatsViewScreen(plat: widget.event)));
+                    builder: (context) {
+                      print(widget.event.type);
+                      if (widget.event.type=='Покупка стройматериалов')
+                        return scrReceiptViewScreen(id: '433a1307-1de7-11ef-80ec-00155d753c19');
+                      else
+                        return scrPlatsViewScreen(plat: widget.event);
+                    }));
             setState(() {
               print('Пересчет формы');
             });

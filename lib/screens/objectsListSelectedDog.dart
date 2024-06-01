@@ -22,6 +22,7 @@ class _scrobjectsListSelectedDogState extends State<objectsListSelectedDog> {
 
   Future httpGetListObject() async {
     var _url=Uri(path: '/a/centrremonta/hs/v1/dogList/${widget.id}/', host: 's1.rntx.ru', scheme: 'https');
+    print(_url.path);
     var _headers = <String, String> {
       'Accept': 'application/json',
       'Authorization': 'Basic YWNlOkF4V3lJdnJBS1prdzY2UzdTMEJP'
@@ -36,6 +37,7 @@ class _scrobjectsListSelectedDogState extends State<objectsListSelectedDog> {
       }
       else {
         print('Код ответа от сервера: ${response.statusCode}');
+        print('Ошибка:  ${response.body}');
       }
     } catch (error) {
       print("Ошибка при формировании списка: $error");
