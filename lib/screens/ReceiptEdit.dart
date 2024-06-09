@@ -191,7 +191,7 @@ class _scrReceiptEditScreenState extends State<scrReceiptEditScreen> {
                         titles: '${(widget.receiptData.kassaType==2 || widget.receiptData.summa==0) ? 'Без списания' : (widget.receiptData.kassaType==0) ? widget.receiptData.kassaName : widget.receiptData.kassaSotrName}',
                         //titles: '${(widget.receiptData.kassaType==0) ? widget.receiptData.kassaName : (widget.receiptData.kassaType==1) ? widget.receiptData.kassaSotrName : 'Без списния'}',
                         icon: Icons.payment_outlined,
-                        id: '',
+                        id: (widget.receiptData.kassaType==0) ? 'Кассы' : 'Сотрудники',
                         idType: (widget.receiptData.kassaType==0) ? 'sprKassaListSelected' : 'sprSotrListSelected', trailing: null)
                   ],
                 )

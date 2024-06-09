@@ -16,7 +16,7 @@ class scrReceiptViewScreen extends StatefulWidget {
 }
 
 class _scrReceiptViewScreenState extends State<scrReceiptViewScreen> {
-  Receipt recipientdata = Receipt('', '', DateTime(2024), true, false, false, '', '', '', '', true, '', '', DateTime(2024), 0, 0, 0, false, '', '', '', 'Расход', 0, '', '', '', '', '', '', 0);
+  Receipt recipientdata = Receipt('', '', DateTime(2024), true, false, false, '', '', '', '', true, '', '', DateTime(2024), 0, 0, 0, false, '', '', '', 'Расход', 0, '', '', '', '', '', '', 0, 'Покупка стройматериалов');
 
   // String number = '';
   // DateTime date = DateTime.now();
@@ -90,6 +90,7 @@ class _scrReceiptViewScreenState extends State<scrReceiptViewScreen> {
         recipientdata.kassaSotrId = data['kassaSotrId'] ?? '';
         recipientdata.kassaSotrName = data['kassaSotrName'] ?? '';
         recipientdata.kassaType = data['kassaType'] ?? 0;
+        recipientdata.type = data['type'] ?? 'Покупка стройматериалов';
       }
       else {
         print('Код ответа сервера: ' + response.statusCode.toString());

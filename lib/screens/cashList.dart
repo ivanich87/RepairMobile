@@ -13,8 +13,14 @@ class scrCashListScreen extends StatefulWidget {
 
   final String idCash;
   final String cashName;
+  final String analytic;
+  final String analyticName;
+  final String objectId;
+  final String objectName;
+  DateTimeRange dateRange;
 
-  scrCashListScreen({required this.idCash, required this.cashName});
+
+  scrCashListScreen({required this.idCash, required this.cashName, required this.analytic, required this.analyticName, required this.objectId, required this.objectName, required this.dateRange});
 
   @override
   State<scrCashListScreen> createState() => _scrCashListScreenState();
@@ -24,11 +30,15 @@ class _scrCashListScreenState extends State<scrCashListScreen> {
   //var objectList = [];
   List<ListPlat> objectList = [];
 
-  DateTimeRange dateRange = DateTimeRange(
-      start: DateTime.now(), end: DateTime.now());
+  //DateTimeRange dateRange = DateTimeRange(start: DateTime.now(), end: DateTime.now());
 
   Future httpGetListPlat() async {
-    var _url = Uri(path: '/a/centrremonta/hs/v1/platlist/${DateFormat('yyyyMMdd').format(dateRange.start)}/${DateFormat('yyyyMMdd').format(dateRange.end)}/${widget.idCash}/',
+    final queryParameters = {
+      'analyticId': widget.analytic,
+      'objectId': widget.objectId,
+    };
+    var _url = Uri(path: '/a/centrremonta/hs/v1/platlist/${DateFormat('yyyyMMdd').format(widget.dateRange.start)}/${DateFormat('yyyyMMdd').format(widget.dateRange.end)}/${widget.idCash}',
+        queryParameters: queryParameters,
         host: 's1.rntx.ru',
         scheme: 'https');
     var _headers = <String, String>{
@@ -36,6 +46,7 @@ class _scrCashListScreenState extends State<scrCashListScreen> {
       'Authorization': 'Basic YWNlOkF4V3lJdnJBS1prdzY2UzdTMEJP'
     };
     try {
+      print(_url.path);
       var response = await http.get(_url, headers: _headers);
       if (response.statusCode == 200) {
         objectList.clear();
@@ -44,6 +55,8 @@ class _scrCashListScreenState extends State<scrCashListScreen> {
           objectList.add(ListPlat.fromJson(noteJson));
         }
       }
+      else
+        throw response.body;
     } catch (error) {
       print("Ошибка при формировании списка платежей: $error");
     }
@@ -56,12 +69,12 @@ class _scrCashListScreenState extends State<scrCashListScreen> {
       setState(() {});
     });
     // TODO: implement initState
-    //super.initState();
+    super.initState();
   }
 
   Widget build(BuildContext context) {
-    final start = dateRange.start;
-    final end = dateRange.end;
+    final start = widget.dateRange.start;
+    final end = widget.dateRange.end;
 
     return Scaffold(
         appBar: AppBar(
@@ -105,15 +118,17 @@ class _scrCashListScreenState extends State<scrCashListScreen> {
 
   Future pickDateRange() async {
     DateTimeRange? newDateRange = await showDateRangePicker(locale: Locale("ru", "RU"),
-        context: context, firstDate: DateTime(2020), lastDate: DateTime(2050), initialDateRange: dateRange);
+        context: context, firstDate: DateTime(2020), lastDate: DateTime(2050), initialDateRange: widget.dateRange);
     if (newDateRange ==null) return;
 
     setState(() {
-      dateRange = newDateRange;
+      widget.dateRange = newDateRange;
     });
     initState();
   }
 }
+
+
 
 enum Menu { oplataDog, oplataMaterials, platUp, platDown, check, platDownSotr, platUpSotr , platMove}
 

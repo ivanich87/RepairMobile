@@ -87,7 +87,7 @@ class _CardCashListState extends State<CardCashList> {
           Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => scrCashListScreen(idCash: widget.event.id, cashName: 'Все',)));},
+            builder: (context) => scrCashListScreen(idCash: widget.event.id, cashName: 'Все', analytic: '', analyticName: '', objectId: '', objectName: '', dateRange: DateTimeRange(start: DateTime.now(), end: DateTime.now()),  )));},
         onLongPress: () {});
     //scrCashCategoriesScreen(idCash: widget.event.id, cashName: widget.event.name)
   }
@@ -286,6 +286,54 @@ class _PlatObjectListState extends State<PlatObjectList> {
               print('Пересчет формы');
             });
             },
+          onLongPress: () {}),
+    );
+  }
+}
+
+
+class CardObjectAnalyticList extends StatefulWidget {
+  const CardObjectAnalyticList({
+    super.key,
+    required this.event,
+    required this.onType,
+    required this.objectId,
+    required this.objectName
+  });
+
+  final analyticObjectList event;
+  final String onType;
+  final String objectId;
+  final String objectName;
+
+  @override
+  State<CardObjectAnalyticList> createState() => _CardObjectAnalyticListState();
+}
+
+class _CardObjectAnalyticListState extends State<CardObjectAnalyticList> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: ListTile(
+          title: Text(widget.event.analyticName, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),),
+          //subtitle: Text(widget.event.addres),
+          trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 0).format(widget.event.summa), style: TextStyle(fontSize: 16, color: textColors(widget.event.summa))),
+          onTap: () async {
+            if (widget.onType=='push') {
+              print('push');
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          scrCashListScreen(idCash: '0', cashName: 'Все', analytic: widget.event.analyticId, analyticName: widget.event.analyticId, objectId: widget.objectId, objectName: widget.objectName, dateRange: DateTimeRange(start: DateTime(2023), end: DateTime.now()),  )));
+            }
+          },
           onLongPress: () {}),
     );
   }

@@ -165,6 +165,25 @@ class DogListObject {
 
 }
 
+class analyticObjectList {
+  late String analyticId;
+  late String analyticName;
+  late num summa;
+  late num summaUp;
+  late num summaDown;
+
+  analyticObjectList(this.analyticId, this.analyticName, this.summa, this.summaUp, this.summaDown);
+
+  analyticObjectList.fromJson(Map<String, dynamic> json) {
+    analyticId = json['analyticId'] ?? '';
+    analyticName = json['analyticName'] ?? 'analyticName';
+    summa = json['summa'] ?? 0;
+    summaUp = json['summaUp'] ?? 0;
+    summaDown = json['summaDown'] ?? 0;
+  }
+
+}
+
 class InfoObject {
   late String id;
   late String name;
@@ -533,9 +552,10 @@ class Receipt {
   String kassaSotrId = '';
   String kassaSotrName = '';
   int kassaType = 0;
+  String type = 'Покупка стройматериалов';
 
 
-  Receipt(this.id, this.number, this.date, this.accept, this.del, this.acceptClient, this.clientId, this.clientNmame, this.objectId, this.objectName, this.dogUse, this.dogId, this.dogNumber, this.dogDate, this.summaClient, this.summaOrg, this.summa, this.tovarUse, this.comment, this.contractorId, this.contractorName, this.platType, this.status, this.analyticId, this.analyticName, this.kassaId, this.kassaName, this.kassaSotrId, this.kassaSotrName, this.kassaType);
+  Receipt(this.id, this.number, this.date, this.accept, this.del, this.acceptClient, this.clientId, this.clientNmame, this.objectId, this.objectName, this.dogUse, this.dogId, this.dogNumber, this.dogDate, this.summaClient, this.summaOrg, this.summa, this.tovarUse, this.comment, this.contractorId, this.contractorName, this.platType, this.status, this.analyticId, this.analyticName, this.kassaId, this.kassaName, this.kassaSotrId, this.kassaSotrName, this.kassaType, this.type);
 
   Map<String, dynamic> toJson() =>
       {
@@ -568,7 +588,8 @@ class Receipt {
         'kassaName': kassaName,
         'kassaSotrId': kassaSotrId,
         'kassaSotrName': kassaSotrName,
-        'kassaType': kassaType
+        'kassaType': kassaType,
+        'type': type
       };
 
   Receipt copyWith({
@@ -601,7 +622,8 @@ class Receipt {
     String? kassaName,
     String? kassaSotrId,
     String? kassaSotrName,
-    int? kassaType
+    int? kassaType,
+    String? type
   }) {
     return Receipt(
         id = id ?? this.id,
@@ -633,7 +655,8 @@ class Receipt {
         kassaName = kassaName ?? this.kassaName,
         kassaSotrId = kassaSotrId ?? this.kassaSotrId,
         kassaSotrName = kassaSotrName ?? this.kassaSotrName,
-        kassaType = kassaType ?? this.kassaType
+        kassaType = kassaType ?? this.kassaType,
+        type = type ?? this.type
     );
   }
 
@@ -668,5 +691,6 @@ class Receipt {
     original.kassaSotrId = a.kassaSotrId ?? this.kassaSotrId;
     original.kassaSotrName = a.kassaSotrName ?? this.kassaSotrName;
     original.kassaType = a.kassaType ?? this.kassaType;
+    original.type = a.type ?? this.type;
   }
 }
