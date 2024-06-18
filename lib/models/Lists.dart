@@ -96,8 +96,9 @@ class ListObject {
   late String name;
   late String addres;
   late int summa;
+  late int TipId;
 
-  ListObject(this.id, this.name, this.addres, this.summa);
+  ListObject(this.id, this.name, this.addres, this.summa, this.TipId);
 
   ListObject.fromJson(Map<String, dynamic> json) {
     id = json['id'] ?? '0';
@@ -105,6 +106,7 @@ class ListObject {
     addres = json['addres'] ?? 'Адрес не указан';
     final s = double.parse(json['СуммыДоговоров'].toString());
     summa = s.toInt();
+    TipId=0;
   }
 
 }
@@ -137,14 +139,16 @@ class DogListObject {
   late DateTime StopDate;
   late String nameProrab;
   late String Status;
+
   late int TipId;
   late String TipName;
   late String nameMan;
   late num summaAkt;
   late num summaOplata;
   late num summa;
+  late String name;
 
-  DogListObject(this.id, this.Number, this.Date, this.StartDate, this.StopDate, this.nameProrab, this.Status, this.TipId, this.nameMan, this.summaAkt, this.summaOplata, this.summa);
+  DogListObject(this.id, this.Number, this.Date, this.StartDate, this.StopDate, this.nameProrab, this.Status, this.TipId, this.nameMan, this.summaAkt, this.summaOplata, this.summa, this.name);
 
   DogListObject.fromJson(Map<String, dynamic> json) {
     id = json['id'] ?? '0';
@@ -160,7 +164,7 @@ class DogListObject {
     summaAkt = json['summaAkt'];
     summaOplata = json['summaOplata'];
     summa = json['summa'];
-
+    name = json['name'];
   }
 
 }
@@ -197,9 +201,10 @@ class InfoObject {
   late String startDate;
   late String stopDate;
 
-  late int summa;
-  late int summaSeb;
-  late int summaAkt;
+  late num summa;
+  late num summaSeb;
+  late num summaAkt;
+  late num summaOpl;
   late int percent;
   late int payment;
 
@@ -219,20 +224,21 @@ class InfoObject {
     idProrab = json['idProrab'] ?? 'Пусто';
     startDate = json['startDate'] ?? 'Пусто';
     stopDate = json['stopDate'] ?? 'Пусто';
-    summa = json['summa'] ?? 'Пусто';
-    summaSeb = json['summaSeb'] ?? 'Пусто';
-    summaAkt = json['summaAkt'] ?? 'Пусто';
-    percent = json['percent'] ?? 'Пусто';
+    summa = json['summa'] ?? 0;
+    summaSeb = json['summaSeb'] ?? 0;
+    summaOpl = json['summaOpl'] ?? 0;
+    summaAkt = json['summaAkt'] ?? 0;
+    percent = json['percent'] ?? 0;
     address = json['address'] ?? 'Адрес не указан';
 
-    final s = double.parse(json['СуммыДоговоров'].toString());
-    summa = s.toInt();
-
-    final s2 = double.parse(json['СуммаСебестоимость'].toString());
-    summaSeb = s2.toInt();
-
-    final s3 = double.parse(json['СуммаАктов'].toString());
-    summaAkt = s3.toInt();
+    // final s = double.parse(json['СуммыДоговоров'].toString());
+    // summa = s.toInt();
+    //
+    // final s2 = double.parse(json['СуммаСебестоимость'].toString());
+    // summaSeb = s2.toInt();
+    //
+    // final s3 = double.parse(json['СуммаАктов'].toString());
+    // summaAkt = s3.toInt();
 
     final s4 = double.parse(json['ПроцентВыполнения'].toString());
     percent = s4.toInt();

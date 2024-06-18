@@ -6,11 +6,17 @@ import 'package:repairmodule/models/Lists.dart';
 //import 'package:repairmodule/components/Cards.dart;
 import 'package:http/http.dart' as http;
 
+import 'dogovor_create.dart';
+
 
 class objectsListSelectedDog extends StatefulWidget {
-  final String id;
+  final String objectId;
+  final String objectName;
+  final String clientId;
+  final String clientName;
+  final String onType;
 
-  objectsListSelectedDog({super.key, required this.id});
+  objectsListSelectedDog({super.key, required this.objectId, required this.onType, required this.objectName, required this.clientId, required this.clientName});
 
   @override
   State<objectsListSelectedDog> createState() => _scrobjectsListSelectedDogState();
@@ -21,8 +27,7 @@ class _scrobjectsListSelectedDogState extends State<objectsListSelectedDog> {
   //List <DogListObject> objectList = [];
 
   Future httpGetListObject() async {
-    var _url=Uri(path: '/a/centrremonta/hs/v1/dogList/${widget.id}/', host: 's1.rntx.ru', scheme: 'https');
-    print(_url.path);
+    var _url=Uri(path: '/a/centrremonta/hs/v1/dogList/${widget.objectId}/', host: 's1.rntx.ru', scheme: 'https');
     var _headers = <String, String> {
       'Accept': 'application/json',
       'Authorization': 'Basic YWNlOkF4V3lJdnJBS1prdzY2UzdTMEJP'
@@ -46,6 +51,8 @@ class _scrobjectsListSelectedDogState extends State<objectsListSelectedDog> {
 
   @override
   void initState() {
+    print('initState');
+    objectList.clear();
     httpGetListObject().then((value) {
       setState(() {
       });
@@ -68,9 +75,17 @@ class _scrobjectsListSelectedDogState extends State<objectsListSelectedDog> {
           physics: BouncingScrollPhysics(),
           reverse: false,
           itemCount: objectList.length,
-            itemBuilder: (_, index) => CardDogObjectList(event: objectList[index], onType: 'pop',),
+            itemBuilder: (_, index) => CardDogObjectList(event: objectList[index], onType: widget.onType,),
           ),
-          //backgroundColor: Colors.grey[900]),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () async {
+            DateTimeRange dateRange = DateTimeRange(start: DateTime.now(), end: DateTime.now());
+            final newObjectId = await Navigator.push(context, MaterialPageRoute(builder: (context) => scrDogovorCreateScreen(objectId: widget.objectId, objectName: widget.objectName, clientId: widget.clientId, clientName: widget.clientName, newDogovorId: '', managerId: '', managerName: 'Выберите менеджера', prorabId: '', prorabName: 'Выберите прораба', nameDog: '', summa: 0, summaSeb: 0, dateRange: dateRange,),));
+            initState();
+          },
+          child: Text('+'),)
+
+      //backgroundColor: Colors.grey[900]),
     );
   }
 }

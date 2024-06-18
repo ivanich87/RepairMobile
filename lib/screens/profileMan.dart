@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:repairmodule/screens/profileMan_edit.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class scrProfileMan extends StatefulWidget {
@@ -17,6 +18,7 @@ class _scrProfileManState extends State<scrProfileMan> {
   String phone = '';
   String mail = '';
   String role = '';
+  int type = 1;
   int kol = 0;
 
   Future httpGetInfoMan() async {
@@ -35,10 +37,7 @@ class _scrProfileManState extends State<scrProfileMan> {
         phone = data['phone'] ?? 'no phone';
         mail = data['mail'] ?? 'no mail';
         role = data['role'] ?? 'no role';
-
-
-        final a = double.parse(data['kol'].toString());
-        kol = a.toInt();
+        type = data['type'] ?? 1;
 
       }
       else
@@ -130,6 +129,13 @@ class _scrProfileManState extends State<scrProfileMan> {
           ),
         ],
       ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () async {
+            await Navigator.push(context, MaterialPageRoute(builder: (context) => scrProfileManEditScreen(id: widget.id, name: name, email: mail, phone: phone, type: type),));
+            initState();
+          },
+          child: Icon(Icons.edit),
+        )
     );
   }
 }

@@ -126,7 +126,7 @@ class _scrCashHomeScreenState extends State<scrCashHomeScreen> {
                             context,
                             MaterialPageRoute(
                                 //builder: (context) => scrCashCategoriesScreen(idCash: '0', cashName: 'Все',)));
-                                builder: (context) => scrCashListScreen(idCash: '0', cashName: 'Все', analytic: '', analyticName: '', objectId: '',objectName: '', dateRange: DateTimeRange(start: DateTime.now(), end: DateTime.now()),)));
+                                builder: (context) => scrCashListScreen(idCash: '0', cashName: 'Все', analytic: '', analyticName: '', objectId: '',objectName: '', platType: '', dateRange: DateTimeRange(start: DateTime.now(), end: DateTime.now()),)));
                       },
                     )
                   ],

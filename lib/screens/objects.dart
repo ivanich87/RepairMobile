@@ -6,6 +6,9 @@ import 'package:repairmodule/models/Lists.dart';
 //import 'package:repairmodule/components/Cards.dart;
 import 'package:http/http.dart' as http;
 
+import 'object_create.dart';
+import 'object_view.dart';
+
 
 class scrObjectsScreen extends StatefulWidget {
 
@@ -40,6 +43,9 @@ class _scrObjectsScreenState extends State<scrObjectsScreen> {
 
   @override
   void initState() {
+    print('initState');
+    objectList.clear();
+
     httpGetListObject().then((value) {
       setState(() {
       });
@@ -65,8 +71,14 @@ class _scrObjectsScreenState extends State<scrObjectsScreen> {
             itemBuilder: (_, index) => CardObjectList(event: objectList[index], onType: 'push',),
           ),
           floatingActionButton: FloatingActionButton(
-          onPressed: () {},
-          child: Text('+'),)
+            onPressed: () async {
+              final newObjectId = await Navigator.push(context, MaterialPageRoute(builder: (context) => scrObjectCreateScreen(),)) ?? '';
+              if (newObjectId!='') {
+                Navigator.push(context, MaterialPageRoute( builder: (context) => scrObjectsViewScreen(id: newObjectId)));
+                initState();
+              }
+            },
+            child: Text('+'),)
           //backgroundColor: Colors.grey[900]),
     );
   }

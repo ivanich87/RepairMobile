@@ -16,41 +16,14 @@ class scrReceiptViewScreen extends StatefulWidget {
 }
 
 class _scrReceiptViewScreenState extends State<scrReceiptViewScreen> {
-  Receipt recipientdata = Receipt('', '', DateTime(2024), true, false, false, '', '', '', '', true, '', '', DateTime(2024), 0, 0, 0, false, '', '', '', 'Расход', 0, '', '', '', '', '', '', 0, 'Покупка стройматериалов');
+  Receipt recipientdata = Receipt('', '', DateTime.now(), true, false, false, '', '', '', '', true, '', '', DateTime.now(), 0, 0, 0, false, '', '', '', 'Расход', 0, '', '', '', '', '', '', 0, 'Покупка стройматериалов');
 
-  // String number = '';
-  // DateTime date = DateTime.now();
-  // bool accept = true;
-  // bool del = false;
-  // bool acceptClient = false;
-  // String clientId = '';
-  // String clientNmame = '';
-  // String objectId = '';
-  // String objectName = '';
-  // bool dogUse = true;
-  // String dogId = '';
-  // String dogNumber = '';
-  // DateTime dogDate = DateTime.now();
-  // num summaClient = 0;
-  // num summaOrg = 0;
-  // num summa = 0;
-  // bool tovarUse = false;
-  // String comment = '';
-  // String contractorId = '';
-  // String contractorName = '';
-  // String platType = 'Расход';
-  // int status = 0;
-  // String analyticId = '';
-  // String analyticName = '';
-  // String kassaId = '';
-  // String kassaName = '';
-  // String kassaSotrId = '';
-  // String kassaSotrName = '';
-  // int kassaType = 0;
 
 
   Future httpGetInfoObject() async {
-    print('!!!!!!!!!!!!!!!!!!' + widget.id.toString());
+    if (widget.id=='')
+      return;
+
     var _url=Uri(path: '/a/centrremonta/hs/v1/receipt/'+widget.id+'/', host: 's1.rntx.ru', scheme: 'https');
 
     var _headers = <String, String> {

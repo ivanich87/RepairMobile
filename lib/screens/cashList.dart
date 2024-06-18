@@ -8,6 +8,8 @@ import 'package:repairmodule/screens/plat_edit.dart';
 //import 'package:repairmodule/components/Cards.dart;
 import 'package:http/http.dart' as http;
 
+import 'ReceiptEdit.dart';
+
 
 class scrCashListScreen extends StatefulWidget {
 
@@ -17,10 +19,11 @@ class scrCashListScreen extends StatefulWidget {
   final String analyticName;
   final String objectId;
   final String objectName;
+  final String platType;
   DateTimeRange dateRange;
 
 
-  scrCashListScreen({required this.idCash, required this.cashName, required this.analytic, required this.analyticName, required this.objectId, required this.objectName, required this.dateRange});
+  scrCashListScreen({required this.idCash, required this.cashName, required this.analytic, required this.analyticName, required this.objectId, required this.objectName, required this.platType, required this.dateRange});
 
   @override
   State<scrCashListScreen> createState() => _scrCashListScreenState();
@@ -36,6 +39,7 @@ class _scrCashListScreenState extends State<scrCashListScreen> {
     final queryParameters = {
       'analyticId': widget.analytic,
       'objectId': widget.objectId,
+      'platType': widget.platType
     };
     var _url = Uri(path: '/a/centrremonta/hs/v1/platlist/${DateFormat('yyyyMMdd').format(widget.dateRange.start)}/${DateFormat('yyyyMMdd').format(widget.dateRange.end)}/${widget.idCash}',
         queryParameters: queryParameters,
@@ -141,10 +145,19 @@ class _AddMenuIcon extends StatelessWidget {
         icon: const Icon(Icons.add),
         offset: const Offset(0, 40),
         onSelected: (Menu item) {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => scrPlatEditScreen(plat2: ListPlat('', 'Новый платеж', DateTime.now(), false, '', true, '', '', '', useDog(item), analyticId(item, true), analyticId(item, false), 0, 0, 0, '', 'Не выбран', '', '', DateTime.now(), useDog(item), '', '', '', '', 0, '', '', '', platType(item), type(item), '', '', '', '', 0),)));
+          if (item.name=='check') //если покупка стройматериалов
+            {
+            Receipt recipientdata = Receipt('', '', DateTime.now(), true, false, false, '', '', '', '', true, '', '', DateTime.now(), 0, 0, 0, false, '', '', '', 'Расход', 0, '', '', '', '', '', '', 0, 'Покупка стройматериалов');
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => scrReceiptEditScreen(receiptData: recipientdata,)));
+            }
+          else
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => scrPlatEditScreen(plat2: ListPlat('', 'Новый платеж', DateTime.now(), false, '', true, '', '', '', useDog(item), analyticId(item, true), analyticId(item, false), 0, 0, 0, '', 'Не выбран', '', '', DateTime.now(), useDog(item), '', '', '', '', 0, '', '', '', platType(item), type(item), '', '', '', '', 0),)));
         },
         itemBuilder: (BuildContext context) => <PopupMenuEntry<Menu>>[
           const PopupMenuItem<Menu>(
@@ -163,10 +176,10 @@ class _AddMenuIcon extends StatelessWidget {
             value: Menu.platDown,
             child: Text('Списание денег'),
           ),
-          // const PopupMenuItem<Menu>(
-          //   value: Menu.check,
-          //   child: Text('Покупка стройматериалов'),
-          // ),
+          const PopupMenuItem<Menu>(
+            value: Menu.check,
+            child: Text('Покупка стройматериалов'),
+          ),
           const PopupMenuItem<Menu>(
             value: Menu.platMove,
             child: Text('Перемещение денег'),

@@ -8,48 +8,51 @@ import 'package:repairmodule/screens/profileMan.dart';
 
 import '../components/Cards.dart';
 import 'cashList.dart';
-import 'object_edit.dart';
+import 'dogovor_create.dart';
 import 'objectsListSelectedDog.dart';
 
-class scrObjectsViewScreen extends StatefulWidget {
+class scrDogovorViewScreen extends StatefulWidget {
   final String id;
-  scrObjectsViewScreen({super.key, required this.id});
+  scrDogovorViewScreen({super.key, required this.id});
 
   @override
-  State<scrObjectsViewScreen> createState() => _scrObjectsViewScreenState();
+  State<scrDogovorViewScreen> createState() => _scrDogovorViewScreenState();
 }
 
-class _scrObjectsViewScreenState extends State<scrObjectsViewScreen> {
+class _scrDogovorViewScreenState extends State<scrDogovorViewScreen> {
   List<analyticObjectList> AnalyticObjectList = [];
 
   num summaDown = 0;
   num summaUp = 0;
 
+  String idObject = '';
   String address = '';
   String name = '';
+  String number = '';
+  String date = '';
   String nameClient = '';
-  String emailClient = '';
-  String phoneClient = '';
   String idClient = '';
   String nameManager = '';
   String idManager = '';
   String nameProrab = '';
   String idProrab = '';
-  String startDate = '20010101';
-  String stopDate = '20010101';
+  String startDate = '';
+  String stopDate = '';
+  DateTime dtStart = DateTime.now();
+  DateTime dtStop = DateTime.now();
   num summa = 0;
   num summaSeb = 0;
   num summaAkt = 0;
-  num summaOpl = 0;
-  int percent = 0;
-  int payment = 0;
+  num summaOpl=0;
+  num percent = 0;
+  num payment = 0;
   num area = 0;
 
 
   Future httpGetInfoObject() async {
     print('!!!!!!!!!!!!!!!!!!' + widget.id.toString());
-    var _url=Uri(path: '/a/centrremonta/hs/v1/obinfo/'+widget.id+'/', host: 's1.rntx.ru', scheme: 'https');
-    
+    var _url=Uri(path: '/a/centrremonta/hs/v1/doginfo/'+widget.id+'/', host: 's1.rntx.ru', scheme: 'https');
+    print(_url.path);
     var _headers = <String, String> {
       'Accept': 'application/json',
       'Authorization': 'Basic YWNlOkF4V3lJdnJBS1prdzY2UzdTMEJP'
@@ -59,33 +62,30 @@ class _scrObjectsViewScreenState extends State<scrObjectsViewScreen> {
       if (response.statusCode == 200) {
         var data = json.decode(response.body);
         //id = data['id'] ?? 'no id';
-        name = data['nameObject'] ?? '';
-        nameClient = data['nameClient'] ?? '';
-        phoneClient = data['phoneClient'] ?? '';
-        emailClient = data['emailClient'] ?? '';
-        idClient = data['idClient'] ?? '';
-        nameManager = data['nameManager'] ?? '';
-        idManager = data['idManager'] ?? '';
-        nameProrab = data['nameProrab'] ?? '';
-        idProrab = data['idProrab'] ?? '';
-        address = data['address'] ?? '';
+        name = data['name'] ?? 'no name';
+        number = data['number'] ?? '';
+        date = DateFormat('dd-MM-yyyy').format(DateTime.parse(data['date'] ?? DateTime.now().toString())) ;
+        nameClient = data['nameClient'] ?? 'no nameClient';
+        idClient = data['idClient'] ?? 'no idClient';
+        nameManager = data['nameManager'] ?? 'no nameManager';
+        idManager = data['idManager'] ?? 'no idManager';
+        nameProrab = data['nameProrab'] ?? 'no nameProrab';
+        idProrab = data['idProrab'] ?? 'no idProrab';
+        idObject = data['idObject'] ?? 'no idClient';
+        address = data['address'] ?? 'no address';
 
-        startDate = DateFormat('dd-MM-yyyy').format(DateTime.parse(data['StartDate']));
-        stopDate = DateFormat('dd-MM-yyyy').format(DateTime.parse(data['StopDate']));
+        dtStart = DateTime.parse(data['StartDate']);
+        dtStop = DateTime.parse(data['StopDate']);
 
-        summa = data['summa'];
-        summaSeb = data['summaSeb'];
-        summaAkt = data['summaAkt'];
-        summaOpl = data['summaOpl'];
+        startDate = DateFormat('dd.MM.yyyy').format(dtStart);
+        stopDate = DateFormat('dd.MM.yyyy').format(dtStop);
 
-        area = data['area'];
+        summa    = data['summa'] ?? 0;
+        summaSeb = data['summaSeb'] ?? 0;
+        summaAkt = data['summaAkt'] ?? 0;
+        summaOpl = data['summaOpl'] ?? 0;
 
-
-        final s4 = double.parse(data['ПроцентВыпол нения'].toString());
-        percent = s4.toInt();
-
-        final s5 = double.parse(data['ПроцентВыполнения'].toString());
-        payment = s5.toInt();
+        area = data['area'] ?? 0;
       }
       else {
     print('Код ответа сервера: ' + response.statusCode.toString());
@@ -123,7 +123,6 @@ class _scrObjectsViewScreenState extends State<scrObjectsViewScreen> {
 
   @override
   void initState() {
-    AnalyticObjectList.clear();
     httpGetInfoObject().then((value) async {
       await httpGetAnalyticListObject();
 
@@ -138,7 +137,7 @@ class _scrObjectsViewScreenState extends State<scrObjectsViewScreen> {
       length: 2,
       child: Scaffold(
           appBar: AppBar(
-            title: Text('Карточка объекта'),
+            title: Text('Карточка договора'),
             //bottom: TabBar(tabs: _tabs),
             centerTitle: true,
             backgroundColor: Theme.of(context).colorScheme.inversePrimary,
@@ -162,7 +161,8 @@ class _scrObjectsViewScreenState extends State<scrObjectsViewScreen> {
           ),
           floatingActionButton: FloatingActionButton(
             onPressed: () async {
-              await Navigator.push(context, MaterialPageRoute(builder: (context) => scrObjectEditScreen(objectId: widget.id, clientId: idClient, clientName: nameClient, clientEMail: emailClient, clientPhone: phoneClient, address: address, area: area),));
+              DateTimeRange dateRange = DateTimeRange(start: dtStart, end: dtStop);
+              await Navigator.push(context, MaterialPageRoute(builder: (context) => scrDogovorCreateScreen(objectId: idObject, objectName: address, clientId: idClient, clientName: nameClient, newDogovorId: widget.id, managerId: idManager, managerName: nameManager, prorabId: idProrab, prorabName: nameProrab, nameDog: name, summa: summa, summaSeb: summaSeb, dateRange: dateRange,),));
               initState();
             },
             child: Icon(Icons.edit),
@@ -173,105 +173,85 @@ class _scrObjectsViewScreenState extends State<scrObjectsViewScreen> {
   }
 
   _pageGeneral() {
-    return RefreshIndicator(
-      onRefresh: () async {
-        initState();
-        return Future<void>.delayed(const Duration(seconds: 2));
-      },
-      child: ListView(
-        children: [
-          Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            //crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              ListTile(
-                title: Text(
-                  nameClient,
-                  style: TextStyle(fontWeight: FontWeight.w500, fontSize: 18),
-                ),
-                subtitle: Text('Посмотреть данные по клиенту'),
-                trailing: Icon(Icons.info_outlined),
-                leading: Icon(Icons.account_circle),
-                onTap: (){
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => scrProfileMan(id: idClient,)));
-                },
+    return ListView(
+      children: [
+        Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          //crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            ListTile(
+              title: Text(
+                nameClient,
+                style: TextStyle(fontWeight: FontWeight.w500, fontSize: 18),
               ),
-              Divider(),
-              SingleSection(
-                title: 'Основное',
-                children: [
-                  _CustomListTile(
-                      title: startDate.toString() + ' - ' + stopDate.toString(),
-                      icon: Icons.calendar_month,
-                      id: '', idType: ''),
-                  _CustomListTile(
-                      title: "Площадь объекта $area м2",
-                      icon: Icons.rectangle_outlined,
-                      id: '', idType: ''),
-                  _CustomListTile(
-                      title: address,//InfoObject['address'],//ObjectData,  //infoObjectData['address'].toString()
-                      icon: Icons.location_on_outlined,
-                      id: '', idType: ''),
-                ],
-              ),
-              Divider(),
-              SingleSection(
-                title: 'Ответственные за объект',
-                children: [
-                  _CustomListTile(
-                      title: nameProrab,
-                      icon: Icons.hardware_sharp,
-                      id: idProrab, idType: 'scrProfileMan'),
-                  _CustomListTile(
-                      title: nameManager,
-                      icon: Icons.headset_mic_sharp,
-                      id: idManager, idType: 'scrProfileMan'),
-                ],
-              ),
-              Divider(),
-              SingleSection(
-                title: 'Документы',
-                children: [
-                  _CustomListTile(
-                      title: "Договора и соглашения",
-                      icon: Icons.document_scanner,
-                      id: '{"objectId": "${widget.id}", "objectName": "${address}", "clientId": "${idClient}", "clientName": "${nameClient}"}',
-                      idType: 'objectsListSelectedDog'),
-                  _CustomListTile(
-                      title: "Акты выполненных работ",
-                      icon: Icons.document_scanner_outlined,
-                      id: '', idType: ''),
-                  _CustomListTile(
-                      title: "Финансовые показатели",
-                      icon: Icons.monetization_on_outlined,
-                      id: '', idType: '',),
-                ],
-              ),
-              SingleSection(
-                title: 'Суммы',
-                children: [
-                  _CustomListTile(
-                      title: "Сумма договоров ${NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(summa)} руб.",
-                      icon: Icons.currency_ruble,
-                      id: '', idType: ''),
-                  _CustomListTile(
-                      title: "Себестоимость ${NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(summaSeb)} руб.",
-                      icon: Icons.currency_ruble,
-                      id: '', idType: ''),
-                  _CustomListTile(
-                      title: "Внесено клиентом ${NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(summaOpl)} руб.",
-                      icon: Icons.currency_ruble,
-                      id: '', idType: '')
-                ],
-              )
-            ],
-          )
+              subtitle: Text('Посмотреть данные по клиенту'),
+              trailing: Icon(Icons.info_outlined),
+              leading: Icon(Icons.account_circle),
+              onTap: (){
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => scrProfileMan(id: idClient,)));
+              },
+            ),
+            Divider(),
+            SingleSection(
+              title: 'Основное',
+              children: [
+                _CustomListTile(
+                    title: '№' + number + ' от ' + date,
+                    icon: Icons.document_scanner,
+                    id: '', idType: ''),
+                _CustomListTile(
+                    title: startDate.toString() + ' - ' + stopDate.toString(),
+                    icon: Icons.calendar_month,
+                    id: '', idType: ''),
+                _CustomListTile(
+                    title: "Площадь объекта $area м2",
+                    icon: Icons.rectangle_outlined,
+                    id: '', idType: ''),
+                _CustomListTile(
+                    title: address,//InfoObject['address'],//ObjectData,  //infoObjectData['address'].toString()
+                    icon: Icons.location_on_outlined,
+                    id: '', idType: ''),
+              ],
+            ),
+            Divider(),
+            SingleSection(
+              title: 'Ответственные за объект',
+              children: [
+                _CustomListTile(
+                    title: nameProrab,
+                    icon: Icons.hardware_sharp,
+                    id: idProrab, idType: 'scrProfileMan'),
+                _CustomListTile(
+                    title: nameManager,
+                    icon: Icons.headset_mic_sharp,
+                    id: idManager, idType: 'scrProfileMan'),
+              ],
+            ),
+            Divider(),
+            SingleSection(
+              title: 'Суммы',
+              children: [
+                _CustomListTile(
+                    title: "Сумма ${NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(summa)} руб.",
+                    icon: Icons.currency_ruble,
+                    id: '', idType: ''),
+                _CustomListTile(
+                    title: "Себестоимость ${NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(summaSeb)} руб.",
+                    icon: Icons.currency_ruble,
+                    id: '', idType: ''),
+                _CustomListTile(
+                    title: "Внесено клиентом ${NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(summaOpl)} руб.",
+                    icon: Icons.currency_ruble,
+                    id: '', idType: '')
+              ],
+            )
+          ],
+        )
 
-        ],
-      ),
+      ],
     );
   }
 
@@ -328,18 +308,12 @@ class _scrObjectsViewScreenState extends State<scrObjectsViewScreen> {
             Divider(),
             titleHeader('Аналитика движения денег'),
             Expanded(
-                child: RefreshIndicator(
-                  onRefresh: () async {
-                    initState();
-                    return Future<void>.delayed(const Duration(seconds: 2));
-                  },
-                  child: ListView.builder(
-                    padding: EdgeInsets.all(10),
-                    physics: BouncingScrollPhysics(),
-                    reverse: false,
-                    itemCount: AnalyticObjectList.length,
-                    itemBuilder: (_, index) => CardObjectAnalyticList(event: AnalyticObjectList[index], onType: 'push', objectId: widget.id, objectName: address),
-                  ),
+                child: ListView.builder(
+                  padding: EdgeInsets.all(10),
+                  physics: BouncingScrollPhysics(),
+                  reverse: false,
+                  itemCount: AnalyticObjectList.length,
+                  itemBuilder: (_, index) => CardObjectAnalyticList(event: AnalyticObjectList[index], onType: 'push', objectId: widget.id, objectName: address),
                 )
             ),
       ],
@@ -368,10 +342,8 @@ class _CustomListTile extends StatelessWidget {
       trailing: trailing,
       onTap: () {
         if (id != '') {
-          if (idType=='objectsListSelectedDog') {
-            Map valueMap = json.decode(id);
-            Navigator.push(context, MaterialPageRoute(builder: (context) => objectsListSelectedDog(objectId: valueMap['objectId'], objectName: valueMap['objectName'], clientId: valueMap['clientId'],  clientName: valueMap['clientName'],onType: 'push',)));
-          }
+          if (idType=='objectsListSelectedDog')
+              Navigator.push(context, MaterialPageRoute(builder: (context) => objectsListSelectedDog(objectId: id, onType: 'push', objectName: '', clientId: '', clientName: '',)));
           if (idType=='scrProfileMan')
               Navigator.push(context, MaterialPageRoute(builder: (context) => scrProfileMan(id: id,)));
         }
