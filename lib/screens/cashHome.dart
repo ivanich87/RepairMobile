@@ -7,6 +7,7 @@ import 'package:repairmodule/models/Lists.dart';
 import 'package:repairmodule/screens/cashCategories.dart';
 import 'package:repairmodule/components/Cards.dart';
 import 'package:repairmodule/screens/cashList.dart';
+import 'package:repairmodule/screens/sprList_create.dart';
 
 class scrCashHomeScreen extends StatefulWidget {
 
@@ -49,12 +50,14 @@ class _scrCashHomeScreenState extends State<scrCashHomeScreen> {
 
   @override
   void initState() {
+    cashBankList.clear();
+    cashKassList.clear();
     httpGetListCash().then((value) {
       setState(() {
       });
     });
     // TODO: implement initState
-    super.initState();
+    //super.initState();
   }
   Widget build(BuildContext context) {
     final arg = (ModalRoute.of(context)?.settings.arguments ?? <String, dynamic> {'summa': 0, 'title': 'Пусто'}) as Map<String, dynamic>;
@@ -74,99 +77,110 @@ class _scrCashHomeScreenState extends State<scrCashHomeScreen> {
         ),
         body: Padding(
           padding: const EdgeInsets.only(left: 8.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-             Divider(),
-            Expanded(child:
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Банк', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                    ConstrainedBox(
-                      constraints: BoxConstraints(maxHeight: 200, minHeight: 56.0),
-                      child: ListView(
-                        shrinkWrap: true,
-                        padding: EdgeInsets.all(1),
-                        physics: BouncingScrollPhysics(),
-                        reverse: false,
-                        //itemCount: notes.length,
-                        //itemBuilder: (_, index) => CardCashList(event: notes[index]),
-                        children: cashBankList.map((e) => CardCashList(event: e)).toList(),
+          child: RefreshIndicator(
+            onRefresh: () async {
+              initState();
+              return Future<void>.delayed(const Duration(seconds: 1));
+            },
+            child: ListView(
+              //mainAxisAlignment: MainAxisAlignment.start,
+              //crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+               Divider(),
+              //Expanded(child:
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Банк', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                      ConstrainedBox(
+                        constraints: BoxConstraints(maxHeight: 200, minHeight: 56.0),
+                        child: ListView(
+                          shrinkWrap: true,
+                          padding: EdgeInsets.all(1),
+                          physics: BouncingScrollPhysics(),
+                          reverse: false,
+                          //itemCount: notes.length,
+                          //itemBuilder: (_, index) => CardCashList(event: notes[index]),
+                          children: cashBankList.map((e) => CardCashList(event: e)).toList(),
+                        ),
                       ),
-                    ),
-                    Divider(),
-                    Text('Касса', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                    ConstrainedBox(
-                      constraints: BoxConstraints(maxHeight: 200, minHeight: 56.0),
-                      child: ListView(
-                        shrinkWrap: true,
-                        padding: EdgeInsets.all(1),
-                        physics: BouncingScrollPhysics(),
-                        reverse: false,
-                        //itemCount: notes.length,
-                        //itemBuilder: (_, index) => CardCashList(event: notes[index]),
-                        children: cashKassList.map((e) => CardCashList(event: e)).toList(),
+                      Divider(),
+                      Text('Касса', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                      ConstrainedBox(
+                        constraints: BoxConstraints(maxHeight: 200, minHeight: 56.0),
+                        child: ListView(
+                          shrinkWrap: true,
+                          padding: EdgeInsets.all(1),
+                          physics: BouncingScrollPhysics(),
+                          reverse: false,
+                          //itemCount: notes.length,
+                          //itemBuilder: (_, index) => CardCashList(event: notes[index]),
+                          children: cashKassList.map((e) => CardCashList(event: e)).toList(),
+                        ),
                       ),
-                    ),
-                    Divider(),
-                    SizedBox(height: 20,),
-                    //Text('Всего: 245800 руб.', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),),
-                    ListTile(
-                      title: Text.rich(TextSpan(children: [
-                        TextSpan(text: 'Всего: ', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-                        TextSpan(text: NumberFormat.simpleCurrency(locale: 'ru-RU', decimalDigits: 2).format(allSumma), style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.green)),
-                        ],
+                      Divider(),
+                      SizedBox(height: 20,),
+                      //Text('Всего: 245800 руб.', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),),
+                      ListTile(
+                        title: Text.rich(TextSpan(children: [
+                          TextSpan(text: 'Всего: ', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+                          TextSpan(text: NumberFormat.simpleCurrency(locale: 'ru-RU', decimalDigits: 2).format(allSumma), style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.green)),
+                          ],
+                        )
+                        ),
+                        trailing: Icon(Icons.navigate_next),
+                        onTap: (){
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  //builder: (context) => scrCashCategoriesScreen(idCash: '0', cashName: 'Все',)));
+                                  builder: (context) => scrCashListScreen(idCash: '0', cashName: 'Все', analytic: '', analyticName: '', objectId: '',objectName: '', platType: '', dateRange: DateTimeRange(start: DateTime.now(), end: DateTime.now()),)));
+                        },
                       )
-                      ),
-                      trailing: Icon(Icons.navigate_next),
-                      onTap: (){
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                //builder: (context) => scrCashCategoriesScreen(idCash: '0', cashName: 'Все',)));
-                                builder: (context) => scrCashListScreen(idCash: '0', cashName: 'Все', analytic: '', analyticName: '', objectId: '',objectName: '', platType: '', dateRange: DateTimeRange(start: DateTime.now(), end: DateTime.now()),)));
-                      },
-                    )
-                  ],
-                ),
-                //Divider(),
+                    ],
+                  ),
+                  //Divider(),
+              //),
+              ],
             ),
-            ],
           ),
         ),
-    floatingActionButton: FloatingActionButton(
-    onPressed: () {},
-    child: Text('+'),)
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {print('Нажали кнопку меню');},
+          child: _AddMenuIcon(),
+        )
     //backgroundColor: Colors.grey[900]),
     );
     }
+
+
+  _AddMenuIcon() {
+    return PopupMenuButton<Menu>(
+        icon: const Icon(Icons.add),
+        offset: const Offset(0, 40),
+        onSelected: (Menu item) async {
+          String _sprName = (item.name=='kassa') ? 'Кассы' : 'БанковскиеСчетаОрганизаций';
+          sprList _newSpr = sprList('', '', '', '');
+          await Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => scrListCreateScreen(sprName: _sprName, sprObject: _newSpr,)));
+          initState();
+        },
+        itemBuilder: (BuildContext context) => <PopupMenuEntry<Menu>>[
+          const PopupMenuItem<Menu>(
+            value: Menu.kassa,
+            child: Text('Создать кассу'),
+          ),
+          const PopupMenuItem<Menu>(
+            value: Menu.bank,
+            child: Text('Создать банковский счет'),
+          ),
+        ]);
   }
 
-class _CustomListTile extends StatelessWidget {
-  final String title;
-  final IconData icon;
-  final Widget? trailing;
-  final int idCash;
-
-  const _CustomListTile(
-      {Key? key, required this.title, required this.icon, this.trailing, required this.idCash})
-      : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      title: Text(title),
-      leading: Icon(icon),
-      trailing: trailing,
-      onTap: () async {
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => scrCashCategoriesScreen(idCash: idCash.toString(), cashName: '',)));
-      },
-    );
   }
-}
+
+
+enum Menu { kassa, bank}
 

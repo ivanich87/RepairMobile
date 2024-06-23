@@ -9,6 +9,9 @@ import 'package:repairmodule/screens/plat_view.dart';
 import '../screens/cashList.dart';
 import '../screens/dogovor_view.dart';
 import '../screens/objectsListSelectedDog.dart';
+import '../screens/profileMan.dart';
+import '../screens/profileMan_edit.dart';
+import '../screens/sprList_create.dart';
 
 class CardCategorySums extends StatefulWidget {
   const CardCategorySums({
@@ -89,7 +92,17 @@ class _CardCashListState extends State<CardCashList> {
           context,
           MaterialPageRoute(
             builder: (context) => scrCashListScreen(idCash: widget.event.id, cashName: 'Все', analytic: '', analyticName: '', objectId: '', objectName: '', platType: '', dateRange: DateTimeRange(start: DateTime.now(), end: DateTime.now()),  )));},
-        onLongPress: () {});
+        onLongPress: () async {
+          sprList _newSpr = sprList(widget.event.id, widget.event.name, widget.event.comment, '');
+          await Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => scrListCreateScreen(sprName: (widget.event.tip==1) ? 'Кассы' : 'БанковскиеСчетаОрганизаций', sprObject: _newSpr,)));
+          setState(() {
+            widget.event.name = _newSpr.name;
+            widget.event.comment = _newSpr.comment;
+          });
+        });
     //scrCashCategoriesScreen(idCash: widget.event.id, cashName: widget.event.name)
   }
 }
@@ -98,11 +111,13 @@ class sprCardList extends StatefulWidget {
   const sprCardList({
     super.key,
     required this.event,
-    required this.onType
+    required this.onType,
+    required this.name
   });
 
   final sprList event;
   final String onType;
+  final String name;
 
   @override
   State<sprCardList> createState() => _sprCardListState();
@@ -132,7 +147,17 @@ class _sprCardListState extends State<sprCardList> {
               else {
                 Navigator.pop(context, SelectedSPR(widget.event.id, widget.event.name));};
             },
-            onLongPress: () {})
+            onLongPress: () async {
+              if (widget.name=='Сотрудники' || widget.name=='Контрагенты' || widget.name=='КонтрагентыДляФондов') {
+                await Navigator.push(context, MaterialPageRoute(builder: (context) => scrProfileMan(id: widget.event.id)));
+              }
+              else
+                await Navigator.push(context, MaterialPageRoute(builder: (context) => scrListCreateScreen(sprName: widget.name, sprObject: widget.event, ))
+              );
+              setState(() {
+
+              });
+            })
     );
   }
 }

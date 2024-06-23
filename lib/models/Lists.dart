@@ -60,14 +60,16 @@ class ListCash {
   late String name;
   late int tip;
   late num summa;
+  late String comment;
 
-  ListCash(this.id, this.name, this.tip, this.summa);
+  ListCash(this.id, this.name, this.tip, this.summa, this.comment);
 
   ListCash.fromJson(Map<String, dynamic> json) {
     id = json['id'] ?? '0';
     name = json['name'] ?? 'Пусто';
     tip = json['tip'] ?? 1;
     summa = json['summa'];
+    comment = json['comment'];
     // final s = double.parse(json['summa'].toString());
     // summa = s.toInt();
   }
@@ -86,7 +88,7 @@ class sprList {
     id = json['id'] ?? '0';
     name = json['name'] ?? 'Пусто';
     comment = json['comment'] ?? 'Адрес не указан';
-    code = json['code'] ?? '0';
+    code = json['code'].toString() ?? '0';
   }
 
 }

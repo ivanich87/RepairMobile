@@ -5,12 +5,15 @@ import 'package:repairmodule/components/Cards.dart';
 import 'package:repairmodule/models/Lists.dart';
 //import 'package:repairmodule/components/Cards.dart;
 import 'package:http/http.dart' as http;
+import 'package:repairmodule/screens/profileMan_edit.dart';
+import 'package:repairmodule/screens/sprList_create.dart';
 
 
 class scrListScreen extends StatefulWidget {
   final String sprName;
+  final String onType;
 
-  scrListScreen({super.key, required this.sprName});
+  scrListScreen({super.key, required this.sprName, required this.onType});
 
   @override
   State<scrListScreen> createState() => _scrListScreenState();
@@ -24,6 +27,7 @@ class _scrListScreenState extends State<scrListScreen> {
   Future httpGetListObject() async {
     print(widget.sprName);
     var _url=Uri(path: '/a/centrremonta/hs/v1/sprList/${widget.sprName}', host: 's1.rntx.ru', scheme: 'https');
+    print(_url.path);
     var _headers = <String, String> {
       'Accept': 'application/json',
       'Authorization': 'Basic YWNlOkF4V3lJdnJBS1prdzY2UzdTMEJP'
@@ -51,6 +55,7 @@ class _scrListScreenState extends State<scrListScreen> {
 
   @override
   void initState() {
+    objectList.clear();
     httpGetListObject().then((value) {
       setState(() {
       });
@@ -59,6 +64,7 @@ class _scrListScreenState extends State<scrListScreen> {
     super.initState();
   }
   Widget build(BuildContext context) {
+    print(widget.sprName);
     return Scaffold(
       appBar: AppBar(
         title: SearchBar(),
@@ -73,10 +79,36 @@ class _scrListScreenState extends State<scrListScreen> {
           physics: BouncingScrollPhysics(),
           reverse: false,
           itemCount: objectListFiltered.length,
-            itemBuilder: (_, index) => sprCardList(event: objectListFiltered[index], onType: 'pop',),
+            itemBuilder: (_, index) => sprCardList(event: objectListFiltered[index], onType: widget.onType, name: widget.sprName),
           ),
           floatingActionButton: FloatingActionButton(
-            onPressed: () {},
+            onPressed: () async{
+              String _newCode='';
+              if (widget.sprName=='АналитикаДвиженийДСПриход')
+                _newCode='0';
+              if (widget.sprName=='АналитикаДвиженийДСРасход')
+                _newCode='1';
+              if (widget.sprName=='АналитикаДвиженийДС')
+                _newCode='1';
+              
+              if (widget.sprName=='Сотрудники' || widget.sprName=='Контрагенты' || widget.sprName=='КонтрагентыДляФондов') {
+                //тут все неверно. Нужно создавать выпадающее меню с вариантами выбора, создаем сотрудника или контрагнета для фонда. Клиентов не создаем, т.к. они создаются  при создании объетов
+                //меню должно быть только если widget.sprName=='Контрагенты'
+                //решил доп меню пока не делать. Если тут список НЕ сотрудников, то создавать всегда контрагентаДляФонда
+                int _type=4;
+                if (widget.sprName=='Сотрудники')
+                  _type=1;
+                //if (widget.sprName=='КонтрагентыДляФондов')
+                //  _type=4;
+
+                await Navigator.push(context, MaterialPageRoute(builder: (context) => scrProfileManEditScreen(id: '', email: '', phone: '', name: '', type: _type,)));
+              }
+              else {
+                sprList _newSpr = sprList('', '', '', _newCode);
+                await Navigator.push(context, MaterialPageRoute(builder: (context) => scrListCreateScreen(sprName: widget.sprName, sprObject: _newSpr,)));
+              }
+              initState();
+            },
             child: Text('+'),)
           //backgroundColor: Colors.grey[900]),
     );

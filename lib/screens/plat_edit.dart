@@ -134,7 +134,7 @@ class _scrPlatEditScreenState extends State<scrPlatEditScreen> {
                     CustomTitle(plat: plat3,
                         titles: plat3.analyticName,
                         icon: Icons.analytics,
-                        id: 'АналитикаДвиженийДС',
+                        id: (plat3.platType=='Приход') ? 'АналитикаДвиженийДСПриход' : 'АналитикаДвиженийДСРасход',
                         idType: 'sprAnalyticsListSelected', trailing: null),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -336,16 +336,16 @@ class _scrPlatEditScreenState extends State<scrPlatEditScreen> {
                       return objectsListSelected();
                     };
                     if (idType=='sprAnalyticsListSelected') {
-                      return scrListScreen(sprName: id);
+                      return scrListScreen(sprName: id, onType: 'pop',);
                     };
                     if (idType=='sprKassaListSelected' || idType=='sprKassaListSelected2') {
-                      return scrListScreen(sprName: id);
+                      return scrListScreen(sprName: id, onType: 'pop');
                     };
                     if (idType=='sprSotrListSelected' || idType=='sprSotrListSelected2') {
-                      return scrListScreen(sprName: id);
+                      return scrListScreen(sprName: id, onType: 'pop');
                     };
                     if (idType=='sprContractorListSelected') {
-                      return scrListScreen(sprName: id);
+                      return scrListScreen(sprName: id, onType: 'pop');
                     };
                     return scrProfileMan(id: id,);
                   } ));

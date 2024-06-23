@@ -12,47 +12,40 @@ import 'package:repairmodule/screens/sprList.dart';
 import 'objects.dart';
 import 'objectsListSelected.dart';
 
-class scrProfileManEditScreen extends StatefulWidget {
-  late String id;
-  final String email;
-  final String phone;
-  final String name;
-  final int type;
+class scrListCreateScreen extends StatefulWidget {
+  final String sprName;
+  late sprList sprObject;
 
 
-  scrProfileManEditScreen({super.key, required this.id, required this.email, required this.phone, required this.name, required this.type});
+  scrListCreateScreen({super.key, required this.sprObject, required this.sprName});
 
   @override
-  State<scrProfileManEditScreen> createState() => _scrProfileManEditScreenState();
+  State<scrListCreateScreen> createState() => _scrListCreateScreenState();
 }
 
-class _scrProfileManEditScreenState extends State<scrProfileManEditScreen> {
+class _scrListCreateScreenState extends State<scrListCreateScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-
 
   bool userDataEdit = false;
 
+  TextEditingController name=TextEditingController(text: '');
+  TextEditingController comment=TextEditingController(text: '');
 
-  TextEditingController email=TextEditingController(text: '');
-  TextEditingController phone=TextEditingController(text: '');
-  TextEditingController name = TextEditingController(text: '');
-
-
-
-  Future<bool> httpManCreate() async {
+  Future<bool> httpSprCreate() async {
     bool _result=false;
-    var _url=Uri(path: '/a/centrremonta/hs/v1/man/edit/', host: 's1.rntx.ru', scheme: 'https');
+    var _url=Uri(path: '/a/centrremonta/hs/v1/sprList/${widget.sprName}/', host: 's1.rntx.ru', scheme: 'https');
     var _headers = <String, String> {
       'Accept': 'application/json',
       'Authorization': 'Basic YWNlOkF4V3lJdnJBS1prdzY2UzdTMEJP'
     };
+    widget.sprObject.name=name.text;
+    widget.sprObject.comment=comment.text;
 
     var _body = <String, String> {
-      'id': widget.id,
-      'email': email.text,
-      'phone': phone.text,
-      'name': name.text,
-      'type': widget.type.toString(),
+      'name': widget.sprObject.name,
+      'comment': widget.sprObject.comment,
+      'id': widget.sprObject.id,
+      'code': widget.sprObject.code,
     };
 
     try {
@@ -64,9 +57,9 @@ class _scrProfileManEditScreenState extends State<scrProfileManEditScreen> {
         _result = data['Успешно'] ?? '';
         String _message = data['Сообщение'] ?? '';
         if (_result==true)
-          widget.id = data['Код'];
+          widget.sprObject.id = data['Код'];
 
-        print('Объект и договор созданы. Результат:  $_result. Сообщение:  $_message. Код объекта = ${widget.id}');
+        print('Справочник создан. Результат:  $_result. Сообщение:  $_message. Код объекта = ${widget.sprObject.id}');
       }
       else {
         _result = false;
@@ -89,25 +82,16 @@ class _scrProfileManEditScreenState extends State<scrProfileManEditScreen> {
 
   @override
   Widget build(BuildContext context) {
+
     if (userDataEdit==false) {
-      phone.text = widget.phone;
-      email.text = widget.email;
-      name.text = widget.name;
+      name.text = widget.sprObject.name;
+      comment.text = widget.sprObject.comment;
       userDataEdit = true;
     }
-    String _typeText = 'Заполните данные';
-    if (widget.type==1)
-      _typeText = 'Заполните данные сотрудника';
-    if (widget.type==2)
-      _typeText = 'Заполните данные субподрядчика'; //субподрядчики не будут использоваться
-    if (widget.type==3)
-      _typeText = 'Заполните данные клиента';
-    if (widget.type==4)
-      _typeText = 'Заполните данные контрагента'; //КонтрагентДляФонда
-
+    print('Тип: '+widget.sprObject.code + 'Вот');
     return Scaffold(
         appBar: AppBar(
-          title: Text('Редактирование профиля'),
+          title: Text('Создание элемента'),
           centerTitle: true,
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
           actions: [IconButton(onPressed: () {}, icon: Icon(Icons.menu))],
@@ -121,10 +105,10 @@ class _scrProfileManEditScreenState extends State<scrProfileManEditScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Padding(
-                    padding: const EdgeInsets.all(8.0),
+                    padding: const EdgeInsets.all(10.0),
                     child: Column(
                       children: [
-                        Text(_typeText, style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold), ),
+                        Text('Заполните данные ', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold), ),
                       ],
                     ),
                   ),
@@ -140,35 +124,11 @@ class _scrProfileManEditScreenState extends State<scrProfileManEditScreen> {
                             style: TextStyle(fontSize: 18),
                             decoration: InputDecoration(
                               border: OutlineInputBorder(),
-                              labelText: 'Введите ФИО',
-                            ),
-                              textInputAction: TextInputAction.done,
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {return 'Заполните ФИО';}
-                                return null;
-                              }
-                          ),
-                        ),
-                      ]),
-                  Divider(),
-                  SingleSection(title: 'Контакты',
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: TextFormField(
-                            textAlign: TextAlign.center,
-                            controller: phone,
-                            keyboardType: TextInputType.number,
-                            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                            decoration: InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: 'Введите номер телефона',
+                              labelText: 'Введите название',
                             ),
                               textInputAction: TextInputAction.next,
                               validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Введиете номер телефона';
-                                }
+                                if (value == null || value.isEmpty) {return 'Заполните название';}
                                 return null;
                               }
                           ),
@@ -176,22 +136,47 @@ class _scrProfileManEditScreenState extends State<scrProfileManEditScreen> {
                         Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: TextFormField(
-                            textAlign: TextAlign.center,
-                            controller: email,
-                            keyboardType: TextInputType.emailAddress,
-                            style: TextStyle(fontSize: 18),
-                            decoration: InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: 'email',
-                            ),
+                              textAlign: TextAlign.start,
+                              controller: comment,
+                              minLines: 3,
+                              maxLines: 6,
+                              keyboardType: TextInputType.text,
+                              style: TextStyle(fontSize: 16),
+                              decoration: InputDecoration(
+                                icon: Icon(Icons.comment_outlined),
+                                border: OutlineInputBorder(),
+                                labelText: 'Комментарий',
+                                //hintText: 'Укажите описание элемента справочника'
+                              ),
                               textInputAction: TextInputAction.done,
                               validator: (value) {
                                 return null;
                               }
                           ),
                         )
-          
                       ]),
+                  Divider(),
+                  //Далее идет блок только для справочника создания аналитики и выводит на экран тип аналитики (зашифровано в поле code)
+                  if (widget.sprName=='АналитикаДвиженийДСРасход' || widget.sprName=='АналитикаДвиженийДСПриход' || widget.sprName=='АналитикаДвиженийДС')
+                  SingleSection(title: 'Тип аналитики',
+                    children: [
+                      Column(
+                        children: [
+                          RadioListTile(title: Text('Приход'), subtitle: Text('Будет выходить только в поступлениях денег'), value: '0', groupValue: widget.sprObject.code, onChanged: (value){
+                            setState(() {
+                              widget.sprObject.code = value!;
+                            });
+                          }
+                          ),
+                          RadioListTile(title: Text('Расход'), subtitle: Text('Будет выходить только в списании денег'), value: '1', groupValue: widget.sprObject.code, onChanged: (value) {
+                            setState(() {
+                              widget.sprObject.code = value!;
+                            });
+                          }
+                          ),
+                        ],
+                    )],
+                  )
             ],
           ),
                 ],
@@ -201,10 +186,9 @@ class _scrProfileManEditScreenState extends State<scrProfileManEditScreen> {
           onPressed: () {
             //ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Данные сохраняются'), backgroundColor: Colors.green,));
             print('Данные введены правильно');
-            httpManCreate().then((value) {
-              Map<String, dynamic> _result = {'mail': email.text, 'phone': phone.text, 'name': name.text, 'id': widget.id, 'type': widget.type};
+            httpSprCreate().then((value) {
               if (value==true)
-                Navigator.pop(context, _result);
+                Navigator.pop(context);
             });
             },
           child: Icon(Icons.save),
@@ -212,6 +196,7 @@ class _scrProfileManEditScreenState extends State<scrProfileManEditScreen> {
       //backgroundColor: Colors.grey[900]),
     );
   }
+
 }
 
 

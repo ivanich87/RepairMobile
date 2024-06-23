@@ -21,6 +21,7 @@ class _scrProfileManState extends State<scrProfileMan> {
   int type = 1;
   int kol = 0;
 
+
   Future httpGetInfoMan() async {
     var _url=Uri(path: '/a/centrremonta/hs/v1/man/'+widget.id+'/', host: 's1.rntx.ru', scheme: 'https');
     var _headers = <String, String> {
@@ -131,8 +132,15 @@ class _scrProfileManState extends State<scrProfileMan> {
       ),
         floatingActionButton: FloatingActionButton(
           onPressed: () async {
-            await Navigator.push(context, MaterialPageRoute(builder: (context) => scrProfileManEditScreen(id: widget.id, name: name, email: mail, phone: phone, type: type),));
-            initState();
+            print('старая почта ' + mail);
+            Map<String, dynamic> _result = await Navigator.push(context, MaterialPageRoute(builder: (context) => scrProfileManEditScreen(id: widget.id, name: name, email: mail, phone: phone, type: type),));
+            mail=_result['mail'];
+            phone=_result['phone'];
+            name=_result['name'];
+            setState(() {
+
+            });
+            //initState();
           },
           child: Icon(Icons.edit),
         )

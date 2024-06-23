@@ -302,16 +302,16 @@ class _scrDogovorCreateScreenState extends State<scrDogovorCreateScreen> {
                       return objectsListSelected();
                     };
                     if (idType=='sprAnalyticsListSelected') {
-                      return scrListScreen(sprName: id);
+                      return scrListScreen(sprName: id, onType: 'pop');
                     };
                     if (idType=='sprKassaListSelected' || idType=='sprKassaListSelected2') {
-                      return scrListScreen(sprName: id);
+                      return scrListScreen(sprName: id, onType: 'pop');
                     };
                     if (idType=='sprSotrListSelected' || idType=='sprSotrListSelected2') {
-                      return scrListScreen(sprName: id);
+                      return scrListScreen(sprName: id, onType: 'pop');
                     };
                     if (idType=='sprContractorListSelected') {
-                      return scrListScreen(sprName: id);
+                      return scrListScreen(sprName: id, onType: 'pop');
                     };
                     return scrProfileMan(id: id,);
                   } ));

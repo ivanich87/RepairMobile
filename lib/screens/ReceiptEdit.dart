@@ -209,7 +209,7 @@ class _scrReceiptEditScreenState extends State<scrReceiptEditScreen> {
                 Navigator.pop(context);
             });
           },
-          child: Icon(Icons.disc_full_rounded),
+          child: Icon(Icons.save),
         )
       //backgroundColor: Colors.grey[900]),
     ),
@@ -241,18 +241,18 @@ class _scrReceiptEditScreenState extends State<scrReceiptEditScreen> {
                       return objectsListSelected();
                     };
                     if (idType == 'sprAnalyticsListSelected') {
-                      return scrListScreen(sprName: id);
+                      return scrListScreen(sprName: id, onType: 'pop');
                     };
                     if (idType == 'sprKassaListSelected' ||
                         idType == 'sprKassaListSelected2') {
-                      return scrListScreen(sprName: id);
+                      return scrListScreen(sprName: id, onType: 'pop');
                     };
                     if (idType == 'sprSotrListSelected' ||
                         idType == 'sprSotrListSelected2') {
-                      return scrListScreen(sprName: id);
+                      return scrListScreen(sprName: id, onType: 'pop');
                     };
                     if (idType == 'sprContractorListSelected') {
-                      return scrListScreen(sprName: id);
+                      return scrListScreen(sprName: id, onType: 'pop');
                     };
                     if (idType == 'summaEdit') {
                       _tripEditModalBottomSheet(
