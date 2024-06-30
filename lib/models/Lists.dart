@@ -76,19 +76,36 @@ class ListCash {
 
 }
 
+class accountableFounds {
+  late String id;
+  late String name;
+  late num summa;
+
+  accountableFounds(this.id, this.name, this.summa);
+
+  accountableFounds.fromJson(Map<String, dynamic> json) {
+    id = json['id'] ?? '0';
+    name = json['name'] ?? '';
+    summa = json['summa'];
+  }
+
+}
+
 class sprList {
   late String id;
   late String name;
   late String comment;
   late String code;
+  late bool del;
 
-  sprList(this.id, this.name, this.comment, this.code);
+  sprList(this.id, this.name, this.comment, this.code, this.del);
 
   sprList.fromJson(Map<String, dynamic> json) {
     id = json['id'] ?? '0';
     name = json['name'] ?? 'Пусто';
     comment = json['comment'] ?? 'Адрес не указан';
     code = json['code'].toString() ?? '0';
+    del = json['del'] ?? false;
   }
 
 }

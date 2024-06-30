@@ -8,6 +8,8 @@ import 'package:repairmodule/models/Lists.dart';
 import 'package:repairmodule/screens/object_view.dart';
 import 'package:repairmodule/screens/plat_edit.dart';
 
+import '../components/Cards.dart';
+
 class scrPlatsViewScreen extends StatefulWidget {
   //final String id;
   final ListPlat plat;
@@ -37,62 +39,9 @@ class _scrPlatsViewScreenState extends State<scrPlatsViewScreen> {
   int payment = 0;
   int area = 0;
 
-
-  Future httpGetInfoObject() async {
-    var _url=Uri(path: '/a/centrremonta/hs/v1/0/', host: 's1.rntx.ru', scheme: 'https');
-    var _headers = <String, String> {
-      'Accept': 'application/json',
-      'Authorization': 'Basic YWNlOkF4V3lJdnJBS1prdzY2UzdTMEJP'
-    };
-    try {
-      var response = await http.get(_url, headers: _headers);
-      if (response.statusCode == 200) {
-        var data = json.decode(response.body);
-        //id = data['id'] ?? 'no id';
-        name = data['nameObject'] ?? 'no name';
-        nameClient = data['nameClient'] ?? 'no nameClient';
-        idClient = data['idClient'] ?? 'no idClient';
-        nameManager = data['nameManager'] ?? 'no nameManager';
-        idManager = data['idManager'] ?? 'no idManager';
-        nameProrab = data['nameProrab'] ?? 'no nameProrab';
-        idProrab = data['idProrab'] ?? 'no idProrab';
-        address = data['address'] ?? 'no address';
-
-        startDate = DateFormat('dd-MM-yyyy').format(DateTime.parse(data['StartDate']));
-        stopDate = DateFormat('dd-MM-yyyy').format(DateTime.parse(data['StopDate']));
-
-        final a = double.parse(data['area'].toString());
-        area = a.toInt();
-
-        final s = double.parse(data['СуммыДоговоров'].toString());
-        summa = s.toInt();
-
-        final s2 = double.parse(data['СуммаСебестоимость'].toString());
-        summaSeb = s2.toInt();
-
-        final s3 = double.parse(data['СуммаАктов'].toString());
-        summaAkt = s3.toInt();
-
-        final s4 = double.parse(data['ПроцентВыполнения'].toString());
-        percent = s4.toInt();
-
-        final s5 = double.parse(data['ПроцентВыполнения'].toString());
-        payment = s5.toInt();
-      };
-    } catch (error) {
-      print("Ошибка при формировании списка: $error");
-    }
-  }
+  bool userDataEdit = false;
 
   @override
-  // void initState() {
-  //   httpGetInfoObject().then((value) {
-  //     setState(() {
-  //     });
-  //   });
-  //   // TODO: implement initState
-  //   super.initState();
-  // }
   Widget build(BuildContext context) {
     print('Идентификатор платежа: ${widget.plat.id}');
     return Scaffold(
@@ -100,7 +49,7 @@ class _scrPlatsViewScreenState extends State<scrPlatsViewScreen> {
           title: Text('Платеж'),
           centerTitle: true,
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-          actions: [IconButton(onPressed: () {}, icon: Icon(Icons.menu))],
+          actions: <Widget>[_menuAppBar()],
         ),
         body: ListView(
           children: [
@@ -170,10 +119,7 @@ class _scrPlatsViewScreenState extends State<scrPlatsViewScreen> {
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () async{
-            await Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => scrPlatEditScreen(plat2: widget.plat,)));
+            await Navigator.push(context, MaterialPageRoute(builder: (context) => scrPlatEditScreen(plat2: widget.plat,)));
             setState(() {
 
             });
@@ -183,7 +129,46 @@ class _scrPlatsViewScreenState extends State<scrPlatsViewScreen> {
       //backgroundColor: Colors.grey[900]),
     );
   }
+
+  PopupMenuButton<Menu> _menuAppBar() {
+    return PopupMenuButton<Menu>(
+        icon: const Icon(Icons.menu, ),
+        offset: const Offset(0, 40),
+        onSelected: (Menu item) async {
+          if (item == Menu.itemEdit) {
+            await Navigator.push(context, MaterialPageRoute(builder: (context) => scrPlatEditScreen(plat2: widget.plat,)));
+            setState(() {
+
+            });
+          }
+          if (item == Menu.itemDelete) {
+            httpEventDelete(widget.plat.id, widget.plat.del, context).then((value) {
+              userDataEdit = value;
+              print('userDataEdit = $value');
+              if (userDataEdit==true) {
+                widget.plat.del=!widget.plat.del;
+                Navigator.pop(context);
+              }
+            });
+          }
+        },
+        itemBuilder: (BuildContext context) => <PopupMenuEntry<Menu>>[
+          const PopupMenuItem<Menu>(
+            value: Menu.itemEdit,
+            child: Text('Редактировать'),
+          ),
+          const PopupMenuItem<Menu>(
+            value: Menu.itemDelete,
+            child: Text('Удалить'),
+          ),
+        ].toList());
+  }
+
 }
+
+enum Menu { itemEdit, itemDelete }
+
+
 
 class _CustomListTile extends StatelessWidget {
   final String title;

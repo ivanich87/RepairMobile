@@ -7,8 +7,10 @@ import 'package:repairmodule/models/Lists.dart';
 import 'package:repairmodule/screens/plat_edit.dart';
 //import 'package:repairmodule/components/Cards.dart;
 import 'package:http/http.dart' as http;
+import 'package:repairmodule/screens/plat_view.dart';
 
 import 'ReceiptEdit.dart';
+import 'ReceiptView.dart';
 
 
 class scrCashListScreen extends StatefulWidget {
@@ -21,9 +23,11 @@ class scrCashListScreen extends StatefulWidget {
   final String objectName;
   final String platType;
   DateTimeRange dateRange;
+  final String kassaSotrId;
+  final String kassaSortName;
 
 
-  scrCashListScreen({required this.idCash, required this.cashName, required this.analytic, required this.analyticName, required this.objectId, required this.objectName, required this.platType, required this.dateRange});
+  scrCashListScreen({required this.idCash, required this.cashName, required this.analytic, required this.analyticName, required this.objectId, required this.objectName, required this.platType, required this.dateRange, required this.kassaSotrId, required this.kassaSortName});
 
   @override
   State<scrCashListScreen> createState() => _scrCashListScreenState();
@@ -39,8 +43,10 @@ class _scrCashListScreenState extends State<scrCashListScreen> {
     final queryParameters = {
       'analyticId': widget.analytic,
       'objectId': widget.objectId,
-      'platType': widget.platType
+      'platType': widget.platType,
+      'kassaSortId': widget.kassaSotrId
     };
+    print(queryParameters.toString());
     var _url = Uri(path: '/a/centrremonta/hs/v1/platlist/${DateFormat('yyyyMMdd').format(widget.dateRange.start)}/${DateFormat('yyyyMMdd').format(widget.dateRange.end)}/${widget.idCash}',
         queryParameters: queryParameters,
         host: 's1.rntx.ru',
@@ -108,7 +114,7 @@ class _scrCashListScreenState extends State<scrCashListScreen> {
                   reverse: false,
                   itemCount: objectList.length,
                   itemBuilder: (_, index) =>
-                      PlatObjectList(event: objectList[index]),
+                      _cardItem(objectList[index]), //PlatObjectList
                 ),
               ),
             ),
@@ -118,6 +124,33 @@ class _scrCashListScreenState extends State<scrCashListScreen> {
           onPressed: () {},
           child: _AddMenuIcon())
     );
+
+  }
+
+  _cardItem(ListPlat event){
+    return Card(
+      child: ListTile(
+          title: Text('${event.name} № ${event.number} от ${DateFormat('dd.MM.yyyy').format(event.date)}', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, decoration: textDelete(event.del)),),
+          subtitle: Text(event.comment),
+          trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(event.summa), style: TextStyle(fontSize: 16, color: textColors(event.summa), decoration: textDelete(event.del))),
+          onTap: () async {
+            await Navigator.push(context, MaterialPageRoute(builder: (context) {
+              if (event.type=='Покупка стройматериалов')
+                return scrReceiptViewScreen(id: event.id, event: event);
+              else
+                return scrPlatsViewScreen(plat: event);
+            }));
+            setState(() {
+              if (event.del==true) {
+                print('Удаляем этот платеж');
+                //initState();
+              }
+              print('Пересчет формы');
+            });
+          },
+          onLongPress: () {}),
+    );
+
   }
 
   Future pickDateRange() async {
@@ -130,34 +163,27 @@ class _scrCashListScreenState extends State<scrCashListScreen> {
     });
     initState();
   }
-}
 
-
-
-enum Menu { oplataDog, oplataMaterials, platUp, platDown, check, platDownSotr, platUpSotr , platMove}
-
-class _AddMenuIcon extends StatelessWidget {
-  const _AddMenuIcon({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
+  _AddMenuIcon() {
     return PopupMenuButton<Menu>(
         icon: const Icon(Icons.add),
         offset: const Offset(0, 40),
-        onSelected: (Menu item) {
+        onSelected: (Menu item) async {
           if (item.name=='check') //если покупка стройматериалов
-            {
-            Receipt recipientdata = Receipt('', '', DateTime.now(), true, false, false, '', '', '', '', true, '', '', DateTime.now(), 0, 0, 0, false, '', '', '', 'Расход', 0, '', '', '', '', '', '', 0, 'Покупка стройматериалов');
-            Navigator.push(
+              {
+            Receipt recipientdata = Receipt('', '', DateTime.now(), true, false, false, '', '', '', '', true, '', '', DateTime.now(), 0, 0, 0, false, '', '', '', 'Расход', 0, '7fa144f2-14ca-11ed-80dd-00155d753c19', 'Покупка стройматериалов', '', '', '', '', 0, 'Покупка стройматериалов');
+            await Navigator.push(
                 context,
                 MaterialPageRoute(
                     builder: (context) => scrReceiptEditScreen(receiptData: recipientdata,)));
-            }
+          }
           else
-            Navigator.push(
+            await Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => scrPlatEditScreen(plat2: ListPlat('', 'Новый платеж', DateTime.now(), false, '', true, '', '', '', useDog(item), analyticId(item, true), analyticId(item, false), 0, 0, 0, '', 'Не выбран', '', '', DateTime.now(), useDog(item), '', '', '', '', 0, '', '', '', platType(item), type(item), '', '', '', '', 0),)));
+                    builder: (context) => scrPlatEditScreen(plat2: ListPlat('', 'Новый платеж', DateTime.now(), false, '', true, '', '', '', useDog(item), analyticId(item, true), analyticId(item, false), 0, 0, 0, '', 'Не выбран', '', '', DateTime.now(), useDog(item), '', '', widget.kassaSotrId, widget.kassaSortName, (widget.kassaSotrId=='') ? 0 : 1, '', '', '', platType(item), type(item), '', '', '', '', 0),)));
+
+          initState();
         },
         itemBuilder: (BuildContext context) => <PopupMenuEntry<Menu>>[
           const PopupMenuItem<Menu>(
@@ -193,8 +219,17 @@ class _AddMenuIcon extends StatelessWidget {
             child: Text('Возврат из подотчета'),
           ),
         ]);
+
   }
+
 }
+
+
+
+
+
+enum Menu { oplataDog, oplataMaterials, platUp, platDown, check, platDownSotr, platUpSotr , platMove}
+
 
 String platType(Menu item) {
   if (item==Menu.platMove)

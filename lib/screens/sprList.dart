@@ -104,7 +104,7 @@ class _scrListScreenState extends State<scrListScreen> {
                 await Navigator.push(context, MaterialPageRoute(builder: (context) => scrProfileManEditScreen(id: '', email: '', phone: '', name: '', type: _type,)));
               }
               else {
-                sprList _newSpr = sprList('', '', '', _newCode);
+                sprList _newSpr = sprList('', '', '', _newCode, false);
                 await Navigator.push(context, MaterialPageRoute(builder: (context) => scrListCreateScreen(sprName: widget.sprName, sprObject: _newSpr,)));
               }
               initState();

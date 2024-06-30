@@ -9,6 +9,7 @@ import 'package:repairmodule/models/Lists.dart';
 import 'package:repairmodule/screens/object_view.dart';
 import 'package:repairmodule/screens/sprList.dart';
 
+import '../components/Cards.dart';
 import 'objects.dart';
 import 'objectsListSelected.dart';
 
@@ -94,7 +95,7 @@ class _scrListCreateScreenState extends State<scrListCreateScreen> {
           title: Text('Создание элемента'),
           centerTitle: true,
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-          actions: [IconButton(onPressed: () {}, icon: Icon(Icons.menu))],
+          actions: <Widget>[_menuAppBar()],
         ),
         body: Form(
           key: _formKey,
@@ -184,8 +185,6 @@ class _scrListCreateScreenState extends State<scrListCreateScreen> {
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
-            //ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Данные сохраняются'), backgroundColor: Colors.green,));
-            print('Данные введены правильно');
             httpSprCreate().then((value) {
               if (value==true)
                 Navigator.pop(context);
@@ -197,7 +196,42 @@ class _scrListCreateScreenState extends State<scrListCreateScreen> {
     );
   }
 
+  PopupMenuButton<Menu> _menuAppBar() {
+    return PopupMenuButton<Menu>(
+        icon: const Icon(Icons.menu, ),
+        offset: const Offset(0, 40),
+        onSelected: (Menu item) async {
+          if (item == Menu.itemSave) {
+            httpSprCreate().then((value) {
+              if (value==true)
+                Navigator.pop(context);
+            });
+          }
+          if (item == Menu.itemDelete) {
+            httpEventDelete(widget.sprObject.id, widget.sprObject.del, context).then((value) {
+              userDataEdit = value;
+              print('userDataEdit = $value');
+              if (userDataEdit==true) {
+                widget.sprObject.del=!widget.sprObject.del;
+                Navigator.pop(context);
+              }
+            });
+          }
+        },
+        itemBuilder: (BuildContext context) => <PopupMenuEntry<Menu>>[
+          const PopupMenuItem<Menu>(
+            value: Menu.itemSave,
+            child: Text('Сохранить'),
+          ),
+          const PopupMenuItem<Menu>(
+            value: Menu.itemDelete,
+            child: Text('Удалить'),
+          ),
+        ].toList());
+  }
+
 }
 
+enum Menu { itemSave, itemDelete }
 
 

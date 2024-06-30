@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:repairmodule/screens/settings.dart';
 
 class scrHomeScreen extends StatefulWidget {
   scrHomeScreen();
@@ -51,7 +52,10 @@ class _scrHomeScreenState extends State<scrHomeScreen> {
           centerTitle: true,
           //backgroundColor: Colors.grey[900],
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-          actions: [IconButton(onPressed: () {}, icon: Icon(Icons.menu))],
+          actions: [
+            IconButton(onPressed: () {
+            Navigator.push(context, MaterialPageRoute(builder: (context) => scrSettingsScreen()));
+            }, icon: Icon(Icons.settings))],
         ),
         body: Center(
           child: Column(
@@ -97,10 +101,10 @@ class _scrHomeScreenState extends State<scrHomeScreen> {
             ],
           ),
         ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {},
-          child: Text('+'),
-        )
+        // floatingActionButton: FloatingActionButton(
+        //   onPressed: () {},
+        //   child: Text('+'),
+        // )
         //backgroundColor: Colors.grey[900]),
         );
   }

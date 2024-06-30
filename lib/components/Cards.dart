@@ -6,6 +6,8 @@ import 'package:repairmodule/screens/ReceiptView.dart';
 import 'package:repairmodule/screens/object_view.dart';
 import 'package:repairmodule/screens/plat_view.dart';
 
+import 'package:http/http.dart' as http;
+
 import '../screens/cashList.dart';
 import '../screens/dogovor_view.dart';
 import '../screens/objectsListSelectedDog.dart';
@@ -56,7 +58,49 @@ textColors(summ) {
     return Colors.green;
 }
 
+textDelete(del) {
+  if (del==true)
+    return TextDecoration.lineThrough;
+  else
+    return TextDecoration.none;
+}
 
+Future<bool> httpEventDelete(String id, bool delete, context) async {
+  bool _result=false;
+  int del = 0;
+  if (delete==false)
+    del = 1;
+  print(del.toString());
+  var _url=Uri(path: '/a/centrremonta/hs/v1/delete/$id/$del/', host: 's1.rntx.ru', scheme: 'https');
+  var _headers = <String, String> {
+    'Accept': 'application/json',
+    'Authorization': 'Basic YWNlOkF4V3lJdnJBS1prdzY2UzdTMEJP'
+  };
+  try {
+    var response = await http.get(_url, headers: _headers);
+    print('Код ответа: ${response.statusCode} Тело ответа: ${response.body}');
+    if (response.statusCode == 200) {
+      _result=true;
+
+      print('Платеж удален.');
+    }
+    else {
+      _result = false;
+      final snackBar = SnackBar(
+        content: Text('${response.body}'),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    }
+  } catch (error) {
+    _result = false;
+    print("Ошибка при выгрузке платежа: $error");
+    final snackBar = SnackBar(
+      content: Text('$error'),
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
+  return _result ?? false;
+}
 
 
 class CardCashList extends StatefulWidget {
@@ -91,9 +135,9 @@ class _CardCashListState extends State<CardCashList> {
           Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => scrCashListScreen(idCash: widget.event.id, cashName: 'Все', analytic: '', analyticName: '', objectId: '', objectName: '', platType: '', dateRange: DateTimeRange(start: DateTime.now(), end: DateTime.now()),  )));},
+            builder: (context) => scrCashListScreen(idCash: widget.event.id, cashName: 'Все', analytic: '', analyticName: '', objectId: '', objectName: '', platType: '', dateRange: DateTimeRange(start: DateTime.now(), end: DateTime.now()), kassaSotrId: '', kassaSortName: '',  )));},
         onLongPress: () async {
-          sprList _newSpr = sprList(widget.event.id, widget.event.name, widget.event.comment, '');
+          sprList _newSpr = sprList(widget.event.id, widget.event.name, widget.event.comment, '', false);
           await Navigator.push(
               context,
               MaterialPageRoute(
@@ -285,25 +329,18 @@ class _PlatObjectListState extends State<PlatObjectList> {
       child: ListTile(
           title: Text('${widget.event.name} № ${widget.event.number} от ${DateFormat('dd.MM.yyyy').format(widget.event.date)}', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),),
           subtitle: Text(widget.event.comment),
-          // Column(
-          //   children: [
-          //     Text(widget.event.comment),
-          //     Text(widget.event.analyticName),
-          //   ],
-          // ),
           trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(widget.event.summa), style: TextStyle(fontSize: 16, color: textColors(widget.event.summa))),
           onTap: () async {
-            await Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) {
-                      print(widget.event.type);
+            await Navigator.push(context, MaterialPageRoute(builder: (context) {
                       if (widget.event.type=='Покупка стройматериалов')
-                        return scrReceiptViewScreen(id: '433a1307-1de7-11ef-80ec-00155d753c19');
+                        return scrReceiptViewScreen(id: widget.event.id, event: widget.event);
                       else
                         return scrPlatsViewScreen(plat: widget.event);
                     }));
             setState(() {
+              if (widget.event.del==true) {
+                print('Удаляем этот платеж');
+              }
               print('Пересчет формы');
             });
             },
@@ -352,7 +389,7 @@ class _CardObjectAnalyticListState extends State<CardObjectAnalyticList> {
                   context,
                   MaterialPageRoute(
                       builder: (context) =>
-                          scrCashListScreen(idCash: '0', cashName: 'Все', analytic: widget.event.analyticId, analyticName: widget.event.analyticId, objectId: widget.objectId, objectName: widget.objectName, platType: '', dateRange: DateTimeRange(start: DateTime(2023), end: DateTime.now()),  )));
+                          scrCashListScreen(idCash: '0', cashName: 'Все', analytic: widget.event.analyticId, analyticName: widget.event.analyticId, objectId: widget.objectId, objectName: widget.objectName, platType: '', dateRange: DateTimeRange(start: DateTime(2023), end: DateTime.now()), kassaSotrId: '', kassaSortName: '',  )));
             }
           },
           onLongPress: () {}),

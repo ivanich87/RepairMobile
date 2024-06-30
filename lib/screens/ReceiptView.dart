@@ -7,20 +7,24 @@ import 'package:repairmodule/models/Lists.dart';
 import 'package:repairmodule/screens/ReceiptEdit.dart';
 import 'package:repairmodule/screens/profileMan.dart';
 
+import '../components/Cards.dart';
+
 class scrReceiptViewScreen extends StatefulWidget {
   final String id;
-  scrReceiptViewScreen({super.key, required this.id});
+  late ListPlat event;
+  scrReceiptViewScreen({super.key, required this.id, required this.event});
 
   @override
   State<scrReceiptViewScreen> createState() => _scrReceiptViewScreenState();
 }
 
 class _scrReceiptViewScreenState extends State<scrReceiptViewScreen> {
-  Receipt recipientdata = Receipt('', '', DateTime.now(), true, false, false, '', '', '', '', true, '', '', DateTime.now(), 0, 0, 0, false, '', '', '', 'Расход', 0, '', '', '', '', '', '', 0, 'Покупка стройматериалов');
-
+  Receipt recipientdata = Receipt('', '', DateTime.now(), true, false, false, '', '', '', '', true, '', '', DateTime.now(), 0, 0, 0, false, '', '', '', 'Расход', 0, '7fa144f2-14ca-11ed-80dd-00155d753c19', 'Покупка стройматериалов', '', '', '', '', 0, 'Покупка стройматериалов');
+  bool userDataEdit = false;
 
 
   Future httpGetInfoObject() async {
+    print(widget.id);
     if (widget.id=='')
       return;
 
@@ -88,7 +92,7 @@ class _scrReceiptViewScreenState extends State<scrReceiptViewScreen> {
           title: Text('Покупка стройматериалов'),
           centerTitle: true,
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-          actions: [IconButton(onPressed: () {}, icon: Icon(Icons.menu))],
+          actions: <Widget>[_menuAppBar()],
         ),
         body: ListView(
           children: [
@@ -177,7 +181,9 @@ class _scrReceiptViewScreenState extends State<scrReceiptViewScreen> {
                 MaterialPageRoute(
                     builder: (context) => scrReceiptEditScreen(receiptData: recipientdata,)));
             setState(() {
-
+              widget.event.summaDown = recipientdata.summa;
+              widget.event.summa = -recipientdata.summa;
+              widget.event.comment = recipientdata.comment;
             });
           },
           child: Icon(Icons.edit),
@@ -185,7 +191,44 @@ class _scrReceiptViewScreenState extends State<scrReceiptViewScreen> {
       //backgroundColor: Colors.grey[900]),
     );
   }
+
+  PopupMenuButton<Menu> _menuAppBar() {
+    return PopupMenuButton<Menu>(
+        icon: const Icon(Icons.menu, ),
+        offset: const Offset(0, 40),
+        onSelected: (Menu item) async {
+          if (item == Menu.itemEdit) {
+            await Navigator.push(context, MaterialPageRoute(builder: (context) => scrReceiptEditScreen(receiptData: recipientdata,)));
+            setState(() {
+
+            });
+          }
+          if (item == Menu.itemDelete) {
+            httpEventDelete(widget.id, recipientdata.del, context).then((value) {
+              userDataEdit = value;
+              print('userDataEdit = $value');
+              if (userDataEdit==true) {
+                recipientdata.del=!recipientdata.del;
+                Navigator.pop(context);
+              }
+            });
+          }
+        },
+        itemBuilder: (BuildContext context) => <PopupMenuEntry<Menu>>[
+          const PopupMenuItem<Menu>(
+            value: Menu.itemEdit,
+            child: Text('Редактировать'),
+          ),
+          const PopupMenuItem<Menu>(
+            value: Menu.itemDelete,
+            child: Text('Удалить'),
+          ),
+        ].toList());
+  }
+
 }
+
+enum Menu { itemEdit, itemDelete }
 
 MyTextStyle() {
   return TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: Colors.red);

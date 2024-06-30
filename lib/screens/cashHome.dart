@@ -21,6 +21,8 @@ class scrCashHomeScreen extends StatefulWidget {
 class _scrCashHomeScreenState extends State<scrCashHomeScreen> {
   var cashKassList = [];
   var cashBankList = [];
+  List<accountableFounds> AccountableFounds = [];
+  num AccountableFoundsBalance = 0;
 
   Future httpGetListCash() async {
     var _url=Uri(path: '/a/centrremonta/hs/v1/cashList/', host: 's1.rntx.ru', scheme: 'https');
@@ -45,6 +47,24 @@ class _scrCashHomeScreenState extends State<scrCashHomeScreen> {
     } catch (error) {
       print("Ошибка при формировании списка: $error");
     }
+
+    //запрос к подотчетным средствам сотрудников
+    _url=Uri(path: '/a/centrremonta/hs/v1/accountableFunds/', host: 's1.rntx.ru', scheme: 'https');
+    try {
+      AccountableFoundsBalance=0;
+      var response2 = await http.get(_url, headers: _headers);
+      if (response2.statusCode == 200) {
+        var notesJson = json.decode(response2.body);
+        for (var noteJson in notesJson) {
+          AccountableFounds.add(accountableFounds.fromJson(noteJson));
+          AccountableFoundsBalance = AccountableFoundsBalance + accountableFounds.fromJson(noteJson).summa;
+        }
+      }
+      else
+        throw 'Код ответа запроса подотчетных денег: ${response2.statusCode}';
+    } catch (error) {
+      print("Ошибка при формировании списка: $error");
+    }
   }
 
 
@@ -52,6 +72,7 @@ class _scrCashHomeScreenState extends State<scrCashHomeScreen> {
   void initState() {
     cashBankList.clear();
     cashKassList.clear();
+    AccountableFounds.clear();
     httpGetListCash().then((value) {
       setState(() {
       });
@@ -62,97 +83,144 @@ class _scrCashHomeScreenState extends State<scrCashHomeScreen> {
   Widget build(BuildContext context) {
     final arg = (ModalRoute.of(context)?.settings.arguments ?? <String, dynamic> {'summa': 0, 'title': 'Пусто'}) as Map<String, dynamic>;
     num allSumma = arg['summa'];
-    return Scaffold(
-        appBar: AppBar(
-          title: Text('Финансы'),
-          centerTitle: true,
-          //backgroundColor: Colors.grey[900],
-          backgroundColor: Theme
-              .of(context)
-              .colorScheme
-              .inversePrimary,
-          actions: [
-            IconButton(onPressed: () {}, icon: Icon(Icons.menu))
-          ],
-        ),
-        body: Padding(
-          padding: const EdgeInsets.only(left: 8.0),
-          child: RefreshIndicator(
-            onRefresh: () async {
-              initState();
-              return Future<void>.delayed(const Duration(seconds: 1));
-            },
-            child: ListView(
-              //mainAxisAlignment: MainAxisAlignment.start,
-              //crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-               Divider(),
-              //Expanded(child:
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Банк', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                      ConstrainedBox(
-                        constraints: BoxConstraints(maxHeight: 200, minHeight: 56.0),
-                        child: ListView(
-                          shrinkWrap: true,
-                          padding: EdgeInsets.all(1),
-                          physics: BouncingScrollPhysics(),
-                          reverse: false,
-                          //itemCount: notes.length,
-                          //itemBuilder: (_, index) => CardCashList(event: notes[index]),
-                          children: cashBankList.map((e) => CardCashList(event: e)).toList(),
-                        ),
-                      ),
-                      Divider(),
-                      Text('Касса', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                      ConstrainedBox(
-                        constraints: BoxConstraints(maxHeight: 200, minHeight: 56.0),
-                        child: ListView(
-                          shrinkWrap: true,
-                          padding: EdgeInsets.all(1),
-                          physics: BouncingScrollPhysics(),
-                          reverse: false,
-                          //itemCount: notes.length,
-                          //itemBuilder: (_, index) => CardCashList(event: notes[index]),
-                          children: cashKassList.map((e) => CardCashList(event: e)).toList(),
-                        ),
-                      ),
-                      Divider(),
-                      SizedBox(height: 20,),
-                      //Text('Всего: 245800 руб.', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),),
-                      ListTile(
-                        title: Text.rich(TextSpan(children: [
-                          TextSpan(text: 'Всего: ', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-                          TextSpan(text: NumberFormat.simpleCurrency(locale: 'ru-RU', decimalDigits: 2).format(allSumma), style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.green)),
-                          ],
-                        )
-                        ),
-                        trailing: Icon(Icons.navigate_next),
-                        onTap: (){
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  //builder: (context) => scrCashCategoriesScreen(idCash: '0', cashName: 'Все',)));
-                                  builder: (context) => scrCashListScreen(idCash: '0', cashName: 'Все', analytic: '', analyticName: '', objectId: '',objectName: '', platType: '', dateRange: DateTimeRange(start: DateTime.now(), end: DateTime.now()),)));
-                        },
-                      )
-                    ],
-                  ),
-                  //Divider(),
-              //),
-              ],
-            ),
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
+          appBar: AppBar(
+            bottom: TabBar(tabs: _tabs),
+            title: Text('Финансы'),
+            centerTitle: true,
+            //backgroundColor: Colors.grey[900],
+            backgroundColor: Theme
+                .of(context)
+                .colorScheme
+                .inversePrimary,
+            actions: [
+              IconButton(onPressed: () {}, icon: Icon(Icons.menu))
+            ],
           ),
-        ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {print('Нажали кнопку меню');},
-          child: _AddMenuIcon(),
-        )
-    //backgroundColor: Colors.grey[900]),
+          body: TabBarView(children: <Widget> [
+              _OneScreenTab(allSumma),
+              _TwoScreenTab(),
+            ],),
+            floatingActionButton: FloatingActionButton(
+              onPressed: () {print('Нажали кнопку меню');},
+              child: _AddMenuIcon(),
+          )
+      //backgroundColor: Colors.grey[900]),
+      ),
     );
     }
 
+  _OneScreenTab(allSumma) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 8.0),
+      child: RefreshIndicator(
+        onRefresh: () async {
+          initState();
+          return Future<void>.delayed(const Duration(seconds: 1));
+        },
+        child: ListView(
+          //mainAxisAlignment: MainAxisAlignment.start,
+          //crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Divider(),
+            //Expanded(child:
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Банк', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                ConstrainedBox(
+                  constraints: BoxConstraints(maxHeight: 200, minHeight: 56.0),
+                  child: ListView(
+                    shrinkWrap: true,
+                    padding: EdgeInsets.all(1),
+                    physics: BouncingScrollPhysics(),
+                    reverse: false,
+                    //itemCount: notes.length,
+                    //itemBuilder: (_, index) => CardCashList(event: notes[index]),
+                    children: cashBankList.map((e) => CardCashList(event: e)).toList(),
+                  ),
+                ),
+                Divider(),
+                Text('Касса', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                ConstrainedBox(
+                  constraints: BoxConstraints(maxHeight: 200, minHeight: 56.0),
+                  child: ListView(
+                    shrinkWrap: true,
+                    padding: EdgeInsets.all(1),
+                    physics: BouncingScrollPhysics(),
+                    reverse: false,
+                    //itemCount: notes.length,
+                    //itemBuilder: (_, index) => CardCashList(event: notes[index]),
+                    children: cashKassList.map((e) => CardCashList(event: e)).toList(),
+                  ),
+                ),
+                Divider(),
+                SizedBox(height: 20,),
+                //Text('Всего: 245800 руб.', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),),
+                ListTile(
+                  title: Text.rich(TextSpan(children: [
+                    TextSpan(text: 'Всего: ', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+                    TextSpan(text: NumberFormat.simpleCurrency(locale: 'ru-RU', decimalDigits: 2).format(allSumma), style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.green)),
+                  ],
+                  )
+                  ),
+                  trailing: Icon(Icons.navigate_next),
+                  onTap: (){
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          //builder: (context) => scrCashCategoriesScreen(idCash: '0', cashName: 'Все',)));
+                            builder: (context) => scrCashListScreen(idCash: '0', cashName: 'Все', analytic: '', analyticName: '', objectId: '',objectName: '', platType: '', dateRange: DateTimeRange(start: DateTime.now(), end: DateTime.now()), kassaSotrId: '', kassaSortName: '',)));
+                  },
+                ),
+              ],
+            ),
+            //Divider(),
+            //),
+          ],
+        ),
+      ),
+    );
+  }
+
+  _TwoScreenTab() {
+    return Container(padding: EdgeInsets.all(2),
+      child: Column(
+        children: [
+          ConstrainedBox(
+            constraints: BoxConstraints(maxHeight: 500, minHeight: 20.0),
+            child: ListView.builder(
+              padding: EdgeInsets.all(10),
+              physics: AlwaysScrollableScrollPhysics(),
+              reverse: false,
+              shrinkWrap: true,
+              itemCount: AccountableFounds.length,
+              itemBuilder: (_, index) =>
+                Card(
+                  child: ListTile(
+                    title: Text(AccountableFounds[index].name, style: TextStyle(fontWeight: FontWeight.normal, fontSize: 18)),
+                    trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(AccountableFounds[index].summa), style: TextStyle(fontSize: 16, color: textColors(AccountableFounds[index].summa))),
+                    onTap: () {Navigator.push(context, MaterialPageRoute(builder: (context) => scrCashListScreen(idCash: '0', cashName: 'Все', analytic: '', analyticName: '', objectId: '', objectName: '', platType: '', dateRange: DateTimeRange(start: DateTime(2023), end: DateTime.now()), kassaSotrId: AccountableFounds[index].id, kassaSortName: AccountableFounds[index].name,  )));},
+                  ),
+                )
+            ),
+          ),
+          Expanded(
+            child: ListTile(
+              title: Text.rich(TextSpan(children: [
+                TextSpan(text: 'Всего: ', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+                TextSpan(text: NumberFormat.simpleCurrency(locale: 'ru-RU', decimalDigits: 2).format(AccountableFoundsBalance), style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.green)),
+              ],
+              )
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
   _AddMenuIcon() {
     return PopupMenuButton<Menu>(
@@ -160,7 +228,7 @@ class _scrCashHomeScreenState extends State<scrCashHomeScreen> {
         offset: const Offset(0, 40),
         onSelected: (Menu item) async {
           String _sprName = (item.name=='kassa') ? 'Кассы' : 'БанковскиеСчетаОрганизаций';
-          sprList _newSpr = sprList('', '', '', '');
+          sprList _newSpr = sprList('', '', '', '', false);
           await Navigator.push(
               context,
               MaterialPageRoute(
@@ -181,6 +249,13 @@ class _scrCashHomeScreenState extends State<scrCashHomeScreen> {
 
   }
 
+const _tabs = [
+  Tab(icon: Icon(Icons.account_balance),
+      text: "Деньги фирмы",
+  ),
+  Tab(icon: Icon(Icons.people),
+    text: "Подотчетные средства")
+];
 
 enum Menu { kassa, bank}
 

@@ -5,6 +5,8 @@ import 'package:http/http.dart' as http;
 import 'package:repairmodule/screens/profileMan_edit.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../components/Cards.dart';
+
 class scrProfileMan extends StatefulWidget {
   final String id;
   const scrProfileMan({Key? key, required this.id}) : super(key: key);
@@ -20,7 +22,9 @@ class _scrProfileManState extends State<scrProfileMan> {
   String role = '';
   int type = 1;
   int kol = 0;
+  bool del = false;
 
+  bool userDataEdit = false;
 
   Future httpGetInfoMan() async {
     var _url=Uri(path: '/a/centrremonta/hs/v1/man/'+widget.id+'/', host: 's1.rntx.ru', scheme: 'https');
@@ -39,7 +43,7 @@ class _scrProfileManState extends State<scrProfileMan> {
         mail = data['mail'] ?? 'no mail';
         role = data['role'] ?? 'no role';
         type = data['type'] ?? 1;
-
+        del = data['del'] ?? false;
       }
       else
         throw response.body;
@@ -65,9 +69,7 @@ class _scrProfileManState extends State<scrProfileMan> {
         title: Text('Профиль'),
         centerTitle: true,
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        actions: [
-          IconButton(onPressed: () {}, icon: Icon(Icons.menu))
-        ],
+        actions: <Widget>[_menuAppBar()],
       ),
       body: Column(
         children: [
@@ -78,7 +80,7 @@ class _scrProfileManState extends State<scrProfileMan> {
               padding: const EdgeInsets.all(8.0),
               child: Column(
                 children: [
-                  Text(name, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                  Text(name, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, decoration: textDelete(del))),
                   const SizedBox(height: 16),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -146,7 +148,44 @@ class _scrProfileManState extends State<scrProfileMan> {
         )
     );
   }
+
+  PopupMenuButton<Menu> _menuAppBar() {
+    return PopupMenuButton<Menu>(
+        icon: const Icon(Icons.menu, ),
+        offset: const Offset(0, 40),
+        onSelected: (Menu item) async {
+          if (item == Menu.itemEdit) {
+            await Navigator.push(context, MaterialPageRoute(builder: (context) => scrProfileManEditScreen(id: widget.id, name: name, email: mail, phone: phone, type: type)));
+            setState(() {
+
+            });
+          }
+          if (item == Menu.itemDelete) {
+            httpEventDelete(widget.id, del, context).then((value) {
+              userDataEdit = value;
+              print('userDataEdit = $value');
+              if (userDataEdit==true) {
+                del=!del;
+                Navigator.pop(context);
+              }
+            });
+          }
+        },
+        itemBuilder: (BuildContext context) => <PopupMenuEntry<Menu>>[
+          const PopupMenuItem<Menu>(
+            value: Menu.itemEdit,
+            child: Text('Редактировать'),
+          ),
+          const PopupMenuItem<Menu>(
+            value: Menu.itemDelete,
+            child: Text('Удалить'),
+          ),
+        ].toList());
+  }
+
 }
+
+enum Menu { itemEdit, itemDelete }
 
 class _ProfileInfoRow extends StatelessWidget {
   const _ProfileInfoRow({Key? key}) : super(key: key);

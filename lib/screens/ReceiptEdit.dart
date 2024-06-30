@@ -77,7 +77,6 @@ class _scrReceiptEditScreenState extends State<scrReceiptEditScreen> {
       print('Скопировали бэкап');
     }
     firstInit=false;
-
     return PopScope(
         canPop: true,
         onPopInvoked: (bool didPop) async {
@@ -92,7 +91,6 @@ class _scrReceiptEditScreenState extends State<scrReceiptEditScreen> {
           title: Text('Покупка стройматериалов'),
           centerTitle: true,
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-          actions: [IconButton(onPressed: () {}, icon: Icon(Icons.menu))],
         ),
         body: ListView(
           children: [
@@ -399,8 +397,8 @@ class _scrReceiptEditScreenState extends State<scrReceiptEditScreen> {
     );
   }
 
-
 }
+
 
 _EditSumma({required int typeSumma, required num summa}) {
   return TextField(
