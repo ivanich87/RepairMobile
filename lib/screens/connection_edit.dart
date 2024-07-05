@@ -12,76 +12,61 @@ import 'package:repairmodule/screens/sprList.dart';
 import 'objects.dart';
 import 'objectsListSelected.dart';
 
-class scrProfileManEditScreen extends StatefulWidget {
-  late String id;
-  final String email;
-  final String phone;
-  final String name;
-  final int type;
+class scrConnectionEditScreen extends StatefulWidget {
 
 
-  scrProfileManEditScreen({super.key, required this.id, required this.email, required this.phone, required this.name, required this.type});
+
+  scrConnectionEditScreen({super.key});
 
   @override
-  State<scrProfileManEditScreen> createState() => _scrProfileManEditScreenState();
+  State<scrConnectionEditScreen> createState() => _scrConnectionEditScreenState();
 }
 
-class _scrProfileManEditScreenState extends State<scrProfileManEditScreen> {
+class _scrConnectionEditScreenState extends State<scrConnectionEditScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
 
   bool userDataEdit = false;
 
 
-  TextEditingController email=TextEditingController(text: '');
+  TextEditingController server=TextEditingController(text: '');
+  TextEditingController path=TextEditingController(text: '');
   TextEditingController phone=TextEditingController(text: '');
-  TextEditingController name = TextEditingController(text: '');
+  TextEditingController login = TextEditingController(text: '');
+  TextEditingController password = TextEditingController(text: '');
 
 
 
-  Future<bool> httpManCreate() async {
+  Future<bool> httpConnection() async {
     bool _result=false;
-    final _queryParameters = {'userId': Globals.anPhone};
-    var _url=Uri(path: '${Globals.anPath}man/edit/', host: Globals.anServer, scheme: 'https', queryParameters: _queryParameters);
+    String _message = '';
+    var _url=Uri(path: '${path.text}connection/${phone.text}/', host: server.text, scheme: 'https');
     var _headers = <String, String> {
       'Accept': 'application/json',
       'Authorization': Globals.anAuthorization
     };
 
-    var _body = <String, String> {
-      'id': widget.id,
-      'email': email.text,
-      'phone': phone.text,
-      'name': name.text,
-      'type': widget.type.toString(),
-    };
-
     try {
-      print(json.encode(_body));
-      var response = await http.post(_url, headers: _headers, body: json.encode(_body));
+      print(_url.path);
+      var response = await http.get(_url, headers: _headers);
       print('Код ответа: ${response.statusCode} Тело ответа: ${response.body}');
+      var data = json.decode(response.body);
+      _message = data['Сообщение'] ?? '';
       if (response.statusCode == 200) {
-        var data = json.decode(response.body);
         _result = data['Успешно'] ?? '';
-        String _message = data['Сообщение'] ?? '';
-        if (_result==true)
-          widget.id = data['Код'];
-
-        print('Объект и договор созданы. Результат:  $_result. Сообщение:  $_message. Код объекта = ${widget.id}');
       }
       else {
         _result = false;
         final snackBar = SnackBar(
-          content: Text('${response.body}'),
+          content: Text('${_message}'),
         );
         ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
     } catch (error) {
       _result = false;
-      print("Ошибка при выгрузке платежа: $error");
-      _result = false;
+      _message = 'Не верное Имя сервера или Путь до сервисов';
       final snackBar = SnackBar(
-        content: Text('$error'),
+        content: Text('$_message'),
       );
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
@@ -91,24 +76,18 @@ class _scrProfileManEditScreenState extends State<scrProfileManEditScreen> {
   @override
   Widget build(BuildContext context) {
     if (userDataEdit==false) {
-      phone.text = widget.phone;
-      email.text = widget.email;
-      name.text = widget.name;
+      server.text = Globals.anServer;
+      path.text = Globals.anPath;
+      phone.text = Globals.anPhone;
+
       userDataEdit = true;
     }
-    String _typeText = 'Заполните данные';
-    if (widget.type==1)
-      _typeText = 'Заполните данные сотрудника';
-    if (widget.type==2)
-      _typeText = 'Заполните данные субподрядчика'; //субподрядчики не будут использоваться
-    if (widget.type==3)
-      _typeText = 'Заполните данные клиента';
-    if (widget.type==4)
-      _typeText = 'Заполните данные контрагента'; //КонтрагентДляФонда
+    String _typeText = 'Подключение';
+
 
     return Scaffold(
         appBar: AppBar(
-          title: Text('Редактирование профиля'),
+          title: Text('Настройки подключения'),
           centerTitle: true,
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
           actions: [IconButton(onPressed: () {}, icon: Icon(Icons.menu))],
@@ -136,36 +115,54 @@ class _scrProfileManEditScreenState extends State<scrProfileManEditScreen> {
                           padding: const EdgeInsets.all(8.0),
                           child: TextFormField(
                             textAlign: TextAlign.start,
-                            controller: name,
+                            controller: server,
                             keyboardType: TextInputType.text,
                             style: TextStyle(fontSize: 18),
                             decoration: InputDecoration(
                               border: OutlineInputBorder(),
-                              labelText: 'Введите ФИО',
+                              labelText: 'Имя сервера',
                             ),
                               textInputAction: TextInputAction.done,
                               validator: (value) {
-                                if (value == null || value.isEmpty) {return 'Заполните ФИО';}
+                                if (value == null || value.isEmpty) {return 'Заполните имя сервере';}
                                 return null;
                               }
                           ),
                         ),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: TextFormField(
+                              textAlign: TextAlign.start,
+                              controller: path,
+                              keyboardType: TextInputType.text,
+                              style: TextStyle(fontSize: 18),
+                              decoration: InputDecoration(
+                                border: OutlineInputBorder(),
+                                labelText: 'Путь до сервисов',
+                              ),
+                              textInputAction: TextInputAction.done,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {return 'Заполните путь до сервисов';}
+                                return null;
+                              }
+                          ),
+                        )
                       ]),
                   Divider(),
-                  SingleSection(title: 'Контакты',
+                  SingleSection(title: 'Авторизация',
                       children: [
                         Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: TextFormField(
                             textAlign: TextAlign.center,
                             controller: phone,
-                            keyboardType: TextInputType.number,
+                            keyboardType: TextInputType.phone,
                             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                             decoration: InputDecoration(
                               border: OutlineInputBorder(),
                               labelText: 'Введите номер телефона',
                             ),
-                              textInputAction: TextInputAction.next,
+                              textInputAction: TextInputAction.done,
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
                                   return 'Введиете номер телефона';
@@ -173,39 +170,24 @@ class _scrProfileManEditScreenState extends State<scrProfileManEditScreen> {
                                 return null;
                               }
                           ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: TextFormField(
-                            textAlign: TextAlign.center,
-                            controller: email,
-                            keyboardType: TextInputType.emailAddress,
-                            style: TextStyle(fontSize: 18),
-                            decoration: InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: 'email',
-                            ),
-                              textInputAction: TextInputAction.done,
-                              validator: (value) {
-                                return null;
-                              }
-                          ),
-                        )
-          
-                      ]),
-            ],
-          ),
+                        )]),
+                    ],
+                  ),
                 ],
           ),
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
-            //ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Данные сохраняются'), backgroundColor: Colors.green,));
+
             print('Данные введены правильно');
-            httpManCreate().then((value) {
-              Map<String, dynamic> _result = {'mail': email.text, 'phone': phone.text, 'name': name.text, 'id': widget.id, 'type': widget.type};
-              if (value==true)
-                Navigator.pop(context, _result);
+            httpConnection().then((value) {
+              if (value==true) {
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Успешное подключение'), backgroundColor: Colors.green,));
+                Globals.setServer(server.text);
+                Globals.setPath(path.text);
+                Globals.setPhone(phone.text);
+                Navigator.pop(context);
+              }
             });
             },
           child: Icon(Icons.save),

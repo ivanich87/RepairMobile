@@ -26,11 +26,12 @@ class _scrListScreenState extends State<scrListScreen> {
 
   Future httpGetListObject() async {
     print(widget.sprName);
-    var _url=Uri(path: '/a/centrremonta/hs/v1/sprList/${widget.sprName}', host: 's1.rntx.ru', scheme: 'https');
+    final _queryParameters = {'userId': Globals.anPhone};
+    var _url=Uri(path: '${Globals.anPath}sprList/${widget.sprName}', host: Globals.anServer, scheme: 'https', queryParameters: _queryParameters);
     print(_url.path);
     var _headers = <String, String> {
       'Accept': 'application/json',
-      'Authorization': 'Basic YWNlOkF4V3lJdnJBS1prdzY2UzdTMEJP'
+      'Authorization': Globals.anAuthorization
     };
     try {
       var response = await http.get(_url, headers: _headers);

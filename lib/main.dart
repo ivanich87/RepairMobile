@@ -1,3 +1,7 @@
+import 'dart:convert';
+import 'dart:io' as IO;
+import 'package:http/http.dart' as http;
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:repairmodule/screens/home.dart';
 import 'package:repairmodule/screens/objects.dart';
@@ -6,28 +10,142 @@ import 'package:repairmodule/screens/cashHome.dart';
 import 'package:repairmodule/screens/cashCategories.dart';
 import 'package:repairmodule/screens/testMenu.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import 'models/Lists.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
-  // final routes = {
-  //   '/': (context, {arguments}) => scrHomeScreen(),
-  //   '/objects': (context, {arguments}) => scrObjectsScreen(),
-  //   '/objectsView': (context, {arguments}) => scrObjectsViewScreen(),
-  //   '/cashHome': (context, {arguments}) => scrCashHomeScreen(),
-  //   '/cashHomeCategories': (context, {arguments}) => scrCashCategoriesScreen(arguments: arguments),
-  //   };
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  static const userInfoKey = 'userInfoKey';
+
+  bool _load = false;
+  String _login = '';
+  String _password = '';
+  String _phone = '';
+  String _server = '';
+  String _path = '';
+  int _themeIndex = 0;
+
+  bool success = false;
+  String message = '';
+  bool logIn = false;
+
+
+  Future httpGetUserData() async {
+    _load = false;
+    var prefs = await SharedPreferences.getInstance();
+
+    //prefs.remove(userInfoKey);
+    final String? Inf = prefs.getString(userInfoKey);
+    if (Inf == null) {
+      _login = 'Руководитель';
+      _password = '123';
+      _server = 'ut.acewear.ru';
+      _path = '/repair/hs/v1/';
+      _themeIndex = 0;
+
+      print('не нашли данных по ключу $userInfoKey');
+    } else {
+      var str = json.decode(Inf);
+      UserInfo dt = UserInfo.fromJson(str);
+      _login = dt.login;
+      _password = dt.password;
+      _phone = dt.phone;
+      _server = dt.server;
+      _path = dt.path;
+      _themeIndex = dt.themeIndex;
+      print('Нашли данные по ключу $userInfoKey Логин: $_login Пароль: $_password');
+    }
+
+    print('logon......');
+    print('Логин: $_login');
+    print('Пароль: $_password');
+    print('Тема: $_themeIndex');
+
+    if (_themeIndex==null)
+      _themeIndex = 0;
+
+    //зачем обращаться к модели Globals, если есть модель UserInfo
+    Globals.setThemeIndex(_themeIndex);
+    Globals.setLogin(_login);
+    Globals.setPhone(_phone);
+    Globals.setServer(_server);
+    Globals.setPath(_path);
+    Globals.setPasswodr(_password);
+
+    String _platform = '';
+    if (IO.Platform.isAndroid)
+      _platform = 'android';
+    if (IO.Platform.isIOS)
+      _platform = 'ios';
+
+    Globals.setPlatform(_platform);
+
+    var _url=Uri(path: '$_path/logon/', host: 's4.rntx.ru', scheme: 'https');
+    var _headers = <String, String> {
+      'Accept': 'application/json',
+      'Authorization': Globals.anAuthorization
+    };
+    var _body = <String, String> {
+      "login": _login,
+      "password": _password
+    };
+
+    final connectivityResult = await (Connectivity().checkConnectivity());
+    if (connectivityResult == ConnectivityResult.mobile || connectivityResult == ConnectivityResult.wifi) {
+      _load = true;
+      try {
+        print('Выполняем запрос на авторизацию по данным из сохраненных настроек');
+        // var response = await http.post(_url, headers: _headers, body: jsonEncode(_body));
+        // if (response.statusCode == 200) {
+        //   var notesJson = json.decode(response.body);
+        //   success = notesJson['success'] ?? false;
+        //   message = notesJson['message'] ?? '';
+        //   logIn = notesJson['response'] ?? false;
+        //   _load = true;
+        //   print('Ответ авторизации: $logIn Текст ответа: $message');
+        // }
+      } catch (error) {
+        print("Ошибка при формировании списка: $error");
+        _load = false;
+        //ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Ошибка подключения к серверу: $error"), backgroundColor: Colors.red,));
+      }
+    }
+    else {
+      print('Нет инета');
+      _load = false;
+      //ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Нет подключения к интернету"), backgroundColor: Colors.red,));
+    }
+  }
+
+  @override
+  void initState() {
+    print('Запукаем чтение параметров');
+    httpGetUserData().then((value) {
+
+    });
+    // TODO: implement initState
+    super.initState();
+    //initPlatformState();
+  }
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        title: 'Flutter Demo',
+        title: 'РемонтКвартир',
         debugShowCheckedModeBanner: false,
         localizationsDelegates: [
           GlobalMaterialLocalizations.delegate,

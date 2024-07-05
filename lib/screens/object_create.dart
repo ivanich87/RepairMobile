@@ -53,10 +53,11 @@ class _scrObjectCreateScreenState extends State<scrObjectCreateScreen> {
   Future<bool> httpDogCreate() async {
     newObjectId = '';
     bool _result=false;
-    var _url=Uri(path: '/a/centrremonta/hs/v1/objectcreate/', host: 's1.rntx.ru', scheme: 'https');
+    final _queryParameters = {'userId': Globals.anPhone};
+    var _url=Uri(path: '${Globals.anPath}objectcreate/', host: Globals.anServer, scheme: 'https', queryParameters: _queryParameters);
     var _headers = <String, String> {
       'Accept': 'application/json',
-      'Authorization': 'Basic YWNlOkF4V3lJdnJBS1prdzY2UzdTMEJP'
+      'Authorization': Globals.anAuthorization
     };
     var _body = <String, String> {
       'clientName': clientName.text,

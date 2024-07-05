@@ -25,10 +25,11 @@ class _scrCashHomeScreenState extends State<scrCashHomeScreen> {
   num AccountableFoundsBalance = 0;
 
   Future httpGetListCash() async {
-    var _url=Uri(path: '/a/centrremonta/hs/v1/cashList/', host: 's1.rntx.ru', scheme: 'https');
+    final _queryParameters = {'userId': Globals.anPhone};
+    var _url=Uri(path: '${Globals.anPath}cashList/', host: Globals.anServer, scheme: 'https', queryParameters: _queryParameters);
     var _headers = <String, String> {
       'Accept': 'application/json',
-      'Authorization': 'Basic YWNlOkF4V3lJdnJBS1prdzY2UzdTMEJP'
+      'Authorization': Globals.anAuthorization
     };
     try {
       var response = await http.get(_url, headers: _headers);
@@ -49,7 +50,7 @@ class _scrCashHomeScreenState extends State<scrCashHomeScreen> {
     }
 
     //запрос к подотчетным средствам сотрудников
-    _url=Uri(path: '/a/centrremonta/hs/v1/accountableFunds/', host: 's1.rntx.ru', scheme: 'https');
+    _url=Uri(path: '${Globals.anPath}accountableFunds/', host: Globals.anServer, scheme: 'https');
     try {
       AccountableFoundsBalance=0;
       var response2 = await http.get(_url, headers: _headers);

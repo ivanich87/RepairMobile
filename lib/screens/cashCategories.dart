@@ -26,10 +26,10 @@ class _scrCashCategoriesScreenState extends State<scrCashCategoriesScreen> {
   Future httpGetListSklad() async {
     print('idCash = ' + widget.idCash.toString());
 
-    var _url=Uri(path: '/a/centrremonta/hs/v1/cashCategories/'+widget.idCash+'/', host: 's1.rntx.ru', scheme: 'https');
+    var _url=Uri(path: '${Globals.anPath}cashCategories/'+widget.idCash+'/', host: Globals.anServer, scheme: 'https');
     var _headers = <String, String> {
       'Accept': 'application/json',
-      'Authorization': 'Basic YWNlOkF4V3lJdnJBS1prdzY2UzdTMEJP'
+      'Authorization': Globals.anAuthorization
     };
     print(_url.path);
     try {

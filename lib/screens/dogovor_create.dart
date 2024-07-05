@@ -57,10 +57,11 @@ class _scrDogovorCreateScreenState extends State<scrDogovorCreateScreen> {
 
   Future<bool> httpDogCreate() async {
     bool _result=false;
-    var _url=Uri(path: '/a/centrremonta/hs/v1/dogovorcreate/', host: 's1.rntx.ru', scheme: 'https');
+    final _queryParameters = {'userId': Globals.anPhone};
+    var _url=Uri(path: '${Globals.anPath}dogovorcreate/', host: Globals.anServer, scheme: 'https', queryParameters: _queryParameters);
     var _headers = <String, String> {
       'Accept': 'application/json',
-      'Authorization': 'Basic YWNlOkF4V3lJdnJBS1prdzY2UzdTMEJP'
+      'Authorization': Globals.anAuthorization
     };
     var _body = <String, String> {
       'Id': widget.newDogovorId,

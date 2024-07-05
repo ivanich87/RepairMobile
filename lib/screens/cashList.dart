@@ -44,16 +44,17 @@ class _scrCashListScreenState extends State<scrCashListScreen> {
       'analyticId': widget.analytic,
       'objectId': widget.objectId,
       'platType': widget.platType,
-      'kassaSortId': widget.kassaSotrId
+      'kassaSortId': widget.kassaSotrId,
+      'userId': Globals.anPhone
     };
-    print(queryParameters.toString());
-    var _url = Uri(path: '/a/centrremonta/hs/v1/platlist/${DateFormat('yyyyMMdd').format(widget.dateRange.start)}/${DateFormat('yyyyMMdd').format(widget.dateRange.end)}/${widget.idCash}',
+
+    var _url = Uri(path: '${Globals.anPath}platlist/${DateFormat('yyyyMMdd').format(widget.dateRange.start)}/${DateFormat('yyyyMMdd').format(widget.dateRange.end)}/${widget.idCash}',
         queryParameters: queryParameters,
-        host: 's1.rntx.ru',
+        host: Globals.anServer,
         scheme: 'https');
     var _headers = <String, String>{
       'Accept': 'application/json',
-      'Authorization': 'Basic YWNlOkF4V3lJdnJBS1prdzY2UzdTMEJP'
+      'Authorization': Globals.anAuthorization
     };
     try {
       print(_url.path);

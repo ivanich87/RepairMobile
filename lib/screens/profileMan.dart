@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:repairmodule/models/Lists.dart';
 import 'package:repairmodule/screens/profileMan_edit.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -27,10 +28,11 @@ class _scrProfileManState extends State<scrProfileMan> {
   bool userDataEdit = false;
 
   Future httpGetInfoMan() async {
-    var _url=Uri(path: '/a/centrremonta/hs/v1/man/'+widget.id+'/', host: 's1.rntx.ru', scheme: 'https');
+    final _queryParameters = {'userId': Globals.anPhone};
+    var _url=Uri(path: '${Globals.anPath}man/'+widget.id+'/', host: Globals.anServer, scheme: 'https', queryParameters: _queryParameters);
     var _headers = <String, String> {
       'Accept': 'application/json',
-      'Authorization': 'Basic YWNlOkF4V3lJdnJBS1prdzY2UzdTMEJP'
+      'Authorization': Globals.anAuthorization
     };
     try {
       var response = await http.get(_url, headers: _headers);

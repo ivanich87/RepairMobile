@@ -26,10 +26,11 @@ class _scrReceiptEditScreenState extends State<scrReceiptEditScreen> {
 
   Future<bool> httpPlatUpdate(Receipt _body) async {
     bool _result=false;
-    var _url=Uri(path: '/a/centrremonta/hs/v1/platUpdate/', host: 's1.rntx.ru', scheme: 'https'); //тут нужно заменить функцию на новую
+    final _queryParameters = {'userId': Globals.anPhone};
+    var _url=Uri(path: '${Globals.anPath}platUpdate/', host: Globals.anServer, scheme: 'https', queryParameters: _queryParameters); //тут нужно заменить функцию на новую
     var _headers = <String, String> {
       'Accept': 'application/json',
-      'Authorization': 'Basic YWNlOkF4V3lJdnJBS1prdzY2UzdTMEJP'
+      'Authorization': Globals.anAuthorization
     };
     try {
       print('Start export plat!!!!');

@@ -3,6 +3,9 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:repairmodule/components/SingleSelections.dart';
+import 'package:repairmodule/models/Lists.dart';
+
+import 'connection_edit.dart';
 
 class scrSettingsScreen extends StatefulWidget {
   scrSettingsScreen();
@@ -16,10 +19,11 @@ class _scrSettingsScreenState extends State<scrSettingsScreen> {
   int ObjectKol = 0;
 
   Future httpGetInfo() async {
-    var _url=Uri(path: '/a/centrremonta/hs/v1/info/', host: 's1.rntx.ru', scheme: 'https');
+    final _queryParameters = {'userId': Globals.anPhone};
+    var _url=Uri(path: '${Globals.anPath}info/', host: Globals.anServer, scheme: 'https', queryParameters: _queryParameters);
     var _headers = <String, String> {
       'Accept': 'application/json',
-      'Authorization': 'Basic YWNlOkF4V3lJdnJBS1prdzY2UzdTMEJP'
+      'Authorization': Globals.anAuthorization
     };
     try {
       var response = await http.get(_url, headers: _headers);
@@ -59,6 +63,20 @@ class _scrSettingsScreenState extends State<scrSettingsScreen> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Divider(),
+            titleHeader('Настройки подключения'),
+            Card(
+              child: ListTile(
+                title: Text(
+                  Globals.anServer,
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
+                ),
+                subtitle: Text(Globals.anPhone),
+                leading: Icon(Icons.connect_without_contact_sharp),
+                trailing: Icon(Icons.edit),
+                onTap: () {Navigator.push(context, MaterialPageRoute( builder: (context) => scrConnectionEditScreen()));},
+              ),
+            ),
             Divider(),
             titleHeader('Данные компании'),
             Card(

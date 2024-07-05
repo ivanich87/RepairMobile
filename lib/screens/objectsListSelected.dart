@@ -20,10 +20,11 @@ class _scrobjectsListSelectedState extends State<objectsListSelected> {
   var objectList = [];
 
   Future httpGetListObject() async {
-    var _url=Uri(path: '/a/centrremonta/hs/v1/obList/0/', host: 's1.rntx.ru', scheme: 'https');
+    final _queryParameters = {'userId': Globals.anPhone};
+    var _url=Uri(path: '${Globals.anPath}obList/0/', host: Globals.anServer, scheme: 'https', queryParameters: _queryParameters);
     var _headers = <String, String> {
       'Accept': 'application/json',
-      'Authorization': 'Basic YWNlOkF4V3lJdnJBS1prdzY2UzdTMEJP'
+      'Authorization': Globals.anAuthorization
     };
     try {
       var response = await http.get(_url, headers: _headers);

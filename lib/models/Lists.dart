@@ -1,5 +1,97 @@
 import 'dart:ffi';
 
+
+class Globals {
+  static var anThemeIndex = 0;
+  static var anLogin = '';
+  static var anPassword = '';
+  static var anPhone = '';
+  static var anServer= '';
+  static var anPath = '';
+  static var anFCM = '';
+  static var anPlatform = '';
+  static var anAuthorization = 'Basic YWNlOkF4V3lJdnJBS1prdzY2UzdTMEJP';
+  static var anIsDarkTheme = false;
+
+  static printInteger() {
+    print(anThemeIndex);
+  }
+
+  static setThemeIndex(int a) {
+    anThemeIndex = a;
+  }
+
+  static setLogin(String a) {
+    anLogin = a;
+  }
+
+  static setPasswodr(String a) {
+    anPassword = a;
+  }
+
+  static setPhone(String a) {
+    anPhone = a;
+  }
+
+  static setServer(String a) {
+    anServer = a;
+  }
+
+  static setPath(String a) {
+    anPath = a;
+  }
+
+  static setFCM(String a) {
+    anFCM = a;
+  }
+
+  static setIsDarkTheme(bool a) {
+    anIsDarkTheme = a;
+  }
+
+  static setPlatform(String a) {
+    anPlatform = a;
+  }
+}
+
+class UserInfo {
+  String login;
+  String password;
+  String phone;
+  String server;
+  String path;
+  int themeIndex;
+
+  //Event({required this.name, required this.location, required this.dt});
+
+  UserInfo({
+    required this.login,
+    required this.password,
+    required this.phone,
+    required this.server,
+    required this.path,
+    required this.themeIndex,
+  });
+
+  UserInfo.fromJson(Map<String, dynamic> json)
+      : login = json['login'],
+        password = json['password'],
+        server = json['server'],
+        path = json['path'],
+        phone = json['phone'],
+        themeIndex = json['themeIndex'];
+
+  Map<String, dynamic> toJson() => {
+    'login': login,
+    'password': password,
+    'server': server,
+    'phone': phone,
+    'path': path,
+    'themeIndex': themeIndex,
+  };
+}
+
+
 class ListSkladInfo {
   int id;
   String name;

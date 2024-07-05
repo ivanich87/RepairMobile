@@ -71,10 +71,11 @@ Future<bool> httpEventDelete(String id, bool delete, context) async {
   if (delete==false)
     del = 1;
   print(del.toString());
-  var _url=Uri(path: '/a/centrremonta/hs/v1/delete/$id/$del/', host: 's1.rntx.ru', scheme: 'https');
+  final _queryParameters = {'userId': Globals.anPhone};
+  var _url=Uri(path: '${Globals.anPath}delete/$id/$del/', host: Globals.anServer, scheme: 'https', queryParameters: _queryParameters);
   var _headers = <String, String> {
     'Accept': 'application/json',
-    'Authorization': 'Basic YWNlOkF4V3lJdnJBS1prdzY2UzdTMEJP'
+    'Authorization': Globals.anAuthorization
   };
   try {
     var response = await http.get(_url, headers: _headers);

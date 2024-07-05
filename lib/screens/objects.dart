@@ -23,19 +23,27 @@ class _scrObjectsScreenState extends State<scrObjectsScreen> {
   var objectList = [];
 
   Future httpGetListObject() async {
-    var _url=Uri(path: '/a/centrremonta/hs/v1/obList/0/', host: 's1.rntx.ru', scheme: 'https');
+    final _queryParameters = {'userId': Globals.anPhone};
+
+    var _url=Uri(path: '${Globals.anPath}obList/0/', host: Globals.anServer, scheme: 'https', queryParameters: _queryParameters);
+    print(_url.path);
+    print(Globals.anAuthorization);
     var _headers = <String, String> {
       'Accept': 'application/json',
-      'Authorization': 'Basic YWNlOkF4V3lJdnJBS1prdzY2UzdTMEJP'
+      'Authorization': Globals.anAuthorization
     };
     try {
       var response = await http.get(_url, headers: _headers);
+      print(response.statusCode.toString());
       if (response.statusCode == 200) {
+        print(response.body.toString());
         var notesJson = json.decode(response.body);
         for (var noteJson in notesJson) {
           objectList.add(ListObject.fromJson(noteJson));
         }
       }
+      else
+        throw 'Код ответа: ${response.statusCode.toString()}. Ответ: ${response.body}';
     } catch (error) {
       print("Ошибка при формировании списка: $error");
     }

@@ -34,10 +34,11 @@ class _scrListCreateScreenState extends State<scrListCreateScreen> {
 
   Future<bool> httpSprCreate() async {
     bool _result=false;
-    var _url=Uri(path: '/a/centrremonta/hs/v1/sprList/${widget.sprName}/', host: 's1.rntx.ru', scheme: 'https');
+    final _queryParameters = {'userId': Globals.anPhone};
+    var _url=Uri(path: '${Globals.anPath}sprList/${widget.sprName}/', host: Globals.anServer, scheme: 'https', queryParameters: _queryParameters);
     var _headers = <String, String> {
       'Accept': 'application/json',
-      'Authorization': 'Basic YWNlOkF4V3lJdnJBS1prdzY2UzdTMEJP'
+      'Authorization': Globals.anAuthorization
     };
     widget.sprObject.name=name.text;
     widget.sprObject.comment=comment.text;
