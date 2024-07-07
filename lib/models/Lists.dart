@@ -8,6 +8,8 @@ class Globals {
   static var anPhone = '';
   static var anServer= '';
   static var anPath = '';
+  static var anCompanyId = '';
+  static var anCompanyName = '';
   static var anFCM = '';
   static var anPlatform = '';
   static var anAuthorization = 'Basic YWNlOkF4V3lJdnJBS1prdzY2UzdTMEJP';
@@ -19,6 +21,13 @@ class Globals {
 
   static setThemeIndex(int a) {
     anThemeIndex = a;
+  }
+
+  static setCompanyId(String a) {
+    anCompanyId = a;
+  }
+  static setCompanyName(String a) {
+    anCompanyName = a;
   }
 
   static setLogin(String a) {
@@ -60,6 +69,8 @@ class UserInfo {
   String phone;
   String server;
   String path;
+  String companyId;
+  String companyName;
   int themeIndex;
 
   //Event({required this.name, required this.location, required this.dt});
@@ -70,6 +81,8 @@ class UserInfo {
     required this.phone,
     required this.server,
     required this.path,
+    required this.companyId,
+    required this.companyName,
     required this.themeIndex,
   });
 
@@ -78,6 +91,8 @@ class UserInfo {
         password = json['password'],
         server = json['server'],
         path = json['path'],
+        companyId = json['companyId'],
+        companyName = json['companyName'],
         phone = json['phone'],
         themeIndex = json['themeIndex'];
 
@@ -87,6 +102,8 @@ class UserInfo {
     'server': server,
     'phone': phone,
     'path': path,
+    'companyId': companyId,
+    'companyName': companyName,
     'themeIndex': themeIndex,
   };
 }

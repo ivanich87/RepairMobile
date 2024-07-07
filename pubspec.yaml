@@ -40,6 +40,7 @@ dependencies:
   intl: ^0.18.1
   url_launcher: ^6.2.1
   shared_preferences: ^2.2.3
+  phone_form_field: ^8.1.1
   connectivity_plus: ^5.0.2
   http:
 
