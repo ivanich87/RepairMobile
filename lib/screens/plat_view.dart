@@ -111,7 +111,7 @@ class _scrPlatsViewScreenState extends State<scrPlatsViewScreen> {
                         idType: ''),
                   ],
                 ),
-                Text('${widget.plat.summa} руб.', style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold, color: (widget.plat.summa>=0) ? Colors.green : Colors.red))
+                Text('${NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(widget.plat.summa)} руб.', style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold, color: (widget.plat.summa>=0) ? Colors.green : Colors.red))
               ],
             )
 

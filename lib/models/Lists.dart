@@ -10,6 +10,13 @@ class Globals {
   static var anPath = '';
   static var anCompanyId = '';
   static var anCompanyName = '';
+  static var anCompanyComment = '';
+  static var anOwnerId = '';
+  static var anOwnerName = '';
+  static var anUserId = '';
+  static var anUserName = '';
+  static var anUserRole = '';
+  static var anUserRoleId = 3;
   static var anFCM = '';
   static var anPlatform = '';
   static var anAuthorization = 'Basic YWNlOkF4V3lJdnJBS1prdzY2UzdTMEJP';
@@ -28,6 +35,29 @@ class Globals {
   }
   static setCompanyName(String a) {
     anCompanyName = a;
+  }
+  static setCompanyComment(String a) {
+    anCompanyComment = a;
+  }
+
+  static setOwnerId(String a) {
+    anOwnerId = a;
+  }
+  static setOwnerName(String a) {
+    anOwnerName = a;
+  }
+
+  static setUserId(String a) {
+    anUserId = a;
+  }
+  static setUserName(String a) {
+    anUserName = a;
+  }
+  static setUserRole(String a) {
+    anUserRole = a;
+  }
+  static setUserRoleId(int a) {
+    anUserRoleId = a;
   }
 
   static setLogin(String a) {

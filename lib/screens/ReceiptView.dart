@@ -149,19 +149,19 @@ class _scrReceiptViewScreenState extends State<scrReceiptViewScreen> {
                   children: [
                     _CustomListTile(
                         title: "Сумма за материалы",
-                        trailing: Text(recipientdata.summaClient.toString(), style: MyTextStyle()),
+                        trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(recipientdata.summaClient), style: MyTextStyle()),
                         icon: Icons.attach_money,
                         id: ''),
                     if (recipientdata.summaClient!=recipientdata.summaOrg)
                     _CustomListTile(
                         title: "Сумма факт",
-                        trailing: Text(recipientdata.summaOrg.toString(), style: MyTextStyle()),
+                        trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(recipientdata.summaOrg), style: MyTextStyle()),
                         icon: Icons.attach_money,
                         id: ''),
                     if (recipientdata.summa!=recipientdata.summaOrg)
                     _CustomListTile(
                         title: "Списать деньги",
-                        trailing: Text(recipientdata.summa.toString(), style: MyTextStyle()),
+                        trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(recipientdata.summa), style: MyTextStyle()),
                         icon: Icons.attach_money,
                         id: ''),
                     _CustomListTile(

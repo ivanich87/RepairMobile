@@ -50,7 +50,7 @@ class _scrCashHomeScreenState extends State<scrCashHomeScreen> {
     }
 
     //запрос к подотчетным средствам сотрудников
-    _url=Uri(path: '${Globals.anPath}accountableFunds/', host: Globals.anServer, scheme: 'https');
+    _url=Uri(path: '${Globals.anPath}accountableFunds/', host: Globals.anServer, scheme: 'https', queryParameters: _queryParameters);
     try {
       AccountableFoundsBalance=0;
       var response2 = await http.get(_url, headers: _headers);

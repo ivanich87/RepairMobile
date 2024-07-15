@@ -23,6 +23,10 @@ class scrPlatEditScreen extends StatefulWidget {
 }
 
 class _scrPlatEditScreenState extends State<scrPlatEditScreen> {
+
+  TextEditingController _summaController = TextEditingController(text: '');
+  TextEditingController _commentController = TextEditingController(text: '');
+
   bool firstInit = true;
   bool userDataEdit = false;
   late ListPlat plat4;
@@ -75,6 +79,8 @@ class _scrPlatEditScreenState extends State<scrPlatEditScreen> {
     if (firstInit==true) {
       plat4 = widget.plat2.copyWith();
       print('Скопировали бэкап');
+      _summaController.text = (plat3.platType=='Расход') ? plat3.summaDown.toString() : plat3.summaUp.toString();
+      _commentController.text = plat3.comment;
     }
     firstInit=false;
     print(plat3.platType);
@@ -87,7 +93,7 @@ class _scrPlatEditScreenState extends State<scrPlatEditScreen> {
       }
       return;
     },
-    child: Scaffold(
+      child: Scaffold(
         appBar: AppBar(
           title: Text('Платеж'),
           centerTitle: true,
@@ -140,7 +146,7 @@ class _scrPlatEditScreenState extends State<scrPlatEditScreen> {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
                       child: TextField(
-                        controller: TextEditingController(text: plat3.comment),
+                        controller: _commentController,
                         keyboardType: TextInputType.text,
                         minLines: 3,
                         maxLines: 6,
@@ -149,9 +155,9 @@ class _scrPlatEditScreenState extends State<scrPlatEditScreen> {
                           border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(10))),
                           hintText: 'Комментарий к платежу',
                         ),
-                        onChanged: (value) {
-                          plat3.comment = value;
-                        },
+                        // onChanged: (value) {
+                        //   plat3.comment = value;
+                        // },
                       ),
                     ),
                   ],
@@ -245,29 +251,42 @@ class _scrPlatEditScreenState extends State<scrPlatEditScreen> {
                     children: [
                       TextField(
                         textAlign: TextAlign.center,
-                        controller: TextEditingController(text: (plat3.platType=='Расход') ? plat3.summaDown.toString() : plat3.summaUp.toString()),
+                        controller: _summaController,
                         keyboardType: TextInputType.number,
                         style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold, color: (plat3.summa>=0) ? Colors.green : Colors.red),
-                        onSubmitted: (value) {
-                          if (plat3.platType=='Расход')
-                            plat3.summaDown=num.tryParse(value) ?? 0;
-                          if (plat3.platType=='Приход')
-                            plat3.summaUp=num.tryParse(value) ?? 0;
-                          if (plat3.platType=='Перемещение') {
-                            plat3.summaDown=num.tryParse(value) ?? 0;
-                            plat3.summaUp=num.tryParse(value) ?? 0;
-                          }
-                          plat3.summa=plat3.summaUp - plat3.summaDown;
-                          print('изменили сумму платежа на ${plat3.summa}');
-                        },
+                        //onSubmitted: (value) {
+                          // if (plat3.platType=='Расход')
+                          //   plat3.summaDown=num.tryParse(value) ?? 0;
+                          // if (plat3.platType=='Приход')
+                          //   plat3.summaUp=num.tryParse(value) ?? 0;
+                          // if (plat3.platType=='Перемещение') {
+                          //   plat3.summaDown=num.tryParse(value) ?? 0;
+                          //   plat3.summaUp=num.tryParse(value) ?? 0;
+                          // }
+                          // plat3.summa=plat3.summaUp - plat3.summaDown;
+                          // print('изменили сумму платежа на ${plat3.summa}');
+                        //},
                       )
                     ]),
           ],
         ),
-      ],
+        ],
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
+            if (plat3.platType=='Расход')
+              plat3.summaDown=num.tryParse(_summaController.text) ?? 0;
+            if (plat3.platType=='Приход')
+              plat3.summaUp=num.tryParse(_summaController.text) ?? 0;
+            if (plat3.platType=='Перемещение') {
+              plat3.summaDown=num.tryParse(_summaController.text) ?? 0;
+              plat3.summaUp=num.tryParse(_summaController.text) ?? 0;
+            }
+            plat3.summa=plat3.summaUp - plat3.summaDown;
+            print('изменили сумму платежа на ${plat3.summa}');
+
+            plat3.comment = _commentController.text;
+
             if (plat3.platType=='Перемещение') {
               plat3.contractorId = (plat3.kassaType2==1) ? plat3.kassaSotrId2 : plat3.kassaId2;
               plat3.contractorName = (plat3.kassaType2==1) ? plat3.kassaSotrName2 : plat3.kassaName2;

@@ -9,6 +9,7 @@ import 'package:repairmodule/screens/home.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/Lists.dart';
+import 'newAccount.dart';
 
 class scrLogonScreen extends StatelessWidget {
   const scrLogonScreen({Key? key}) : super(key: key);
@@ -50,7 +51,7 @@ class _Logo extends StatelessWidget {
   Widget build(BuildContext context) {
     final bool isSmallScreen = MediaQuery.of(context).size.width < 600;
     //const String logoPath = 'https://beletag.com/upload/CMax/35c/tw0i3dku7v12n29mwofzdnj5b90k9kn7/logo_aspro.png';
-    const String logoPath = 'https://img.acewear.ru/CleverWearImg/logo_aspro.png';
+    const String logoPath = 'https://img.acewear.ru/CleverWearImg/repo/logo.png';
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -223,14 +224,31 @@ class __FormContentState extends State<_FormContent> {
                         _setUserInfo();
                         print('Аутентификация пройдена успешно');
                         if (accountNew==true)
-                          print('Отправляем в форму создания аккаунта');
-                          //Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => scrAccountNewScreen(login)), (route) => false,);
+                          Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => scrAccountNewScreen(login)), (route) => false,);
                         else
                           Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => scrHomeScreen()), (route) => false,);
                       }
                     },
                   ),
             _gap(),
+            InkWell(child:
+                RichText(text: TextSpan(
+                    children: [
+                      TextSpan(text: 'Зайти в ', style: TextStyle(color: Colors.black, fontSize: 16)),
+                      TextSpan(text: 'Демо-базу', style: TextStyle(color: Colors.blue, fontSize: 16, fontWeight: FontWeight.bold),)
+                    ]
+                )), onTap: () {
+              Globals.setLogin('71111111111');
+              Globals.setPhone('71111111111');
+              Globals.setPasswodr('1111');
+              Globals.setServer('ut.acewear.ru');
+              Globals.setPath('/repair/hs/v1/');
+              Globals.setCompanyId('50eb5b33-387f-11ef-a769-00155d02d23d');
+              Globals.setCompanyName('РосРемонт');
+              Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => scrHomeScreen()), (route) => false,);
+            },
+
+            )
           ],
         ),
       ),

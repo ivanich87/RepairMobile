@@ -4,8 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:repairmodule/components/SingleSelections.dart';
 import 'package:repairmodule/models/Lists.dart';
+import 'package:repairmodule/screens/profileMan.dart';
+import 'package:repairmodule/screens/sprList.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
+import 'company_edit.dart';
 import 'connection_edit.dart';
+import 'logon.dart';
 
 class scrSettingsScreen extends StatefulWidget {
   scrSettingsScreen();
@@ -77,29 +82,61 @@ class _scrSettingsScreenState extends State<scrSettingsScreen> {
                 onTap: () {Navigator.push(context, MaterialPageRoute( builder: (context) => scrConnectionEditScreen()));},
               ),
             ),
+            Card(
+              child: ListTile(
+                title: Text(
+                  'Выйти из учетной записи',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
+                ),
+                subtitle: Text('Выйти из ${Globals.anUserName}'),
+                leading: Icon(Icons.exit_to_app),
+                //trailing: Icon(Icons.edit),
+                onTap: () async {
+                  String userInfoKey = 'userInfoKey';
+                  var prefs = await SharedPreferences.getInstance();
+                  prefs.remove(userInfoKey);
+                  Globals.setLogin('');
+                  Globals.setPhone('');
+                  Globals.setPasswodr('');
+                  Globals.setServer('ut.acewear.ru');
+                  Globals.setPath('/repair/hs/v1/');
+                  Globals.setCompanyId('');
+                  Globals.setCompanyName('');
+                  Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
+                      scrLogonScreen()), (Route<dynamic> route) => false);
+                  //Navigator.popUntil(context, );
+                  },
+              ),
+            ),
             Divider(),
             titleHeader('Данные компании'),
             Card(
               child: ListTile(
                 title: Text(
-                  'Бригада 43',
+                  Globals.anCompanyName,
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
                 ),
                 subtitle: Text('Название компании'),
                 leading: Icon(Icons.account_balance),
                 trailing: Icon(Icons.edit),
+                onTap: () async {
+                  await Navigator.push(context, MaterialPageRoute(builder: (context) => scrCompanyEditScreen()));
+                  setState(() {
+
+                  });
+                },
                 ),
               ),
             Card(
               child: ListTile(
                 title: Text(
-                  'Роганов Владимир Иванович',
+                  Globals.anUserName,
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
                 ),
                 subtitle: Text('Мои данные'),
                 leading: Icon(Icons.account_circle),
-                trailing: Icon(Icons.info_outline),
-                onTap: () {},
+                trailing: Icon(Icons.edit),
+                onTap: () {Navigator.push(context, MaterialPageRoute(builder: (context) => scrProfileMan(id: Globals.anUserId,)));},
               ),
             ),
             Divider(),
@@ -113,7 +150,9 @@ class _scrSettingsScreenState extends State<scrSettingsScreen> {
                 subtitle: Text('Все участники компании'),
                 leading: Icon(Icons.list),
                 //trailing: Icon(Icons.edit),
-                onTap: () {},
+                onTap: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => scrListScreen(sprName: 'Сотрудники', onType: 'push')));
+                },
               ),
             ),
             Card(
@@ -125,7 +164,9 @@ class _scrSettingsScreenState extends State<scrSettingsScreen> {
                 subtitle: Text('Партнеры, поставщики, посредники'),
                 leading: Icon(Icons.list),
                 //trailing: Icon(Icons.edit),
-                onTap: () {},
+                onTap: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => scrListScreen(sprName: 'КлиентыКонтрагенты', onType: 'push')));
+                },
               ),
             ),
           ],

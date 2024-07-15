@@ -190,10 +190,7 @@ class _scrDogovorViewScreenState extends State<scrDogovorViewScreen> {
               trailing: Icon(Icons.info_outlined),
               leading: Icon(Icons.account_circle),
               onTap: (){
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => scrProfileMan(id: idClient,)));
+                Navigator.push(context, MaterialPageRoute(builder: (context) => scrProfileMan(id: idClient,)));
               },
             ),
             Divider(),

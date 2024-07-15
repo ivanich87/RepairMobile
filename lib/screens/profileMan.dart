@@ -35,6 +35,7 @@ class _scrProfileManState extends State<scrProfileMan> {
       'Authorization': Globals.anAuthorization
     };
     try {
+      print(_url.path);
       var response = await http.get(_url, headers: _headers);
       print('Запрос к профилю человека ${widget.id}');
       if (response.statusCode == 200) {

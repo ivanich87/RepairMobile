@@ -20,6 +20,9 @@ class scrReceiptEditScreen extends StatefulWidget {
 }
 
 class _scrReceiptEditScreenState extends State<scrReceiptEditScreen> {
+
+  TextEditingController _commentController = TextEditingController(text: '');
+
   bool firstInit = true;
   bool userDataEdit = false;
   late Receipt receiptDataCopy;
@@ -76,6 +79,7 @@ class _scrReceiptEditScreenState extends State<scrReceiptEditScreen> {
     if (firstInit==true) {
       receiptDataCopy = widget.receiptData.copyWith();
       print('Скопировали бэкап');
+      _commentController.text = widget.receiptData.comment;
     }
     firstInit=false;
     return PopScope(
@@ -145,7 +149,7 @@ class _scrReceiptEditScreenState extends State<scrReceiptEditScreen> {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
                       child: TextField(
-                        controller: TextEditingController(text: widget.receiptData.comment),
+                        controller: _commentController,
                         keyboardType: TextInputType.text,
                         minLines: 3,
                         maxLines: 6,
@@ -154,9 +158,9 @@ class _scrReceiptEditScreenState extends State<scrReceiptEditScreen> {
                           border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(10))),
                           hintText: 'Комментарий к платежу',
                         ),
-                        onChanged: (value) {
-                          widget.receiptData.comment = value;
-                        },
+                        // onChanged: (value) {
+                        //   widget.receiptData.comment = value;
+                        // },
                       ),
                     ),
                   ],
