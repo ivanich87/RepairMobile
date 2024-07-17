@@ -96,6 +96,8 @@ class _scrProfileManEditScreenState extends State<scrProfileManEditScreen> {
       name.text = widget.name;
       userDataEdit = true;
     }
+    print('Тип создаваемого контрагента: ${widget.type}');
+
     String _typeText = 'Заполните данные';
     if (widget.type==1)
       _typeText = 'Заполните данные сотрудника';

@@ -20,7 +20,8 @@ class scrAccountNewScreen extends StatefulWidget {
 class _scrAccountNewScreenState extends State<scrAccountNewScreen> {
   //var objectList = [];
   bool success = false;
-  String logoPath = 'https://beletag.com/upload/CMax/35c/tw0i3dku7v12n29mwofzdnj5b90k9kn7/logo_aspro.png';
+  String logoPath = 'https://img.acewear.ru/CleverWearImg/repo/text.png';
+
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   String header = '';
 
@@ -66,7 +67,14 @@ class _scrAccountNewScreenState extends State<scrAccountNewScreen> {
         print(_message);
         print(notesJson.toString());
         if (success==true) {
-
+          Globals.setPhone(widget.phone);
+          print(notesJson['response']['server']);
+          print(notesJson['response']['path']);
+          Globals.setServer(notesJson['response']['server']);
+          Globals.setPath(notesJson['response']['path']);
+          Globals.setUserName('${_last_nameController.text} ${_nameController.text} ${_second_nameController.text}');
+          Globals.setUserRole('Руководитель');
+          Globals.setUserRoleId(3);
         }
         else {
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(_message), backgroundColor: Colors.red,));

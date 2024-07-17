@@ -183,7 +183,7 @@ class __FormContentState extends State<_FormContent> {
                 icon: Icon(Icons.phone),
                 border: OutlineInputBorder(),
               ),
-              textInputAction: TextInputAction.next,
+              textInputAction: TextInputAction.done,
               onSubmitted: (_tel_value) {
                 print('Введено значение телефона : ${_tel_value}');
                 _isPasswordVisible = true;
@@ -231,7 +231,7 @@ class __FormContentState extends State<_FormContent> {
                     },
                   ),
             _gap(),
-            InkWell(child:
+            InkWell(autofocus: false, child:
                 RichText(text: TextSpan(
                     children: [
                       TextSpan(text: 'Зайти в ', style: TextStyle(color: Colors.black, fontSize: 16)),

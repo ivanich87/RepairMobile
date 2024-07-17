@@ -190,6 +190,18 @@ class _scrReceiptEditScreenState extends State<scrReceiptEditScreen> {
                         icon: Icons.attach_money,
                         id: '',
                         idType: 'summaEdit'),
+                    RadioListTile(title: Text('Касса/Банк'), value: 0, groupValue: widget.receiptData.kassaType, onChanged: (value){
+                      setState(() {
+                        widget.receiptData.kassaType = value!;
+                      });
+                    }
+                    ),
+                    RadioListTile(title: Text('Подотчетные средства'), value: 1, groupValue: widget.receiptData.kassaType, onChanged: (value) {
+                      setState(() {
+                        widget.receiptData.kassaType = value!;
+                      });
+                    }
+                    ),
                     CustomTitle(plat: widget.receiptData,
                         titles: '${(widget.receiptData.kassaType==2 || widget.receiptData.summa==0) ? 'Без списания' : (widget.receiptData.kassaType==0) ? widget.receiptData.kassaName : widget.receiptData.kassaSotrName}',
                         //titles: '${(widget.receiptData.kassaType==0) ? widget.receiptData.kassaName : (widget.receiptData.kassaType==1) ? widget.receiptData.kassaSotrName : 'Без списния'}',
@@ -197,7 +209,7 @@ class _scrReceiptEditScreenState extends State<scrReceiptEditScreen> {
                         id: (widget.receiptData.kassaType==0) ? 'Кассы' : 'Сотрудники',
                         idType: (widget.receiptData.kassaType==0) ? 'sprKassaListSelected' : 'sprSotrListSelected', trailing: null)
                   ],
-                )
+                ),
               ],
             )
 
@@ -205,6 +217,7 @@ class _scrReceiptEditScreenState extends State<scrReceiptEditScreen> {
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
+            widget.receiptData.comment = _commentController.text;
             httpPlatUpdate(widget.receiptData).then((value) {
               userDataEdit = value;
               print('userDataEdit = $value');

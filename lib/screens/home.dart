@@ -69,8 +69,9 @@ class _scrHomeScreenState extends State<scrHomeScreen> {
           //backgroundColor: Colors.grey[900],
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
           actions: [
-            IconButton(onPressed: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => scrSettingsScreen()));
+            IconButton(onPressed: () async {
+                await Navigator.push(context, MaterialPageRoute(builder: (context) => scrSettingsScreen()));
+                initState();
               }, icon: Icon(Icons.settings))],
         ),
         body:
@@ -111,7 +112,8 @@ class _scrHomeScreenState extends State<scrHomeScreen> {
                         style: TextStyle(fontSize: 18, color: Colors.green),
                       ),
                       onTap: () async {
-                        final result = await Navigator.push(context, MaterialPageRoute(builder: (context) => scrObjectsScreen()));
+                        await Navigator.push(context, MaterialPageRoute(builder: (context) => scrObjectsScreen()));
+                        initState();
                       },
                     ),
                   ),
@@ -126,7 +128,8 @@ class _scrHomeScreenState extends State<scrHomeScreen> {
                       trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(CashSummaAll), style: TextStyle(fontSize: 18, color: Colors.green),
                       ),
                       onTap: () async {
-                        final result = await Navigator.push(context, MaterialPageRoute(builder: (context) => scrCashHomeScreen()));
+                        await Navigator.push(context, MaterialPageRoute(builder: (context) => scrCashHomeScreen()));
+                        initState();
                       },
                     ),
                   ),

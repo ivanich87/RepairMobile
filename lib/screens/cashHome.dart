@@ -10,8 +10,6 @@ import 'package:repairmodule/screens/cashList.dart';
 import 'package:repairmodule/screens/sprList_create.dart';
 
 class scrCashHomeScreen extends StatefulWidget {
-
-
   scrCashHomeScreen();
 
   @override
@@ -23,8 +21,14 @@ class _scrCashHomeScreenState extends State<scrCashHomeScreen> {
   var cashBankList = [];
   List<accountableFounds> AccountableFounds = [];
   num AccountableFoundsBalance = 0;
+  num allSumma = 0 ;
 
   Future httpGetListCash() async {
+    allSumma=0;
+    cashBankList.clear();
+    cashKassList.clear();
+    AccountableFounds.clear();
+
     final _queryParameters = {'userId': Globals.anPhone};
     var _url=Uri(path: '${Globals.anPath}cashList/', host: Globals.anServer, scheme: 'https', queryParameters: _queryParameters);
     var _headers = <String, String> {
@@ -33,10 +37,11 @@ class _scrCashHomeScreenState extends State<scrCashHomeScreen> {
     };
     try {
       var response = await http.get(_url, headers: _headers);
+      print(response.statusCode.toString());
       if (response.statusCode == 200) {
         var notesJson = json.decode(response.body);
         for (var noteJson in notesJson) {
-
+          allSumma = allSumma + noteJson['summa'];
           if (ListCash.fromJson(noteJson).tip==1) {
             cashKassList.add(ListCash.fromJson(noteJson));
           };
@@ -46,7 +51,7 @@ class _scrCashHomeScreenState extends State<scrCashHomeScreen> {
         }
       }
     } catch (error) {
-      print("Ошибка при формировании списка: $error");
+      print("Ошибка при формировании списка счетов: $error");
     }
 
     //запрос к подотчетным средствам сотрудников
@@ -71,9 +76,6 @@ class _scrCashHomeScreenState extends State<scrCashHomeScreen> {
 
   @override
   void initState() {
-    cashBankList.clear();
-    cashKassList.clear();
-    AccountableFounds.clear();
     httpGetListCash().then((value) {
       setState(() {
       });
@@ -82,8 +84,6 @@ class _scrCashHomeScreenState extends State<scrCashHomeScreen> {
     //super.initState();
   }
   Widget build(BuildContext context) {
-    final arg = (ModalRoute.of(context)?.settings.arguments ?? <String, dynamic> {'summa': 0, 'title': 'Пусто'}) as Map<String, dynamic>;
-    num allSumma = arg['summa'];
     return DefaultTabController(
       length: 2,
       child: Scaffold(
@@ -101,7 +101,7 @@ class _scrCashHomeScreenState extends State<scrCashHomeScreen> {
             ],
           ),
           body: TabBarView(children: <Widget> [
-              _OneScreenTab(allSumma),
+              _OneScreenTab(),
               _TwoScreenTab(),
             ],),
             floatingActionButton: FloatingActionButton(
@@ -113,14 +113,14 @@ class _scrCashHomeScreenState extends State<scrCashHomeScreen> {
     );
     }
 
-  _OneScreenTab(allSumma) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 8.0),
-      child: RefreshIndicator(
-        onRefresh: () async {
-          initState();
-          return Future<void>.delayed(const Duration(seconds: 1));
-        },
+  _OneScreenTab() {
+    return RefreshIndicator(
+      onRefresh: () async {
+        initState();
+        return Future<void>.delayed(const Duration(seconds: 1));
+      },
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
         child: ListView(
           //mainAxisAlignment: MainAxisAlignment.start,
           //crossAxisAlignment: CrossAxisAlignment.center,
@@ -187,38 +187,44 @@ class _scrCashHomeScreenState extends State<scrCashHomeScreen> {
   }
 
   _TwoScreenTab() {
-    return Container(padding: EdgeInsets.all(2),
-      child: Column(
-        children: [
-          ConstrainedBox(
-            constraints: BoxConstraints(maxHeight: 500, minHeight: 20.0),
-            child: ListView.builder(
-              padding: EdgeInsets.all(10),
-              physics: AlwaysScrollableScrollPhysics(),
-              reverse: false,
-              shrinkWrap: true,
-              itemCount: AccountableFounds.length,
-              itemBuilder: (_, index) =>
-                Card(
-                  child: ListTile(
-                    title: Text(AccountableFounds[index].name, style: TextStyle(fontWeight: FontWeight.normal, fontSize: 18)),
-                    trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(AccountableFounds[index].summa), style: TextStyle(fontSize: 16, color: textColors(AccountableFounds[index].summa))),
-                    onTap: () {Navigator.push(context, MaterialPageRoute(builder: (context) => scrCashListScreen(idCash: '0', cashName: 'Все', analytic: '', analyticName: '', objectId: '', objectName: '', platType: '', dateRange: DateTimeRange(start: DateTime(2023), end: DateTime.now()), kassaSotrId: AccountableFounds[index].id, kassaSortName: AccountableFounds[index].name,  )));},
-                  ),
-                )
-            ),
-          ),
-          Expanded(
-            child: ListTile(
-              title: Text.rich(TextSpan(children: [
-                TextSpan(text: 'Всего: ', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-                TextSpan(text: NumberFormat.simpleCurrency(locale: 'ru-RU', decimalDigits: 2).format(AccountableFoundsBalance), style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.green)),
-              ],
-              )
+    return RefreshIndicator(
+      onRefresh: () async {
+        initState();
+        return Future<void>.delayed(const Duration(seconds: 1));
+      },
+      child: Container(
+        child: Column(
+          children: [
+            ConstrainedBox(
+              constraints: BoxConstraints(maxHeight: 500, minHeight: 200.0),
+              child: ListView.builder(
+                padding: EdgeInsets.all(10),
+                physics: AlwaysScrollableScrollPhysics(),
+                reverse: false,
+                shrinkWrap: true,
+                itemCount: AccountableFounds.length,
+                itemBuilder: (_, index) =>
+                  Card(
+                    child: ListTile(
+                      title: Text(AccountableFounds[index].name, style: TextStyle(fontWeight: FontWeight.normal, fontSize: 18)),
+                      trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(AccountableFounds[index].summa), style: TextStyle(fontSize: 16, color: textColors(AccountableFounds[index].summa))),
+                      onTap: () {Navigator.push(context, MaterialPageRoute(builder: (context) => scrCashListScreen(idCash: '0', cashName: 'Все', analytic: '', analyticName: '', objectId: '', objectName: '', platType: '', dateRange: DateTimeRange(start: DateTime(2023), end: DateTime.now()), kassaSotrId: AccountableFounds[index].id, kassaSortName: AccountableFounds[index].name,  )));},
+                    ),
+                  )
               ),
             ),
-          ),
-        ],
+            Expanded(
+              child: ListTile(
+                title: Text.rich(TextSpan(children: [
+                  TextSpan(text: 'Всего: ', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+                  TextSpan(text: NumberFormat.simpleCurrency(locale: 'ru-RU', decimalDigits: 2).format(AccountableFoundsBalance), style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.green)),
+                ],
+                )
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

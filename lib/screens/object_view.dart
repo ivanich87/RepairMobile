@@ -82,11 +82,11 @@ class _scrObjectsViewScreenState extends State<scrObjectsViewScreen> {
         area = data['area'];
 
 
-        final s4 = double.parse(data['ПроцентВыпол нения'].toString());
-        percent = s4.toInt();
-
-        final s5 = double.parse(data['ПроцентВыполнения'].toString());
-        payment = s5.toInt();
+        // final s4 = double.parse(data['ПроцентВыпол нения'].toString());
+        // percent = s4.toInt();
+        //
+        // final s5 = double.parse(data['ПроцентВыполнения'].toString());
+        // payment = s5.toInt();
       }
       else {
     print('Код ответа сервера: ' + response.statusCode.toString());
@@ -97,6 +97,10 @@ class _scrObjectsViewScreenState extends State<scrObjectsViewScreen> {
   }
 
   Future httpGetAnalyticListObject() async {
+    AnalyticObjectList.clear();
+    summaUp=0;
+    summaDown=0;
+
     int i =0;
     final _queryParameters = {'userId': Globals.anPhone};
     var _url=Uri(path: '${Globals.anPath}analyticinfo/${widget.id}/', host: Globals.anServer, scheme: 'https', queryParameters: _queryParameters);
@@ -123,15 +127,18 @@ class _scrObjectsViewScreenState extends State<scrObjectsViewScreen> {
     }
   }
 
+  ref() async {
+    await httpGetInfoObject();
+    await httpGetAnalyticListObject();
+    setState(() {
+
+    });
+  }
+
   @override
   void initState() {
-    AnalyticObjectList.clear();
-    httpGetInfoObject().then((value) async {
-      await httpGetAnalyticListObject();
+    ref();
 
-      setState(() {
-      });
-    });
     // TODO: implement initState
     super.initState();
   }
