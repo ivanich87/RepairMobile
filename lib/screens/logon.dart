@@ -184,15 +184,18 @@ class __FormContentState extends State<_FormContent> {
                 border: OutlineInputBorder(),
               ),
               textInputAction: TextInputAction.done,
-              onSubmitted: (_tel_value) {
-                print('Введено значение телефона : ${_tel_value}');
-                _isPasswordVisible = true;
-                login = '7${_tel_value.replaceAll(' ', '').replaceAll('-', '').replaceAll('+7', '8')}';
-                print(login);
-                httpGetPhoneValidate().then((value) {
-                  setState(() {
+              onChanged: (_tel_value) {
+                if (_tel_value!.isValidLength()) {
+                  print('Введено значение телефона : ${_tel_value}');
+                  _isPasswordVisible = true;
+                  login = '${_tel_value.countryCode}${_tel_value.nsn}';
+                  //login = '7${_tel_value.replaceAll(' ', '').replaceAll('-', '').replaceAll('+7', '8')}';
+                  print(login);
+                  httpGetPhoneValidate().then((value) {
+                    setState(() {
+                    });
                   });
-                });
+                }
               },
             ),
             _gap(),
@@ -217,16 +220,25 @@ class __FormContentState extends State<_FormContent> {
                   prefixIcon: const Icon(Icons.sms_failed_outlined),
                   border: const OutlineInputBorder(),
                   ),
-                    onFieldSubmitted: (_value_kod) {
-                      print('Введено код из смс : ${_value_kod}');
-                      if (_formKey.currentState?.validate() ?? false) {
-                        password = _value_kod;
-                        _setUserInfo();
-                        print('Аутентификация пройдена успешно');
-                        if (accountNew==true)
-                          Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => scrAccountNewScreen(login)), (route) => false,);
-                        else
-                          Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => scrHomeScreen()), (route) => false,);
+                    onChanged: (_value_kod) {
+                      if (_value_kod.length==4) {
+                        print('Введено код из смс : ${_value_kod}');
+                        if (_formKey.currentState?.validate() ?? false) {
+                          password = _value_kod;
+                          _setUserInfo();
+                          print('Аутентификация пройдена успешно');
+                          Globals.setLogin(login);
+                          Globals.setPhone(login);
+                          Globals.setPasswodr(password);
+                          Globals.setServer(server);
+                          Globals.setPath(path);
+                          Globals.setCompanyId(companyId);
+                          Globals.setCompanyName(companyName);
+                          if (accountNew==true)
+                            Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => scrAccountNewScreen(login)), (route) => false,);
+                          else
+                            Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => scrHomeScreen()), (route) => false,);
+                        }
                       }
                     },
                   ),

@@ -44,6 +44,34 @@ class _scrSettingsScreenState extends State<scrSettingsScreen> {
     }
   }
 
+  Future<bool> httpDeleteUser() async {
+    final _queryParameters = {'userId': Globals.anPhone};
+    bool result = true;
+    bool success = false;
+    String message = '';
+    var _url=Uri(path: '${Globals.anPath}company/${Globals.anCompanyId}/', host: Globals.anServer, scheme: 'https', queryParameters: _queryParameters);
+    var _headers = <String, String> {
+      'Accept': 'application/json',
+      'Authorization': Globals.anAuthorization
+    };
+    try {
+      var response = await http.delete(_url, headers: _headers);
+      if (response.statusCode != 200) {
+        var notesJson = json.decode(response.body);
+        success = notesJson['success'] ?? false;
+        message = notesJson['message'] ?? '';
+        result = notesJson['response'] ?? false;
+        throw message;
+      }
+    } catch (error) {
+      result = false;
+      final snackBar = SnackBar(content: Text('$error'),);
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    }
+    return result;
+  }
+
+
 
   @override
   void initState() {
@@ -64,9 +92,9 @@ class _scrSettingsScreenState extends State<scrSettingsScreen> {
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
           //actions: [IconButton(onPressed: () {}, icon: Icon(Icons.settings))],
         ),
-        body: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
+        body: ListView(
+          //mainAxisAlignment: MainAxisAlignment.start,
+          //crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Divider(),
             titleHeader('Настройки подключения'),
@@ -169,8 +197,58 @@ class _scrSettingsScreenState extends State<scrSettingsScreen> {
                 },
               ),
             ),
+            Divider(thickness: 2),
+            SizedBox(height: 30,),
+            Card(
+              child: ListTile(
+                title: Text('Удалить аккаунт', style: TextStyle(color: Colors.red)),
+                leading: Icon(Icons.delete),
+                onTap: () async {
+                  final _res = await showAlertDialog(context, 'Удалить аккаунт?', 'Все ваши данные будут удалены!');
+                  if (_res==true) {
+                    httpDeleteUser().then((value) {
+                      if (value==true)
+                        Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => scrLogonScreen()), (Route<dynamic> route) => false);
+                    });
+                  }
+                },
+              ),
+            )
           ],
         ),
     );
   }
+}
+
+Future<bool> showAlertDialog(BuildContext context, String title, String message) async {
+  // set up the buttons
+  Widget cancelButton = ElevatedButton(
+    child: Text('Отмена'),
+    onPressed: () {
+      // returnValue = false;
+      Navigator.of(context).pop(false);
+    },
+  );
+  Widget continueButton = ElevatedButton(
+    child: Text('Удалить', style: TextStyle(color: Colors.red)),
+    onPressed: () {
+      // returnValue = true;
+      Navigator.of(context).pop(true);
+    },
+  ); // set up the AlertDialog
+  AlertDialog alert = AlertDialog(
+    title: Text(title),
+    content: Text(message),
+    actions: [
+      cancelButton,
+      continueButton,
+    ],
+  ); // show the dialog
+  final result = await showDialog<bool?>(
+    context: context,
+    builder: (BuildContext context) {
+      return alert;
+    },
+  );
+  return result ?? false;
 }
