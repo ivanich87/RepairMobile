@@ -8,6 +8,7 @@ import 'package:repairmodule/screens/ReceiptEdit.dart';
 import 'package:repairmodule/screens/profileMan.dart';
 
 import '../components/Cards.dart';
+import 'filesAttached.dart';
 
 class scrReceiptViewScreen extends StatefulWidget {
   final String id;
@@ -101,6 +102,25 @@ class _scrReceiptViewScreenState extends State<scrReceiptViewScreen> {
               mainAxisAlignment: MainAxisAlignment.start,
               //crossAxisAlignment: CrossAxisAlignment.end,
               children: [
+                Text(
+                  'Покупка стройматериалов',
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                ),
+                Text(
+                  '№ ${recipientdata.number} от ${DateFormat('dd.MM.yyyy').format(recipientdata.date)}',
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                ),
+                Divider(),
+                Card(
+                  child: ListTile(
+                    title: Text('Посмотреть фото'),
+                    leading: Icon(Icons.photo),
+                    trailing: Icon(Icons.navigate_next),
+                    onTap: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => scrAttachedScreen(recipientdata.id)));
+                    },
+                  ),
+                ),
                 Divider(),
                 SingleSection(
                   title: 'Данные по объекту',

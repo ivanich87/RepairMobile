@@ -234,7 +234,7 @@ class _ProfileInfoRow extends StatelessWidget {
       ),
       Text(
         item.title,
-        style: Theme.of(context).textTheme.caption,
+        //style: Theme.of(context).textTheme.caption,
       )
     ],
   );

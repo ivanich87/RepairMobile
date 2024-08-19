@@ -230,6 +230,23 @@ class accountableFounds {
 
 }
 
+class ListAttach {
+  late String id;
+  late String name;
+  late String path;
+  late int TipId;
+
+  ListAttach(this.id, this.name, this.path, this.TipId);
+
+  ListAttach.fromJson(Map<String, dynamic> json) {
+    id = json['id'] ?? '0';
+    name = json['name'] ?? 'Пусто';
+    path = json['path'] ?? 'Адрес не указан';
+    TipId=0;
+  }
+
+}
+
 class sprList {
   late String id;
   late String name;

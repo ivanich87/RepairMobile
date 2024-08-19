@@ -1,8 +1,11 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:repairmodule/components/SingleSelections.dart';
+import 'package:repairmodule/screens/filesAttached.dart';
 import 'package:repairmodule/screens/profileMan.dart';
 import 'package:repairmodule/models/Lists.dart';
 import 'package:repairmodule/screens/object_view.dart';
@@ -20,6 +23,8 @@ class scrPlatsViewScreen extends StatefulWidget {
 }
 
 class _scrPlatsViewScreenState extends State<scrPlatsViewScreen> {
+  bool isVideo = false;
+
   String address = 'no address';
   String name = 'no name';
 
@@ -73,6 +78,17 @@ class _scrPlatsViewScreenState extends State<scrPlatsViewScreen> {
                   ),
                 ),
                 Divider(),
+                Card(
+                  child: ListTile(
+                    title: Text('Посмотреть фото'),
+                    leading: Icon(Icons.photo),
+                    trailing: Icon(Icons.navigate_next),
+                    onTap: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => scrAttachedScreen(widget.plat.id)));
+                    },
+                  ),
+                ),
+                Divider(),
                 _payer(widget: widget,),
                 Divider(),
                 if (widget.plat.objectName!='')
@@ -111,10 +127,9 @@ class _scrPlatsViewScreenState extends State<scrPlatsViewScreen> {
                         idType: ''),
                   ],
                 ),
-                Text('${NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(widget.plat.summa)} руб.', style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold, color: (widget.plat.summa>=0) ? Colors.green : Colors.red))
+                Text('${NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(widget.plat.summa)} руб.', style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold, color: (widget.plat.summa>=0) ? Colors.green : Colors.red)),
               ],
-            )
-
+            ),
           ],
         ),
         floatingActionButton: FloatingActionButton(

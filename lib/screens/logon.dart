@@ -64,10 +64,10 @@ class _Logo extends StatelessWidget {
             "Авторизация по номеру телефона",
             textAlign: TextAlign.center,
             style: isSmallScreen
-                ? Theme.of(context).textTheme.headline6
+                ? Theme.of(context).textTheme.headlineMedium
                 : Theme.of(context)
                 .textTheme
-                .headline5
+                .headlineLarge
                 ?.copyWith(color: Colors.black),
           ),
         ),
