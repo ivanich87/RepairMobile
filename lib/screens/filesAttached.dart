@@ -8,6 +8,8 @@ import 'package:repairmodule/models/Lists.dart';
 import 'package:http/http.dart' as http;
 import 'package:repairmodule/screens/filesAttachedGallery.dart';
 
+import '../components/GeneralFunctions.dart';
+
 
 
 
@@ -56,49 +58,30 @@ class _scrAttachedScreenState extends State<scrAttachedScreen> {
     }
   }
 
-  Future httpSetListAttached(title, path) async {
-    final _queryParameters = {'userId': Globals.anPhone};
-
-    var _url=Uri(path: '${Globals.anPath}attached/${widget.id}', host: Globals.anServer, scheme: 'https', queryParameters: _queryParameters);
-    print(_url.path);
-    var _headers = <String, String> {
-      'Accept': 'application/json',
-      'Authorization': Globals.anAuthorization
-    };
-    try {
-      var _body = <String, String> {
-        "name": title,
-        "path": path,
-      };
-      var response = await http.post(_url, headers: _headers, body: jsonEncode(_body));
-      print(response.statusCode.toString());
-      if (response.statusCode == 200) {
-        print(response.body.toString());
-        // var notesJson = json.decode(response.body);
-        // for (var noteJson in notesJson) {
-        //   objectList.add(ListAttach.fromJson(noteJson));
-        // }
-      }
-      else
-        throw 'Код ответа: ${response.statusCode.toString()}. Ответ: ${response.body}';
-    } catch (error) {
-      print("Ошибка при формировании списка: $error");
-    }
-  }
-
-
 
   addImage() async {
-    XFile? selectedImage = await imagePicker.pickImage(source: ImageSource.camera, maxHeight: 1400);
-    if (selectedImage!=null) {
-      _namePhoto = '${DateFormat('ddMMyyyyHHmmss').format(DateTime.now())}';
-      print('_namePhoto = $_namePhoto');
-      httpUploadImage(_namePhoto, File(selectedImage.path));
-      // setState(() {
-      //   //image = File(selectedImage.path);
-      // });
-
+    try {
+      XFile? selectedImage = await imagePicker.pickImage(source: ImageSource.camera, maxHeight: 1400);
+      if (selectedImage!=null) {
+        _namePhoto = '${DateFormat('ddMMyyyyHHmmss').format(DateTime.now())}';
+        print('_namePhoto = $_namePhoto');
+        returnResult res = await httpUploadImage(_namePhoto, File(selectedImage.path));
+        if (res.resultCode==0) {
+          returnResult res2 = await httpSetListAttached(widget.id, _namePhoto, res.resultText);
+          if (res2.resultCode==0)
+            initState();
+          else
+            throw res2.resultText;
+        }
+        else {
+          throw res.resultText;
+        }
+      }
+    } catch (error) {
+      final snackBar = SnackBar(content: Text('$error'),);
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
+
   }
 
   uploadImage(String title, File file) async {
@@ -147,33 +130,6 @@ class _scrAttachedScreenState extends State<scrAttachedScreen> {
     // print('_link=$_link');
   }
 
-  Future httpUploadImage(String title, File file) async {
-    String _path="";
-    final _queryParameters = {'userId': Globals.anPhone};
-
-    var _url=Uri(path: '/GLService/hs/repo/attachupload/$title/', host: 'ut.acewear.ru', scheme: 'https', queryParameters: _queryParameters);
-    print(_url.path);
-    var _headers = <String, String> {
-      'Accept': 'application/json',
-      'Authorization': Globals.anAuthorization
-    };
-    try {
-      var response = await http.post(_url, headers: _headers, body: (await file.readAsBytesSync()));
-      print(response.statusCode.toString());
-      if (response.statusCode == 200) {
-        var notesJson = json.decode(response.body);
-        _path = notesJson['path'];
-        await httpSetListAttached(title, _path);
-        initState();
-      }
-      else
-        throw 'Код ответа: ${response.statusCode.toString()}. Ответ: ${response.body}';
-    } catch (error) {
-      print("Ошибка: $error");
-    }
-  }
-
-
   @override 
   void initState() {
     print('initState');
@@ -184,7 +140,7 @@ class _scrAttachedScreenState extends State<scrAttachedScreen> {
       });
     });
     // TODO: implement initState
-    super.initState();
+    //super.initState();
     imagePicker = ImagePicker();
   }
   Widget build(BuildContext context) {
@@ -194,7 +150,9 @@ class _scrAttachedScreenState extends State<scrAttachedScreen> {
         centerTitle: true,
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
       ),
-        body: ListView.builder(
+        body: (objectList.length==0) ? Center(child: Text('Нет фото')) :
+
+        ListView.builder(
           padding: EdgeInsets.all(10),
           physics: BouncingScrollPhysics(),
           reverse: false,

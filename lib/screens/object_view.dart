@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:repairmodule/components/SingleSelections.dart';
 import 'package:repairmodule/models/Lists.dart';
 import 'package:repairmodule/screens/profileMan.dart';
+import 'package:repairmodule/screens/settings/accessObjects.dart';
 
 import '../components/Cards.dart';
 import 'cashList.dart';
@@ -224,6 +225,13 @@ class _scrObjectsViewScreenState extends State<scrObjectsViewScreen> {
                       title: address,//InfoObject['address'],//ObjectData,  //infoObjectData['address'].toString()
                       icon: Icons.location_on_outlined,
                       id: '', idType: ''),
+                  ListTile(
+                    title: Text('Настройки доступа'),
+                    leading: Icon(Icons.key),
+                    onTap: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => scrAccessObjectsScreen(widget.id, address)));
+                    },
+                  ),
                 ],
               ),
               Divider(),
@@ -247,7 +255,7 @@ class _scrObjectsViewScreenState extends State<scrObjectsViewScreen> {
                   _CustomListTile(
                       title: "Договора и соглашения",
                       icon: Icons.document_scanner,
-                      id: '{"objectId": "${widget.id}", "objectName": "${address}", "clientId": "${idClient}", "clientName": "${nameClient}"}',
+                      id: '{"objectId": "${widget.id}", "objectName": "${address}", "clientId": "${idClient}", "clientName": "${nameClient.replaceAll('"', '')}"}',
                       idType: 'objectsListSelectedDog'),
                   _CustomListTile(
                       title: "Акты выполненных работ",

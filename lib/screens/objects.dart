@@ -71,7 +71,8 @@ class _scrObjectsScreenState extends State<scrObjectsScreen> {
           IconButton(onPressed: () {}, icon: Icon(Icons.menu))
         ],
       ),
-        body: ListView.builder(
+        body: (objectList.length==0) ? Center(child: Text('У вас еще нет объектов. Добавьте ваш первый объект по кнопке справа внизу')) :
+        ListView.builder(
           padding: EdgeInsets.all(10),
           physics: BouncingScrollPhysics(),
           reverse: false,

@@ -93,6 +93,16 @@ class Globals {
   }
 }
 
+class returnResult {
+  int resultCode;
+  String resultText;
+
+  returnResult({
+    required this.resultCode,
+    required this.resultText,
+  });
+}
+
 class UserInfo {
   String login;
   String password;
@@ -175,8 +185,6 @@ class AccountCategoryMoneyInfo {
   int summaMinus;
   int summa;
 
-
-  //Event({required this.name, required this.location, required this.dt});
 
   AccountCategoryMoneyInfo({
     required this.id,
@@ -734,9 +742,10 @@ class Receipt {
   String kassaSotrName = '';
   int kassaType = 0;
   String type = 'Покупка стройматериалов';
+  List<ReceiptSost>? receiptSost;
 
 
-  Receipt(this.id, this.number, this.date, this.accept, this.del, this.acceptClient, this.clientId, this.clientNmame, this.objectId, this.objectName, this.dogUse, this.dogId, this.dogNumber, this.dogDate, this.summaClient, this.summaOrg, this.summa, this.tovarUse, this.comment, this.contractorId, this.contractorName, this.platType, this.status, this.analyticId, this.analyticName, this.kassaId, this.kassaName, this.kassaSotrId, this.kassaSotrName, this.kassaType, this.type);
+  Receipt(this.id, this.number, this.date, this.accept, this.del, this.acceptClient, this.clientId, this.clientNmame, this.objectId, this.objectName, this.dogUse, this.dogId, this.dogNumber, this.dogDate, this.summaClient, this.summaOrg, this.summa, this.tovarUse, this.comment, this.contractorId, this.contractorName, this.platType, this.status, this.analyticId, this.analyticName, this.kassaId, this.kassaName, this.kassaSotrId, this.kassaSotrName, this.kassaType, this.type, this.receiptSost);
 
   Map<String, dynamic> toJson() =>
       {
@@ -770,7 +779,10 @@ class Receipt {
         'kassaSotrId': kassaSotrId,
         'kassaSotrName': kassaSotrName,
         'kassaType': kassaType,
-        'type': type
+        'type': type,
+        //if (this.receiptSost != null) {
+          'receiptSost': receiptSost!.map((v) => v.toJson()).toList()
+        //}
       };
 
   Receipt copyWith({
@@ -804,7 +816,8 @@ class Receipt {
     String? kassaSotrId,
     String? kassaSotrName,
     int? kassaType,
-    String? type
+    String? type,
+    List<ReceiptSost>? receiptSost
   }) {
     return Receipt(
         id = id ?? this.id,
@@ -837,7 +850,8 @@ class Receipt {
         kassaSotrId = kassaSotrId ?? this.kassaSotrId,
         kassaSotrName = kassaSotrName ?? this.kassaSotrName,
         kassaType = kassaType ?? this.kassaType,
-        type = type ?? this.type
+        type = type ?? this.type,
+        receiptSost = receiptSost ?? this.receiptSost
     );
   }
 
@@ -873,5 +887,31 @@ class Receipt {
     original.kassaSotrName = a.kassaSotrName ?? this.kassaSotrName;
     original.kassaType = a.kassaType ?? this.kassaType;
     original.type = a.type ?? this.type;
+    original.receiptSost = a.receiptSost ?? this.receiptSost;
+  }
+}
+
+class ReceiptSost {
+  String? name;
+  int? kol;
+  num? price;
+  num? summa;
+
+  ReceiptSost({this.name, this.kol, this.price, this.summa});
+
+  ReceiptSost.fromJson(Map<String, dynamic> json) {
+    name = json['name'];
+    kol = json['kol'];
+    price = json['price'];
+    summa = json['summa'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['name'] = this.name;
+    data['kol'] = this.kol;
+    data['price'] = this.price;
+    data['summa'] = this.summa;
+    return data;
   }
 }

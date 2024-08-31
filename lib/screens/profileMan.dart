@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:repairmodule/models/Lists.dart';
 import 'package:repairmodule/screens/profileMan_edit.dart';
+import 'package:repairmodule/screens/settings/accessUser.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../components/Cards.dart';
@@ -17,6 +18,8 @@ class scrProfileMan extends StatefulWidget {
 }
 
 class _scrProfileManState extends State<scrProfileMan> {
+  bool access = false;
+  bool accessEnable = false;
   String name = '';
   String phone = '';
   String mail = '';
@@ -67,6 +70,10 @@ class _scrProfileManState extends State<scrProfileMan> {
   }
 
   Widget build(BuildContext context) {
+    print('anUserRoleId: ' + Globals.anUserRoleId.toString());
+    if (Globals.anUserRoleId==3)
+      accessEnable = true;
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Профиль'),
@@ -76,7 +83,7 @@ class _scrProfileManState extends State<scrProfileMan> {
       ),
       body: Column(
         children: [
-          const Expanded(flex: 2, child: _TopPortion()),
+          const Expanded(flex: 2, child: _TopPortion(enableUser: true)),
           Expanded(
             flex: 4,
             child: Padding(
@@ -126,6 +133,25 @@ class _scrProfileManState extends State<scrProfileMan> {
                     onTap: () => _makingPhoneCall(mail, 3),
                     onLongPress: () async {
                       await Clipboard.setData(ClipboardData(text: mail));
+                    },
+                  ),
+                  Divider(),
+                  ListTile(
+                    title: Text('Доступ в приложение:', style: TextStyle(fontWeight: FontWeight.w500, fontSize: 18),),
+                    subtitle: Text(role),
+                    trailing: Switch.adaptive(
+                      value: access,
+                      onChanged: !accessEnable
+                          ? null
+                          : (bool value) {
+                        setState(() {
+                          //access = value;
+                        });
+                      },
+                    ),
+                    onTap: () {
+                      if (accessEnable)
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => scrAccessUserScreen(widget.id, name, access, role),));
                     },
                   ),
                   Divider(),
@@ -247,7 +273,8 @@ class ProfileInfoItem {
 }
 
 class _TopPortion extends StatelessWidget {
-  const _TopPortion({Key? key}) : super(key: key);
+  final bool enableUser;
+  const _TopPortion({Key? key, required this.enableUser}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

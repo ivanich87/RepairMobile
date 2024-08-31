@@ -8,6 +8,7 @@ import 'package:repairmodule/screens/ReceiptEdit.dart';
 import 'package:repairmodule/screens/profileMan.dart';
 
 import '../components/Cards.dart';
+import 'ReceiptSost.dart';
 import 'filesAttached.dart';
 
 class scrReceiptViewScreen extends StatefulWidget {
@@ -20,7 +21,8 @@ class scrReceiptViewScreen extends StatefulWidget {
 }
 
 class _scrReceiptViewScreenState extends State<scrReceiptViewScreen> {
-  Receipt recipientdata = Receipt('', '', DateTime.now(), true, false, false, '', '', '', '', true, '', '', DateTime.now(), 0, 0, 0, false, '', '', '', 'Расход', 0, '7fa144f2-14ca-11ed-80dd-00155d753c19', 'Покупка стройматериалов', '', '', '', '', 0, 'Покупка стройматериалов');
+  List<ReceiptSost> receiptSost = [];
+  Receipt recipientdata = Receipt('', '', DateTime.now(), true, false, false, '', '', '', '', true, '', '', DateTime.now(), 0, 0, 0, false, '', '', '', 'Расход', 0, '7fa144f2-14ca-11ed-80dd-00155d753c19', 'Покупка стройматериалов', '', '', '', '', 0, 'Покупка стройматериалов', []);
   bool userDataEdit = false;
 
 
@@ -70,6 +72,14 @@ class _scrReceiptViewScreenState extends State<scrReceiptViewScreen> {
         recipientdata.kassaSotrName = data['kassaSotrName'] ?? '';
         recipientdata.kassaType = data['kassaType'] ?? 0;
         recipientdata.type = data['type'] ?? 'Покупка стройматериалов';
+
+        print(data['receiptSost']);
+        receiptSost.clear();
+        for (var noteJson in data['receiptSost']) {
+          receiptSost.add(ReceiptSost(name: noteJson['name'], kol: noteJson['kol'], price: noteJson['price'], summa: noteJson['summa']));
+        }
+        print(receiptSost.length.toString());
+        recipientdata.receiptSost=receiptSost;
       }
       else {
         print('Код ответа сервера: ' + response.statusCode.toString());
@@ -121,6 +131,17 @@ class _scrReceiptViewScreenState extends State<scrReceiptViewScreen> {
                     },
                   ),
                 ),
+                if (recipientdata.tovarUse)
+                  Card(
+                    child: ListTile(
+                      title: Text('Посмотреть товары'),
+                      leading: Icon(Icons.list_alt),
+                      trailing: Icon(Icons.navigate_next),
+                      onTap: () {
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => scrReceiptSostScreen(recipientdata.receiptSost!.toList())));
+                      },
+                    ),
+                  ),
                 Divider(),
                 SingleSection(
                   title: 'Данные по объекту',

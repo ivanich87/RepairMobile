@@ -8,6 +8,7 @@ import 'package:repairmodule/screens/profileMan.dart';
 import 'package:repairmodule/screens/plat_edit.dart';
 import 'package:repairmodule/screens/sprList.dart';
 
+import 'ReceiptSost.dart';
 import 'object_view.dart';
 import 'objectsListSelected.dart';
 
@@ -80,6 +81,12 @@ class _scrReceiptEditScreenState extends State<scrReceiptEditScreen> {
       receiptDataCopy = widget.receiptData.copyWith();
       print('Скопировали бэкап');
       _commentController.text = widget.receiptData.comment;
+
+      if (widget.receiptData.kassaName.length==0)
+        widget.receiptData.kassaName='Выберите кассу или банк';
+      if (widget.receiptData.kassaSotrName.length==0)
+        widget.receiptData.kassaSotrName='Выберите сотрудника';
+
     }
     firstInit=false;
     return PopScope(
@@ -113,15 +120,15 @@ class _scrReceiptEditScreenState extends State<scrReceiptEditScreen> {
                         id: '',
                         idType: '', trailing: null, Enabled: false),
                     CustomTitle(plat: widget.receiptData,
-                        titles: 'Договор № ${widget.receiptData.dogNumber} от ${DateFormat('dd.MM.yyyy').format(widget.receiptData.dogDate)}',
+                        titles: (widget.receiptData.dogNumber.length==0) ? 'Выверите договор' : 'Договор № ${widget.receiptData.dogNumber} от ${DateFormat('dd.MM.yyyy').format(widget.receiptData.dogDate)}',
                         icon: Icons.paste_rounded,
-                        trailing: Icon(Icons.label_important_sharp),
+                        trailing: Icon(Icons.navigate_next),
                         id: '',
                         idType: 'objectsListSelected'),
                       CustomTitle(plat: widget.receiptData,
-                          titles: 'Объект: ${widget.receiptData.objectName}',
+                          titles: (widget.receiptData.objectName.length==0) ? 'Выверите объект' : 'Объект: ${widget.receiptData.objectName}',
                           icon: Icons.location_on_outlined,
-                          trailing: Icon(Icons.label_important_sharp),
+                          trailing: Icon(Icons.navigate_next),
                           id: '',
                           idType: 'objectsListSelected'),
                   ],
@@ -131,10 +138,11 @@ class _scrReceiptEditScreenState extends State<scrReceiptEditScreen> {
                   title: 'Поставщик',
                   children: [
                     CustomTitle(plat: widget.receiptData,
-                        titles: widget.receiptData.contractorName,
+                        titles: (widget.receiptData.contractorName.length==0) ? 'Поставщик не указан' : widget.receiptData.contractorName,
                         icon: Icons.manage_accounts,
+                        trailing: Icon(Icons.navigate_next),
                         id: 'КонтрагентыДляФондов',
-                        idType: 'sprContractorListSelected', trailing: null),
+                        idType: 'sprContractorListSelected'),
                   ],
                 ),
                 Divider(),
@@ -144,8 +152,9 @@ class _scrReceiptEditScreenState extends State<scrReceiptEditScreen> {
                     CustomTitle(plat: widget.receiptData,
                         titles: widget.receiptData.analyticName,
                         icon: Icons.analytics,
+                        trailing: Icon(Icons.navigate_next),
                         id: 'АналитикаДвиженийДС',
-                        idType: 'sprAnalyticsListSelected', trailing: null),
+                        idType: 'sprAnalyticsListSelected'),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
                       child: TextField(
@@ -163,6 +172,17 @@ class _scrReceiptEditScreenState extends State<scrReceiptEditScreen> {
                         // },
                       ),
                     ),
+                    if (widget.receiptData.tovarUse)
+                      Card(
+                        child: ListTile(
+                          title: Text('Посмотреть товары'),
+                          leading: Icon(Icons.list_alt),
+                          trailing: Icon(Icons.navigate_next),
+                          onTap: () {
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => scrReceiptSostScreen(widget.receiptData.receiptSost!.toList())));
+                          },
+                        ),
+                      ),
                   ],
                 ),
                 Divider(),
@@ -204,10 +224,10 @@ class _scrReceiptEditScreenState extends State<scrReceiptEditScreen> {
                     ),
                     CustomTitle(plat: widget.receiptData,
                         titles: '${(widget.receiptData.kassaType==2 || widget.receiptData.summa==0) ? 'Без списания' : (widget.receiptData.kassaType==0) ? widget.receiptData.kassaName : widget.receiptData.kassaSotrName}',
-                        //titles: '${(widget.receiptData.kassaType==0) ? widget.receiptData.kassaName : (widget.receiptData.kassaType==1) ? widget.receiptData.kassaSotrName : 'Без списния'}',
                         icon: Icons.payment_outlined,
+                        trailing: Icon(Icons.navigate_next),
                         id: (widget.receiptData.kassaType==0) ? 'Кассы' : 'Сотрудники',
-                        idType: (widget.receiptData.kassaType==0) ? 'sprKassaListSelected' : 'sprSotrListSelected', trailing: null)
+                        idType: (widget.receiptData.kassaType==0) ? 'sprKassaListSelected' : 'sprSotrListSelected')
                   ],
                 ),
               ],

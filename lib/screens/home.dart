@@ -70,8 +70,7 @@ class _scrHomeScreenState extends State<scrHomeScreen> {
         _sharedFiles.clear();
         _sharedFiles.addAll(value);
         if (_sharedFiles.length > 0)
-          Navigator.push(context, MaterialPageRoute(
-              builder: (context) => scrInputSharedFilesScreen(_sharedFiles)));
+          Navigator.push(context, MaterialPageRoute(builder: (context) => scrInputSharedFilesScreen(_sharedFiles)));
       };
 
       print(_sharedFiles.map((f) => f.toMap()));
@@ -205,6 +204,7 @@ class _scrHomeScreenState extends State<scrHomeScreen> {
                         trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(CashSummaAll), style: TextStyle(fontSize: 18, color: Colors.green),
                         ),
                         onTap: () async {
+                          //Navigator.push(context, MaterialPageRoute(builder: (context) => scrInputSharedFilesScreen(_sharedFiles)));
                           await Navigator.push(context, MaterialPageRoute(builder: (context) => scrCashHomeScreen()));
                           initState();
                         },

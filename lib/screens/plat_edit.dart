@@ -81,6 +81,16 @@ class _scrPlatEditScreenState extends State<scrPlatEditScreen> {
       print('Скопировали бэкап');
       _summaController.text = (plat3.platType=='Расход') ? plat3.summaDown.toString() : plat3.summaUp.toString();
       _commentController.text = plat3.comment;
+
+      if (plat3.kassaName.length==0)
+        plat3.kassaName='Выберите кассу или банк';
+      if (plat3.kassaSotrName.length==0)
+        plat3.kassaSotrName='Выберите сотрудника';
+
+      if (plat3.kassaName2.length==0)
+        plat3.kassaName2='Выберите кассу или банк';
+      if (plat3.kassaSotrName2.length==0)
+        plat3.kassaSotrName2='Выберите сотрудника';
     }
     firstInit=false;
     print(plat3.platType);
@@ -139,10 +149,11 @@ class _scrPlatEditScreenState extends State<scrPlatEditScreen> {
                   children: [
                     if (plat3.type!='Выдача денежных средств в подотчет' && plat3.platType!='Перемещение')
                     CustomTitle(plat: plat3,
-                        titles: plat3.analyticName,
+                        titles: (plat3.analyticName.length==0) ? 'Выверите аналитику' : plat3.analyticName,
                         icon: Icons.analytics,
+                        trailing: Icon(Icons.navigate_next),
                         id: (plat3.platType=='Приход') ? 'АналитикаДвиженийДСПриход' : 'АналитикаДвиженийДСРасход',
-                        idType: 'sprAnalyticsListSelected', trailing: null),
+                        idType: 'sprAnalyticsListSelected'),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
                       child: TextField(
@@ -188,7 +199,7 @@ class _scrPlatEditScreenState extends State<scrPlatEditScreen> {
                         titles: (plat3.kassaType==0) ? plat3.kassaName : plat3.kassaSotrName,
                         icon: Icons.payment_outlined,
                         id: (plat3.kassaType==0) ? 'Кассы' : 'Сотрудники',
-                        idType: (plat3.kassaType==0) ? 'sprKassaListSelected' : 'sprSotrListSelected', trailing: null),
+                        idType: (plat3.kassaType==0) ? 'sprKassaListSelected' : 'sprSotrListSelected', trailing: Icon(Icons.navigate_next)),
                 ],
               ),
                 Divider(),
@@ -216,7 +227,7 @@ class _scrPlatEditScreenState extends State<scrPlatEditScreen> {
                         titles: (plat3.kassaType2==0) ? plat3.kassaName2 : plat3.kassaSotrName2,
                         icon: Icons.payment_outlined,
                         id: (plat3.kassaType2==0) ? 'Кассы' : 'Сотрудники',
-                        idType: (plat3.kassaType2==0) ? 'sprKassaListSelected2' : 'sprSotrListSelected2', trailing: null),
+                        idType: (plat3.kassaType2==0) ? 'sprKassaListSelected2' : 'sprSotrListSelected2', trailing: Icon(Icons.navigate_next)),
                   ],
                 ),
                 if (plat3.type=='Выдача денежных средств в подотчет')
@@ -229,7 +240,7 @@ class _scrPlatEditScreenState extends State<scrPlatEditScreen> {
                           titles: plat3.kassaSotrName,
                           icon: Icons.man,
                           id: 'Сотрудники',
-                          idType: 'sprSotrListSelected', trailing: null)
+                          idType: 'sprSotrListSelected', trailing: Icon(Icons.navigate_next))
                     ],
                   ),
                 if ((plat3.platType=='Расход' || plat3.platType=='Приход') && plat3.type!='Выдача денежных средств в подотчет')
@@ -239,10 +250,11 @@ class _scrPlatEditScreenState extends State<scrPlatEditScreen> {
                     if (plat3.type=='Движение денежных средтв')
                       ListTile(title: Text('Учитывать в движениях по контрагенту'), trailing: CupertinoSwitch(value: plat3.contractorUse, onChanged: (bool val) => setState(() => plat3.contractorUse = val))),
                     CustomTitle(plat: plat3,
-                        titles: plat3.contractorName,
+                        titles: (plat3.contractorName.length==0) ? 'Выберите контрагента' : plat3.contractorName,
                         icon: Icons.man,
+                        trailing: Icon(Icons.navigate_next),
                         id: 'Контрагенты',
-                        idType: 'sprContractorListSelected', trailing: null,
+                        idType: 'sprContractorListSelected',
                         Enabled: (plat3.dogUse==true && plat3.type!='Движение денежных средтв' && plat3.type!='Выдача денежных средств в подотчет') ? false : true)
                   ],
                 ),
@@ -319,16 +331,16 @@ class _scrPlatEditScreenState extends State<scrPlatEditScreen> {
           ListTile(title: Text('Учитывать в договоре'), trailing: CupertinoSwitch(value: plat.dogUse, onChanged: (bool val) => setState(() => plat.dogUse = val))),
         if (plat.dogUse==true)
         CustomTitle(plat: plat,
-            titles: 'Договор № ${plat.dogNumber} от ${DateFormat('dd.MM.yyyy').format(plat.dogDate)}',
+            titles: (plat.dogNumber.length==0) ? 'Выверите договор' : 'Договор № ${plat.dogNumber} от ${DateFormat('dd.MM.yyyy').format(plat.dogDate)}',
             icon: Icons.paste_rounded,
-            trailing: Icon(Icons.label_important_sharp),
+            trailing: Icon(Icons.navigate_next),
             id: '',
             idType: 'objectsListSelected'),
         if (plat.dogUse==true)
         CustomTitle(plat: plat,
-            titles: 'Объект: ${plat.objectName}',
+            titles: (plat.objectName.length==0) ? 'Выверите объект' : 'Объект: ${plat.objectName}',
             icon: Icons.location_on_outlined,
-            trailing: Icon(Icons.label_important_sharp),
+            trailing: Icon(Icons.navigate_next),
             id: '',
             idType: 'objectsListSelected'),
       ],

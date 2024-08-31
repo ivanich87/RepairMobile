@@ -28,8 +28,6 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   static const userInfoKey = 'userInfoKey';
-  bool _inputSharedFiles = false;
-  final _sharedFiles = <SharedMediaFile>[];
 
   bool _load = false;
   String _login = '';
@@ -143,27 +141,6 @@ class _MyAppState extends State<MyApp> {
 
   @override
   void initState() {
-    _inputSharedFiles = false;
-    // print('Запукаем проверку входящих файлов');
-    // // Get the media sharing coming from outside the app while the app is closed.
-    // ReceiveSharingIntent.instance.getInitialMedia().then((value) {
-    //   if (value !=null) {
-    //     print('Входящие данные: ' + value.toString());
-    //
-    //     _sharedFiles.clear();
-    //     _sharedFiles.addAll(value);
-    //     if (_sharedFiles.length>0)
-    //       _inputSharedFiles = true;
-    //
-    //     print('Пришел файл из вне 2');
-    //     print(_sharedFiles.map((f) => f.toMap()));
-    //
-    //     // Tell the library that we are done processing the intent.
-    //     ReceiveSharingIntent.instance.reset();
-    //   }
-    //
-    // });
-
     print('Запукаем чтение параметров');
     httpGetUserData().then((value) {
       setState(() {
@@ -194,7 +171,7 @@ class _MyAppState extends State<MyApp> {
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
           useMaterial3: true,
         ),
-        home: (logIn == true) ? (_inputSharedFiles == true) ? scrInputSharedFilesScreen(_sharedFiles) : scrHomeScreen() : (_load == true) ? scrLogonScreen() : scrLoadingScreen(),
+        home: (logIn == true) ? scrHomeScreen() : (_load == true) ? scrLogonScreen() : scrLoadingScreen(),
         // initialRoute: '/',
         // routes: {
         //   '/': (context, {arguments}) => scrHomeScreen(),
