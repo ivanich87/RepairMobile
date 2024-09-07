@@ -25,6 +25,7 @@ class _scrHomeScreenState extends State<scrHomeScreen> {
   final _sharedFiles = <SharedMediaFile>[];
 
   num CashSummaAll = 0;
+  num CashSummaPO = 0;
   int ObjectKol = 0;
   
   Future httpGetInfo() async {
@@ -42,6 +43,7 @@ class _scrHomeScreenState extends State<scrHomeScreen> {
         print(notesJson['summa']);
         print(notesJson['objectKol']);
         CashSummaAll = notesJson['summa'];
+        CashSummaPO = notesJson['summaPO'];
         ObjectKol = notesJson['objectKol'];
         Globals.setOwnerId(notesJson['ownerId']);
         Globals.setOwnerName(notesJson['ownerName']);
@@ -105,33 +107,6 @@ class _scrHomeScreenState extends State<scrHomeScreen> {
     // TODO: implement initState
     super.initState();
 
-    // // Listen to media sharing coming from outside the app while the app is in the memory.
-    // _intentSub = ReceiveSharingIntent.instance.getMediaStream().listen((value) {
-    //   setState(() {
-    //     _sharedFiles.clear();
-    //     _sharedFiles.addAll(value);
-    //
-    //     print('Пришел файл из вне 1');
-    //     print(_sharedFiles.map((f) => f.toMap()));
-    //   });
-    // }, onError: (err) {
-    //   print("getIntentDataStream error: $err");
-    // });
-    //
-    // // Get the media sharing coming from outside the app while the app is closed.
-    // ReceiveSharingIntent.instance.getInitialMedia().then((value) {
-    //   setState(() {
-    //     _sharedFiles.clear();
-    //     _sharedFiles.addAll(value);
-    //
-    //     print('Пришел файл из вне 2');
-    //     print(_sharedFiles.map((f) => f.toMap()));
-    //
-    //     // Tell the library that we are done processing the intent.
-    //     ReceiveSharingIntent.instance.reset();
-    //   });
-    // });
-
   }
 
 
@@ -175,6 +150,7 @@ class _scrHomeScreenState extends State<scrHomeScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
+                    SizedBox(height: 200,),
                     Card(
                       child: ListTile(
                         title: Text(
@@ -210,6 +186,40 @@ class _scrHomeScreenState extends State<scrHomeScreen> {
                         },
                       ),
                     ),
+                    Card(
+                      child: ListTile(
+                        title: Text(
+                          'Подотчет',
+                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
+                        ),
+                        subtitle: Text('Мой баланс П/О средств'),
+                        leading: Icon(Icons.currency_ruble_rounded),
+                        trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(CashSummaPO), style: TextStyle(fontSize: 18, color: (CashSummaPO>0) ? Colors.red : Colors.green),
+                        ),
+                        onTap: () async {
+                          //Navigator.push(context, MaterialPageRoute(builder: (context) => scrInputSharedFilesScreen(_sharedFiles)));
+                          await Navigator.push(context, MaterialPageRoute(builder: (context) => scrCashHomeScreen()));
+                          initState();
+                        },
+                      ),
+                    ),
+                    Card(
+                      child: ListTile(
+                        title: Text(
+                          'Задачи',
+                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
+                        ),
+                        subtitle: Text('Управление задачами'),
+                        leading: Icon(Icons.event_note_outlined),
+                        trailing: Text('12/3', style: TextStyle(fontSize: 18, color: Colors.green),
+                        ),
+                        onTap: () async {
+                          final snackBar = SnackBar(content: Text('Этот функционал в разработке'),);
+                          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                        },
+                      ),
+                    )
+
                   ],
                 ),
               ),

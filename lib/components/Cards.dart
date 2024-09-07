@@ -138,7 +138,7 @@ class _CardCashListState extends State<CardCashList> {
           MaterialPageRoute(
             builder: (context) => scrCashListScreen(idCash: widget.event.id, cashName: 'Все', analytic: '', analyticName: '', objectId: '', objectName: '', platType: '', dateRange: DateTimeRange(start: DateTime.now(), end: DateTime.now()), kassaSotrId: '', kassaSortName: '',  )));},
         onLongPress: () async {
-          sprList _newSpr = sprList(widget.event.id, widget.event.name, widget.event.comment, '', false);
+          sprList _newSpr = sprList(widget.event.id, widget.event.name, widget.event.comment, '', false, false);
           await Navigator.push(
               context,
               MaterialPageRoute(
@@ -183,11 +183,9 @@ class _sprCardListState extends State<sprCardList> {
             subtitle: Text(widget.event.comment),
             onTap: () async {
               if (widget.onType=='push') {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) =>
-                            scrObjectsViewScreen(id: widget.event.id)));
+                Navigator.push(context, MaterialPageRoute(builder: (context) =>
+                            openSpr(widget.name, widget.event.id)
+                ));
               }
               else {
                 Navigator.pop(context, SelectedSPR(widget.event.id, widget.event.name));};
@@ -205,6 +203,14 @@ class _sprCardListState extends State<sprCardList> {
             })
     );
   }
+}
+
+openSpr(sprName, id) {
+  if (sprName=='Сотрудники')
+    return scrProfileMan(id: id);
+  if (sprName=='КлиентыКонтрагенты')
+    return scrProfileMan(id: id);
+  return scrObjectsViewScreen(id: id);
 }
 
 class CardObjectList extends StatefulWidget {

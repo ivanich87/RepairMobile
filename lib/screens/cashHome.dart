@@ -235,7 +235,7 @@ class _scrCashHomeScreenState extends State<scrCashHomeScreen> {
         offset: const Offset(0, 40),
         onSelected: (Menu item) async {
           String _sprName = (item.name=='kassa') ? 'Кассы' : 'БанковскиеСчетаОрганизаций';
-          sprList _newSpr = sprList('', '', '', '', false);
+          sprList _newSpr = sprList('', '', '', '', false, false);
           await Navigator.push(
               context,
               MaterialPageRoute(

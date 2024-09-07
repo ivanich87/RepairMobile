@@ -261,8 +261,9 @@ class sprList {
   late String comment;
   late String code;
   late bool del;
+  late bool selected;
 
-  sprList(this.id, this.name, this.comment, this.code, this.del);
+  sprList(this.id, this.name, this.comment, this.code, this.del, this.selected);
 
   sprList.fromJson(Map<String, dynamic> json) {
     id = json['id'] ?? '0';
@@ -270,7 +271,33 @@ class sprList {
     comment = json['comment'] ?? 'Адрес не указан';
     code = json['code'].toString() ?? '0';
     del = json['del'] ?? false;
+    selected = json['selected'] ?? false;
   }
+
+}
+
+class sprListSelected {
+  late String id;
+  late String name;
+  late String comment;
+  late bool selected;
+
+  sprListSelected(this.id, this.name, this.comment, this.selected);
+
+  sprListSelected.fromJson(Map<String, dynamic> json) {
+    id = json['id'] ?? '0';
+    name = json['name'] ?? 'Пусто';
+    comment = json['comment'] ?? 'Адрес не указан';
+    selected = json['selected'] ?? false;
+  }
+
+  Map<String, dynamic> toJson() =>
+      {
+        'id': id,
+        'name': name,
+        'comment': comment,
+        'selected': selected
+      };
 
 }
 

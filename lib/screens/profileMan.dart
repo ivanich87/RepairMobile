@@ -50,6 +50,7 @@ class _scrProfileManState extends State<scrProfileMan> {
         role = data['role'] ?? 'no role';
         type = data['type'] ?? 1;
         del = data['del'] ?? false;
+        access = data['access'] ?? false;
       }
       else
         throw response.body;
@@ -143,15 +144,22 @@ class _scrProfileManState extends State<scrProfileMan> {
                       value: access,
                       onChanged: !accessEnable
                           ? null
-                          : (bool value) {
+                          : (bool value) async {
+                        Map<String, dynamic> _result = await Navigator.push(context, MaterialPageRoute(builder: (context) => scrAccessUserScreen(widget.id, name, access, role),));
                         setState(() {
-                          //access = value;
+                          access=_result['access'];
+                          role=_result['role'];
                         });
                       },
                     ),
-                    onTap: () {
-                      if (accessEnable)
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => scrAccessUserScreen(widget.id, name, access, role),));
+                    onTap: () async {
+                      if (accessEnable) {
+                        Map<String, dynamic> _result = await Navigator.push(context, MaterialPageRoute(builder: (context) => scrAccessUserScreen(widget.id, name, access, role),));
+                        setState(() {
+                          access=_result['access'];
+                          role=_result['role'];
+                        });
+                      }
                     },
                   ),
                   Divider(),
