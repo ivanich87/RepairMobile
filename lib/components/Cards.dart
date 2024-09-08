@@ -396,7 +396,7 @@ class _CardObjectAnalyticListState extends State<CardObjectAnalyticList> {
                   context,
                   MaterialPageRoute(
                       builder: (context) =>
-                          scrCashListScreen(idCash: '0', cashName: 'Все', analytic: widget.event.analyticId, analyticName: widget.event.analyticId, objectId: widget.objectId, objectName: widget.objectName, platType: '', dateRange: DateTimeRange(start: DateTime(2023), end: DateTime.now()), kassaSotrId: '', kassaSortName: '',  )));
+                          scrCashListScreen(idCash: '0', cashName: 'Все', analytic: widget.event.analyticId, analyticName: widget.event.analyticName, objectId: widget.objectId, objectName: widget.objectName, platType: '', dateRange: DateTimeRange(start: DateTime(2023), end: DateTime.now()), kassaSotrId: '', kassaSortName: '',  )));
             }
           },
           onLongPress: () {}),

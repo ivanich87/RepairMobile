@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'package:repairmodule/models/Lists.dart';
+import 'package:repairmodule/screens/cashList.dart';
 import 'package:repairmodule/screens/inputSaredFiles.dart';
 import 'package:repairmodule/screens/settings.dart';
 
@@ -147,8 +148,8 @@ class _scrHomeScreenState extends State<scrHomeScreen> {
                 ),
               ),
               Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                child: ListView(shrinkWrap: true,
+                  //mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     SizedBox(height: 200,),
                     Card(
@@ -169,23 +170,24 @@ class _scrHomeScreenState extends State<scrHomeScreen> {
                         },
                       ),
                     ),
-                    Card(
-                      child: ListTile(
-                        title: Text(
-                          'Финансы',
-                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
+                    if (Globals.anUserRoleId==3)
+                      Card(
+                        child: ListTile(
+                          title: Text(
+                            'Финансы',
+                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
+                          ),
+                          subtitle: Text('Баланс по организации'),
+                          leading: Icon(Icons.currency_ruble_rounded),
+                          trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(CashSummaAll), style: TextStyle(fontSize: 18, color: Colors.green),
+                          ),
+                          onTap: () async {
+                            //Navigator.push(context, MaterialPageRoute(builder: (context) => scrInputSharedFilesScreen(_sharedFiles)));
+                            await Navigator.push(context, MaterialPageRoute(builder: (context) => scrCashHomeScreen()));
+                            initState();
+                          },
                         ),
-                        subtitle: Text('Баланс по организации'),
-                        leading: Icon(Icons.currency_ruble_rounded),
-                        trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(CashSummaAll), style: TextStyle(fontSize: 18, color: Colors.green),
-                        ),
-                        onTap: () async {
-                          //Navigator.push(context, MaterialPageRoute(builder: (context) => scrInputSharedFilesScreen(_sharedFiles)));
-                          await Navigator.push(context, MaterialPageRoute(builder: (context) => scrCashHomeScreen()));
-                          initState();
-                        },
                       ),
-                    ),
                     Card(
                       child: ListTile(
                         title: Text(
@@ -198,7 +200,7 @@ class _scrHomeScreenState extends State<scrHomeScreen> {
                         ),
                         onTap: () async {
                           //Navigator.push(context, MaterialPageRoute(builder: (context) => scrInputSharedFilesScreen(_sharedFiles)));
-                          await Navigator.push(context, MaterialPageRoute(builder: (context) => scrCashHomeScreen()));
+                          await {Navigator.push(context, MaterialPageRoute(builder: (context) => scrCashListScreen(idCash: '0', cashName: 'Все', analytic: '', analyticName: '', objectId: '', objectName: '', platType: '', dateRange: DateTimeRange(start: DateTime(2023), end: DateTime.now()), kassaSotrId: Globals.anUserId, kassaSortName: Globals.anUserName,  )))};
                           initState();
                         },
                       ),

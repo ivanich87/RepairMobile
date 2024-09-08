@@ -80,7 +80,7 @@ class _scrCashListScreenState extends State<scrCashListScreen> {
       setState(() {});
     });
     // TODO: implement initState
-    super.initState();
+    //super.initState();
   }
 
   Widget build(BuildContext context) {
@@ -191,7 +191,7 @@ class _scrCashListScreenState extends State<scrCashListScreen> {
         onSelected: (Menu item) async {
           if (item.name=='check') //если покупка стройматериалов
               {
-            Receipt recipientdata = Receipt('', '', DateTime.now(), true, false, false, '', '', '', '', true, '', '', DateTime.now(), 0, 0, 0, false, '', '', '', 'Расход', 0, '7fa144f2-14ca-11ed-80dd-00155d753c19', 'Покупка стройматериалов', '', '', '', '', 0, 'Покупка стройматериалов', []);
+            Receipt recipientdata = Receipt('', '', DateTime.now(), true, false, false, '', '', widget.objectId, widget.objectName, true, '', '', DateTime.now(), 0, 0, 0, false, '', '', '', 'Расход', 0, '7fa144f2-14ca-11ed-80dd-00155d753c19', 'Покупка стройматериалов', '', '', defaultkassaSotr(widget.kassaSotrId, true), defaultkassaSotr(widget.kassaSortName, false), (defaultkassaSotr(widget.kassaSotrId, true)=='') ? 0 : 1, 'Покупка стройматериалов', []);
             await Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -201,7 +201,7 @@ class _scrCashListScreenState extends State<scrCashListScreen> {
             await Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => scrPlatEditScreen(plat2: ListPlat('', 'Новый платеж', DateTime.now(), false, '', true, '', '', '', useDog(item), analyticId(item, true), analyticId(item, false), 0, 0, 0, '', '', '', '', DateTime.now(), useDog(item), '', '', widget.kassaSotrId, widget.kassaSortName, (widget.kassaSotrId=='') ? 0 : 1, '', '', '', platType(item), type(item), '', '', '', '', 0),)));
+                    builder: (context) => scrPlatEditScreen(plat2: ListPlat('', 'Новый платеж', DateTime.now(), false, '', true, '', '', '', useDog(item), (analyticId(item, true)=='') ? widget.analytic : analyticId(item, true), (analyticId(item, false)=='') ? widget.analyticName : analyticId(item, false), 0, 0, 0, widget.objectId, widget.objectName, '', '', DateTime.now(), useDog(item), '', '', defaultkassaSotr(widget.kassaSotrId, true), defaultkassaSotr(widget.kassaSortName, false), (defaultkassaSotr(widget.kassaSotrId, true)=='') ? 0 : 1, '', '', '', platType(item), type(item), '', '', '', '', 0),)));
 
           initState();
         },
@@ -300,4 +300,20 @@ bool useDog(Menu item) {
     return(false);
 
   return(true);
+}
+
+String defaultkassaSotr(String kassaSotr, bool identity) {
+  String _res=kassaSotr;
+  if (_res!='')
+    return(_res);
+
+  if (Globals.anUserRoleId!=3 && Globals.anUserRoleId!=4 && Globals.anUserRoleId!=5) {
+    if (identity==true)
+      _res = Globals.anUserId;
+    else
+      _res = Globals.anUserName;
+  }
+
+  return(_res);
+
 }
