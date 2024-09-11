@@ -75,14 +75,15 @@ class _scrListScreenState extends State<scrListScreen> {
           IconButton(onPressed: () {}, icon: Icon(Icons.menu))
         ],
       ),
-        body: ListView.builder(
+        body: (objectList.length==0) ? Center(child: Text('Нет доступных элементов')) :
+        ListView.builder(
           padding: EdgeInsets.all(10),
           physics: BouncingScrollPhysics(),
           reverse: false,
           itemCount: objectListFiltered.length,
             itemBuilder: (_, index) => sprCardList(event: objectListFiltered[index], onType: widget.onType, name: widget.sprName),
           ),
-          floatingActionButton: FloatingActionButton(
+          floatingActionButton: (Globals.anUserRoleId!=3) ? null : FloatingActionButton(
             onPressed: () async{
               String _newCode='';
               if (widget.sprName=='АналитикаДвиженийДСПриход')

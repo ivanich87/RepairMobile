@@ -22,7 +22,7 @@ class scrReceiptViewScreen extends StatefulWidget {
 
 class _scrReceiptViewScreenState extends State<scrReceiptViewScreen> {
   List<ReceiptSost> receiptSost = [];
-  Receipt recipientdata = Receipt('', '', DateTime.now(), true, false, false, '', '', '', '', true, '', '', DateTime.now(), 0, 0, 0, false, '', '', '', 'Расход', 0, '7fa144f2-14ca-11ed-80dd-00155d753c19', 'Покупка стройматериалов', '', '', '', '', 0, 'Покупка стройматериалов', []);
+  Receipt recipientdata = Receipt('', '', DateTime.now(), true, false, false, '', '', '', '', true, '', '', DateTime.now(), 0, 0, 0, false, '', '', '', 'Расход', 0, '7fa144f2-14ca-11ed-80dd-00155d753c19', 'Покупка стройматериалов', '', '', '', '', 0, 'Покупка стройматериалов', 0, []);
   bool userDataEdit = false;
 
 
@@ -72,7 +72,7 @@ class _scrReceiptViewScreenState extends State<scrReceiptViewScreen> {
         recipientdata.kassaSotrName = data['kassaSotrName'] ?? '';
         recipientdata.kassaType = data['kassaType'] ?? 0;
         recipientdata.type = data['type'] ?? 'Покупка стройматериалов';
-
+        recipientdata.attachedKol = data['attachedKol'] ?? 0;
         print(data['receiptSost']);
         receiptSost.clear();
         for (var noteJson in data['receiptSost']) {
@@ -104,7 +104,7 @@ class _scrReceiptViewScreenState extends State<scrReceiptViewScreen> {
           title: Text('Покупка стройматериалов'),
           centerTitle: true,
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-          actions: <Widget>[_menuAppBar()],
+          actions: (Globals.anCreatePlat==false || (Globals.anUserRoleId!=3 && recipientdata.accept==true)) ? null : <Widget>[_menuAppBar()],
         ),
         body: ListView(
           children: [
@@ -123,11 +123,12 @@ class _scrReceiptViewScreenState extends State<scrReceiptViewScreen> {
                 Divider(),
                 Card(
                   child: ListTile(
-                    title: Text('Посмотреть фото'),
+                    title: Text('Посмотреть фото (${recipientdata.attachedKol})'),
                     leading: Icon(Icons.photo),
                     trailing: Icon(Icons.navigate_next),
-                    onTap: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => scrAttachedScreen(recipientdata.id)));
+                    onTap: () async {
+                      await Navigator.push(context, MaterialPageRoute(builder: (context) => scrAttachedScreen(recipientdata.id)));
+                      initState();
                     },
                   ),
                 ),
@@ -216,7 +217,7 @@ class _scrReceiptViewScreenState extends State<scrReceiptViewScreen> {
 
           ],
         ),
-        floatingActionButton: FloatingActionButton(
+        floatingActionButton: (Globals.anCreatePlat==false || (Globals.anUserRoleId!=3 && recipientdata.accept==true)) ? null : FloatingActionButton(
           onPressed: () async{
             await Navigator.push(
                 context,

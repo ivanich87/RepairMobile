@@ -37,6 +37,7 @@ class _scrHomeScreenState extends State<scrHomeScreen> {
       'Authorization': Globals.anAuthorization
     };
     print(_url.path);
+    print('${_queryParameters}');
     try {
       var response = await http.get(_url, headers: _headers);
       if (response.statusCode == 200) {
@@ -55,7 +56,12 @@ class _scrHomeScreenState extends State<scrHomeScreen> {
         Globals.setCompanyId(notesJson['companyId']);
         Globals.setCompanyName(notesJson['companyName']);
         Globals.setCompanyComment(notesJson['companyComment']);
+
+        Globals.setCreateObject(notesJson['createObject']);
+        Globals.setCreatePlat(notesJson['createPlat']);
       }
+      else
+        throw 'Ответ от процедуры /info: ${response.statusCode}; ${response.body}';
     } catch (error) {
       print("Ошибка при формировании списка: $error");
     }
@@ -151,7 +157,16 @@ class _scrHomeScreenState extends State<scrHomeScreen> {
                 child: ListView(shrinkWrap: true,
                   //mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    SizedBox(height: 200,),
+                    Container(height: 200,
+                    child: Column(mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Image.asset('assets/icons/repair.png'),
+                        SizedBox(height: 8,),
+                        Text('РемонтКвартир', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 24, fontStyle: FontStyle.italic),)
+                      ],
+                    ),
+                    ),
+                    //SizedBox(height: 200,),
                     Card(
                       child: ListTile(
                         title: Text(

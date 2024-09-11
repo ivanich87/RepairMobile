@@ -54,7 +54,7 @@ class _scrPlatsViewScreenState extends State<scrPlatsViewScreen> {
           title: Text('Платеж'),
           centerTitle: true,
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-          actions: <Widget>[_menuAppBar()],
+          actions: (Globals.anCreatePlat==false || (Globals.anUserRoleId!=3 && widget.plat.accept==true)) ? null : <Widget>[_menuAppBar()],
         ),
         body: ListView(
           children: [
@@ -74,13 +74,15 @@ class _scrPlatsViewScreenState extends State<scrPlatsViewScreen> {
                         '№ ${widget.plat.number} от ${DateFormat('dd.MM.yyyy').format(widget.plat.date)}',
                         style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                       ),
+                      if (widget.plat.accept==false)
+                        Text('Платеж не подтвержден', style: TextStyle(color: Colors.amber),),
                     ],
                   ),
                 ),
                 Divider(),
                 Card(
                   child: ListTile(
-                    title: Text('Посмотреть фото'),
+                    title: Text('Посмотреть фото (${widget.plat.attachedKol})'),
                     leading: Icon(Icons.photo),
                     trailing: Icon(Icons.navigate_next),
                     onTap: () {
@@ -132,7 +134,7 @@ class _scrPlatsViewScreenState extends State<scrPlatsViewScreen> {
             ),
           ],
         ),
-        floatingActionButton: FloatingActionButton(
+        floatingActionButton: (Globals.anCreatePlat==false || (Globals.anUserRoleId!=3 && widget.plat.accept==true)) ? null : FloatingActionButton(
           onPressed: () async{
             await Navigator.push(context, MaterialPageRoute(builder: (context) => scrPlatEditScreen(plat2: widget.plat,)));
             setState(() {

@@ -141,7 +141,7 @@ class _scrObjectsViewScreenState extends State<scrObjectsViewScreen> {
     ref();
 
     // TODO: implement initState
-    super.initState();
+    //super.initState();
   }
   Widget build(BuildContext context) {
     return DefaultTabController(
@@ -170,7 +170,7 @@ class _scrObjectsViewScreenState extends State<scrObjectsViewScreen> {
               ),
             ],
           ),
-          floatingActionButton: FloatingActionButton(
+          floatingActionButton: (Globals.anUserRoleId!=3) ? null : FloatingActionButton(
             onPressed: () async {
               await Navigator.push(context, MaterialPageRoute(builder: (context) => scrObjectEditScreen(objectId: widget.id, clientId: idClient, clientName: nameClient, clientEMail: emailClient, clientPhone: phoneClient, address: address, area: area),));
               initState();

@@ -94,7 +94,7 @@ class _scrInputSharedFilesScreenState extends State<scrInputSharedFilesScreen> {
   }
 
   createNewPlat(BuildContext context, Menu item) async {
-    ListPlat pl = ListPlat('', 'Новый платеж', DateTime.now(), false, '', true, '', '', '', useDog(item), analyticId(item, true), analyticId(item, false), 0, 0, 0, '', '', '', '', DateTime.now(), useDog(item), '', '', '', '', 0, '', '', '', platType(item), type(item), '', '', '', '', 0);
+    ListPlat pl = ListPlat('', 'Новый платеж', DateTime.now(), false, '', true, '', '', '', useDog(item), analyticId(item, true), analyticId(item, false), 0, 0, 0, '', '', '', '', DateTime.now(), useDog(item), '', '', '', '', 0, '', '', '', platType(item), type(item), '', '', '', '', 0, 0);
     await Navigator.push(
         context,
         MaterialPageRoute(
@@ -146,86 +146,88 @@ class _scrInputSharedFilesScreenState extends State<scrInputSharedFilesScreen> {
           //mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Divider(),
-            Text('Вложить в существующий документ', textAlign: TextAlign.center, style: TextStyle(fontStyle: FontStyle.italic, fontSize: 14),),
-            SizedBox(height: 8,),
-            //Divider(),
-            Card(
-              child: ListTile(
-                title: Text(
-                  'Выбрать существующий документ',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+            if (_isJson==false) ... [
+              Text('Вложить в существующий документ', textAlign: TextAlign.center, style: TextStyle(fontStyle: FontStyle.italic, fontSize: 14),),
+              SizedBox(height: 8,),
+              //Divider(),
+              Card(
+                child: ListTile(
+                  title: Text(
+                    'Выбрать существующий документ',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                  ),
+                  subtitle: Text('Найти документ для вложения'),
+                  leading: Icon(Icons.list),
+                  onTap: () async {
+                    platId = await Navigator.push(context, MaterialPageRoute(builder: (context) => scrCashListScreen(idCash: '0', cashName: 'Все', analytic: '', analyticName: '', objectId: '', objectName: '', platType: '', dateRange: DateTimeRange(start: DateTime.now().subtract(const Duration(days: 1)), end: DateTime.now()), kassaSotrId: '', kassaSortName: '', selected: true, )));
+                    print('Платеж выбран и можно прикрепить фото');
+                    for(var i = 0; i < widget._sharedFiles.length; i++){
+                      print(widget._sharedFiles[i].path);
+                      await addImage(context, platId, widget._sharedFiles[i].path);
+                    }
+                    Navigator.pop(context);
+                    },
                 ),
-                subtitle: Text('Найти документ для вложения'),
-                leading: Icon(Icons.list),
-                onTap: () async {
-                  platId = await Navigator.push(context, MaterialPageRoute(builder: (context) => scrCashListScreen(idCash: '0', cashName: 'Все', analytic: '', analyticName: '', objectId: '', objectName: '', platType: '', dateRange: DateTimeRange(start: DateTime.now().subtract(const Duration(days: 1)), end: DateTime.now()), kassaSotrId: '', kassaSortName: '', selected: true, )));
-                  print('Платеж выбран и можно прикрепить фото');
-                  for(var i = 0; i < widget._sharedFiles.length; i++){
-                    print(widget._sharedFiles[i].path);
-                    await addImage(context, platId, widget._sharedFiles[i].path);
-                  }
-                  Navigator.pop(context);
+              ),
+              Divider(),
+              Text('Создание нового документа', textAlign: TextAlign.center, style: TextStyle(fontStyle: FontStyle.italic, fontSize: 14),),
+              SizedBox(height: 8,),
+              Text('Поступления'),
+              Card(
+                child: ListTile(
+                  title: Text(
+                    'Оплата от клиента по договору',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                  ),
+                  subtitle: Text('Создать документ внесения денег клиентом за работы'),
+                  leading: Icon(Icons.add, color: Colors.green,),
+                  onTap: () async {
+                    createNewPlat(context, Menu.oplataDog);
                   },
-              ),
-            ),
-            Divider(),
-            Text('Создание нового документа', textAlign: TextAlign.center, style: TextStyle(fontStyle: FontStyle.italic, fontSize: 14),),
-            SizedBox(height: 8,),
-            Text('Поступления'),
-            Card(
-              child: ListTile(
-                title: Text(
-                  'Оплата от клиента по договору',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                 ),
-                subtitle: Text('Создать документ внесения денег клиентом за работы'),
-                leading: Icon(Icons.add, color: Colors.green,),
-                onTap: () async {
-                  createNewPlat(context, Menu.oplataDog);
-                },
               ),
-            ),
-            Card(
-              child: ListTile(
-                title: Text(
-                  'Оплата от клиента за материалы',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+              Card(
+                child: ListTile(
+                  title: Text(
+                    'Оплата от клиента за материалы',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                  ),
+                  subtitle: Text('Создать документ внесения денег клиентом за материалы'),
+                  leading: Icon(Icons.add, color: Colors.green),
+                  onTap: () async {
+                    createNewPlat(context, Menu.oplataMaterials);
+                  },
                 ),
-                subtitle: Text('Создать документ внесения денег клиентом за материалы'),
-                leading: Icon(Icons.add, color: Colors.green),
-                onTap: () async {
-                  createNewPlat(context, Menu.oplataMaterials);
-                },
               ),
-            ),
-            Card(
-              child: ListTile(
-                title: Text(
-                  'Поступление денег',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+              Card(
+                child: ListTile(
+                  title: Text(
+                    'Поступление денег',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                  ),
+                  subtitle: Text('Создать документ поступления денег'),
+                  leading: Icon(Icons.add, color: Colors.green),
+                  onTap: () async {
+                    createNewPlat(context, Menu.platUp);
+                  },
                 ),
-                subtitle: Text('Создать документ поступления денег'),
-                leading: Icon(Icons.add, color: Colors.green),
-                onTap: () async {
-                  createNewPlat(context, Menu.platUp);
-                },
               ),
-            ),
-            Divider(),
-            Text('Списания'),
-            Card(
-              child: ListTile(
-                title: Text(
-                  'Списание денег',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+              Divider(),
+              Text('Списания'),
+              Card(
+                child: ListTile(
+                  title: Text(
+                    'Списание денег',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                  ),
+                  subtitle: Text('Создать документ списания денег'),
+                  leading: Icon(Icons.remove, color: Colors.red),
+                  onTap: () async {
+                    createNewPlat(context, Menu.platDown);
+                  },
                 ),
-                subtitle: Text('Создать документ списания денег'),
-                leading: Icon(Icons.remove, color: Colors.red),
-                onTap: () async {
-                  createNewPlat(context, Menu.platDown);
-                },
               ),
-            ),
+            ],
             Card(
               child: ListTile(
                 title: Text(
@@ -235,7 +237,7 @@ class _scrInputSharedFilesScreenState extends State<scrInputSharedFilesScreen> {
                 subtitle: Text('Создать документ покупки'),
                 leading: Icon(Icons.remove, color: Colors.red),
                 onTap: () async {
-                  Receipt recipientdata = Receipt('', '', recipientDate, true, false, false, '', '', '', '', true, '', '', DateTime.now(), recipientSumma, recipientSumma, recipientSumma, recipientTovarUse, recipientComment, recipientContractorId, recipientContractorName, 'Расход', 0, '7fa144f2-14ca-11ed-80dd-00155d753c19', 'Покупка стройматериалов', '', '', '', '', 0, 'Покупка стройматериалов', receiptSost);
+                  Receipt recipientdata = Receipt('', '', recipientDate, true, false, false, '', '', '', '', true, '', '', DateTime.now(), recipientSumma, recipientSumma, recipientSumma, recipientTovarUse, recipientComment, recipientContractorId, recipientContractorName, 'Расход', 0, '7fa144f2-14ca-11ed-80dd-00155d753c19', 'Покупка стройматериалов', '', '', '', '', 0, 'Покупка стройматериалов', 0, receiptSost);
                   await Navigator.push(context, MaterialPageRoute(builder: (context) => scrReceiptEditScreen(receiptData: recipientdata,)));
                   if (recipientdata.id!='') {
                     print('Платеж создан и можно прикрепить фото');
@@ -249,51 +251,53 @@ class _scrInputSharedFilesScreenState extends State<scrInputSharedFilesScreen> {
               ),
             ),
             Divider(),
-            Text('Подотчет и перемещение'),
-            Card(
-              child: ListTile(
-                title: Text(
-                  'Выдача в подотчет',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+            if (_isJson==false) ... [
+              Text('Подотчет и перемещение'),
+              Card(
+                child: ListTile(
+                  title: Text(
+                    'Выдача в подотчет',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                  ),
+                  subtitle: Text('Создать документ выдачи денег сотруднику'),
+                  leading: Icon(Icons.remove, color: Colors.red),
+                  onTap: () async {
+                    createNewPlat(context, Menu.platUpSotr);
+                  },
                 ),
-                subtitle: Text('Создать документ выдачи денег сотруднику'),
-                leading: Icon(Icons.remove, color: Colors.red),
-                onTap: () async {
-                  createNewPlat(context, Menu.platUpSotr);
-                },
               ),
-            ),
-            Card(
-              child: ListTile(
-                title: Text(
-                  'Возврат из подотчета',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+              Card(
+                child: ListTile(
+                  title: Text(
+                    'Возврат из подотчета',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                  ),
+                  subtitle: Text('Создать документ возврата денег от сотрудника'),
+                  leading: Icon(Icons.add, color: Colors.green),
+                  onTap: () async {
+                    createNewPlat(context, Menu.platDownSotr);
+                  },
                 ),
-                subtitle: Text('Создать документ возврата денег от сотрудника'),
-                leading: Icon(Icons.add, color: Colors.green),
-                onTap: () async {
-                  createNewPlat(context, Menu.platDownSotr);
-                },
               ),
-            ),
-            SizedBox(height: 18,),
-            Card(
-              child: ListTile(
-                title: Text(
-                  'Внутреннее перемещение',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+              SizedBox(height: 18,),
+              Card(
+                child: ListTile(
+                  title: Text(
+                    'Внутреннее перемещение',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                  ),
+                  subtitle: Text('Создать документ перемещения денег между кассами или счетами'),
+                  leading: Icon(Icons.recycling),
+                  onTap: () async {
+                    createNewPlat(context, Menu.platMove);
+                  },
                 ),
-                subtitle: Text('Создать документ перемещения денег между кассами или счетами'),
-                leading: Icon(Icons.recycling),
-                onTap: () async {
-                  createNewPlat(context, Menu.platMove);
-                },
               ),
-            ),
-            Divider(),
-            Text(widget._sharedFiles
-                .map((f) => f.toMap())
-                .join(",\n****************\n")),
+              Divider(),
+            ],
+            // Text(widget._sharedFiles
+            //     .map((f) => f.toMap())
+            //     .join(",\n****************\n")),
           ],
         )//backgroundColor: Colors.grey[900]),
     );

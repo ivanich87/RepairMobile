@@ -162,7 +162,7 @@ class _scrDogovorViewScreenState extends State<scrDogovorViewScreen> {
               ),
             ],
           ),
-          floatingActionButton: FloatingActionButton(
+          floatingActionButton: (Globals.anUserRoleId!=3) ? null : FloatingActionButton(
             onPressed: () async {
               DateTimeRange dateRange = DateTimeRange(start: dtStart, end: dtStop);
               await Navigator.push(context, MaterialPageRoute(builder: (context) => scrDogovorCreateScreen(objectId: idObject, objectName: address, clientId: idClient, clientName: nameClient, newDogovorId: widget.id, managerId: idManager, managerName: nameManager, prorabId: idProrab, prorabName: nameProrab, nameDog: name, summa: summa, summaSeb: summaSeb, dateRange: dateRange,),));

@@ -91,7 +91,7 @@ class _scrAccessObjectsScreenState extends State<scrAccessObjectsScreen> {
             ),
           ],
         ),
-        floatingActionButton: FloatingActionButton(
+        floatingActionButton: (Globals.anUserRoleId!=3) ? null : FloatingActionButton(
           onPressed: () async{
             // await Navigator.push(context, MaterialPageRoute(builder: (context) => scrPlatEditScreen(plat2: widget.plat,)));
             // setState(() {

@@ -79,7 +79,7 @@ class _scrObjectsScreenState extends State<scrObjectsScreen> {
           itemCount: objectList.length,
             itemBuilder: (_, index) => CardObjectList(event: objectList[index], onType: 'push',),
           ),
-          floatingActionButton: FloatingActionButton(
+          floatingActionButton: (Globals.anCreateObject==false) ? null : FloatingActionButton(
             onPressed: () async {
               final newObjectId = await Navigator.push(context, MaterialPageRoute(builder: (context) => scrObjectCreateScreen(),)) ?? '';
               if (newObjectId!='') {

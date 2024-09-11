@@ -121,7 +121,7 @@ class _scrCashListScreenState extends State<scrCashListScreen> {
             ),
           ],
         ),
-        floatingActionButton: FloatingActionButton(
+        floatingActionButton: (Globals.anCreatePlat==false) ? null : FloatingActionButton(
           onPressed: () {},
           child: _AddMenuIcon())
     );
@@ -133,7 +133,13 @@ class _scrCashListScreenState extends State<scrCashListScreen> {
       child: ListTile(
           title: Text('${event.name} № ${event.number} от ${DateFormat('dd.MM.yyyy').format(event.date)}', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, decoration: textDelete(event.del)),),
           subtitle: Text(event.comment),
-          trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(event.summa), style: TextStyle(fontSize: 16, color: textColors(event.summa), decoration: textDelete(event.del))),
+          trailing: Column(mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(event.summa), style: TextStyle(fontSize: 16, color: textColors(event.summa), decoration: textDelete(event.del))),
+              if (event.accept==false)
+                Icon(Icons.warning_amber, color: Colors.amber)
+            ],
+          ),
           onTap: () async {
             if (widget.selected==true)
               Navigator.pop(context, event.id);
@@ -191,7 +197,7 @@ class _scrCashListScreenState extends State<scrCashListScreen> {
         onSelected: (Menu item) async {
           if (item.name=='check') //если покупка стройматериалов
               {
-            Receipt recipientdata = Receipt('', '', DateTime.now(), true, false, false, '', '', widget.objectId, widget.objectName, true, '', '', DateTime.now(), 0, 0, 0, false, '', '', '', 'Расход', 0, '7fa144f2-14ca-11ed-80dd-00155d753c19', 'Покупка стройматериалов', '', '', defaultkassaSotr(widget.kassaSotrId, true), defaultkassaSotr(widget.kassaSortName, false), (defaultkassaSotr(widget.kassaSotrId, true)=='') ? 0 : 1, 'Покупка стройматериалов', []);
+            Receipt recipientdata = Receipt('', '', DateTime.now(), true, false, false, '', '', widget.objectId, widget.objectName, true, '', '', DateTime.now(), 0, 0, 0, false, '', '', '', 'Расход', 0, '7fa144f2-14ca-11ed-80dd-00155d753c19', 'Покупка стройматериалов', '', '', defaultkassaSotr(widget.kassaSotrId, true), defaultkassaSotr(widget.kassaSortName, false), (defaultkassaSotr(widget.kassaSotrId, true)=='') ? 0 : 1, 'Покупка стройматериалов', 0, []);
             await Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -201,7 +207,7 @@ class _scrCashListScreenState extends State<scrCashListScreen> {
             await Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => scrPlatEditScreen(plat2: ListPlat('', 'Новый платеж', DateTime.now(), false, '', true, '', '', '', useDog(item), (analyticId(item, true)=='') ? widget.analytic : analyticId(item, true), (analyticId(item, false)=='') ? widget.analyticName : analyticId(item, false), 0, 0, 0, widget.objectId, widget.objectName, '', '', DateTime.now(), useDog(item), '', '', defaultkassaSotr(widget.kassaSotrId, true), defaultkassaSotr(widget.kassaSortName, false), (defaultkassaSotr(widget.kassaSotrId, true)=='') ? 0 : 1, '', '', '', platType(item), type(item), '', '', '', '', 0),)));
+                    builder: (context) => scrPlatEditScreen(plat2: ListPlat('', 'Новый платеж', DateTime.now(), false, '', true, '', '', '', useDog(item), (analyticId(item, true)=='') ? widget.analytic : analyticId(item, true), (analyticId(item, false)=='') ? widget.analyticName : analyticId(item, false), 0, 0, 0, widget.objectId, widget.objectName, '', '', DateTime.now(), useDog(item), '', '', defaultkassaSotr(widget.kassaSotrId, true), defaultkassaSotr(widget.kassaSortName, false), (defaultkassaSotr(widget.kassaSotrId, true)=='') ? 0 : 1, '', '', '', platType(item), type(item), '', '', '', '', 0, 0),)));
 
           initState();
         },

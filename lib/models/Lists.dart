@@ -21,6 +21,8 @@ class Globals {
   static var anPlatform = '';
   static var anAuthorization = 'Basic YWNlOkF4V3lJdnJBS1prdzY2UzdTMEJP';
   static var anIsDarkTheme = false;
+  static var anCreatePlat = true;
+  static var anCreateObject = true;
 
   static printInteger() {
     print(anThemeIndex);
@@ -86,6 +88,14 @@ class Globals {
 
   static setIsDarkTheme(bool a) {
     anIsDarkTheme = a;
+  }
+
+  static setCreatePlat(bool a) {
+    anCreatePlat = a;
+  }
+
+  static setCreateObject(bool a) {
+    anCreateObject = a;
   }
 
   static setPlatform(String a) {
@@ -497,8 +507,9 @@ class ListPlat {
   late String kassaSotrId2;
   late String kassaSotrName2;
   late int kassaType2;
+  late int attachedKol;
 
-  ListPlat(this.id, this.name, this.date, this.del, this.number, this.accept, this.comment, this.contractorId, this.contractorName, this.contractorUse, this.analyticId, this.analyticName, this.summaUp, this.summaDown, this.summa, this.objectId, this.objectName, this.dogId, this.dogNumber, this.dogDate, this.dogUse, this.kassaId, this.kassaName, this.kassaSotrId, this.kassaSotrName, this.kassaType, this.kassa, this.companyId, this.companyName, this.platType, this.type, this.kassaId2, this.kassaName2, this.kassaSotrId2, this.kassaSotrName2, this.kassaType2);
+  ListPlat(this.id, this.name, this.date, this.del, this.number, this.accept, this.comment, this.contractorId, this.contractorName, this.contractorUse, this.analyticId, this.analyticName, this.summaUp, this.summaDown, this.summa, this.objectId, this.objectName, this.dogId, this.dogNumber, this.dogDate, this.dogUse, this.kassaId, this.kassaName, this.kassaSotrId, this.kassaSotrName, this.kassaType, this.kassa, this.companyId, this.companyName, this.platType, this.type, this.kassaId2, this.kassaName2, this.kassaSotrId2, this.kassaSotrName2, this.kassaType2, this.attachedKol);
 
   ListPlat copyWith({
     String? id,
@@ -536,7 +547,8 @@ class ListPlat {
     String? kassaName2,
     String? kassaSotrId2,
     String? kassaSotrName2,
-    int? kassaType2
+    int? kassaType2,
+    int? attachedKol
   }) {
     return ListPlat(
         id = id ?? this.id,
@@ -574,7 +586,8 @@ class ListPlat {
         kassaName2 = kassaName2 ?? this.kassaName2,
         kassaSotrId2 = kassaSotrId2 ?? this.kassaSotrId2,
         kassaSotrName2 = kassaSotrName2 ?? this.kassaSotrName2,
-        kassaType2 = kassaType2 ?? this.kassaType2
+        kassaType2 = kassaType2 ?? this.kassaType2,
+        attachedKol= attachedKol ?? this.attachedKol
     );
   }
 
@@ -615,6 +628,7 @@ class ListPlat {
     kassaSotrId2 = json['kassaSotrId2'] ?? 'Пусто';
     kassaSotrName2 = json['kassaSotrName2'] ?? 'Пусто';
     kassaType2 = json['kassaType2'] ?? 0;
+    attachedKol= json['attachedKol'] ?? 0;
   }
 
   Map<String, dynamic> toJson() =>
@@ -654,7 +668,8 @@ class ListPlat {
     'kassaName2': kassaName2 ,
     'kassaSotrId2': kassaSotrId2,
     'kassaSotrName2': kassaSotrName2,
-    'kassaType2': kassaType2
+    'kassaType2': kassaType2,
+    'attachedKol': attachedKol
   };
 
   ListPlat.from(ListPlat a) {
@@ -694,6 +709,7 @@ class ListPlat {
     kassaSotrId2 = a.kassaSotrId2 ?? this.kassaSotrId2;
     kassaSotrName2 = a.kassaSotrName2 ?? this.kassaSotrName2;
     kassaType2 = a.kassaType2 ?? this.kassaType2;
+    attachedKol= a.attachedKol ?? this.attachedKol;
   }
 
   ListPlat.fromTo(ListPlat original, ListPlat a) {
@@ -733,6 +749,7 @@ class ListPlat {
     original.kassaSotrId2 = a.kassaSotrId2 ?? this.kassaSotrId2;
     original.kassaSotrName2 = a.kassaSotrName2 ?? this.kassaSotrName2;
     original.kassaType2 = a.kassaType2 ?? this.kassaType2;
+    original.attachedKol=a.attachedKol ?? this.attachedKol;
   }
 }
 
@@ -769,10 +786,11 @@ class Receipt {
   String kassaSotrName = '';
   int kassaType = 0;
   String type = 'Покупка стройматериалов';
+  int attachedKol = 0;
   List<ReceiptSost>? receiptSost;
 
 
-  Receipt(this.id, this.number, this.date, this.accept, this.del, this.acceptClient, this.clientId, this.clientNmame, this.objectId, this.objectName, this.dogUse, this.dogId, this.dogNumber, this.dogDate, this.summaClient, this.summaOrg, this.summa, this.tovarUse, this.comment, this.contractorId, this.contractorName, this.platType, this.status, this.analyticId, this.analyticName, this.kassaId, this.kassaName, this.kassaSotrId, this.kassaSotrName, this.kassaType, this.type, this.receiptSost);
+  Receipt(this.id, this.number, this.date, this.accept, this.del, this.acceptClient, this.clientId, this.clientNmame, this.objectId, this.objectName, this.dogUse, this.dogId, this.dogNumber, this.dogDate, this.summaClient, this.summaOrg, this.summa, this.tovarUse, this.comment, this.contractorId, this.contractorName, this.platType, this.status, this.analyticId, this.analyticName, this.kassaId, this.kassaName, this.kassaSotrId, this.kassaSotrName, this.kassaType, this.type, this.attachedKol, this.receiptSost);
 
   Map<String, dynamic> toJson() =>
       {
@@ -807,6 +825,7 @@ class Receipt {
         'kassaSotrName': kassaSotrName,
         'kassaType': kassaType,
         'type': type,
+        'attachedKol': attachedKol,
         //if (this.receiptSost != null) {
           'receiptSost': receiptSost!.map((v) => v.toJson()).toList()
         //}
@@ -844,6 +863,7 @@ class Receipt {
     String? kassaSotrName,
     int? kassaType,
     String? type,
+    int? attachedKol,
     List<ReceiptSost>? receiptSost
   }) {
     return Receipt(
@@ -878,6 +898,7 @@ class Receipt {
         kassaSotrName = kassaSotrName ?? this.kassaSotrName,
         kassaType = kassaType ?? this.kassaType,
         type = type ?? this.type,
+        attachedKol = attachedKol ?? this.attachedKol,
         receiptSost = receiptSost ?? this.receiptSost
     );
   }
@@ -914,6 +935,7 @@ class Receipt {
     original.kassaSotrName = a.kassaSotrName ?? this.kassaSotrName;
     original.kassaType = a.kassaType ?? this.kassaType;
     original.type = a.type ?? this.type;
+    original.attachedKol=a.attachedKol ?? this.attachedKol;
     original.receiptSost = a.receiptSost ?? this.receiptSost;
   }
 }

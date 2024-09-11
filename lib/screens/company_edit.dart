@@ -141,7 +141,7 @@ class _scrCompanyEditScreenState extends State<scrCompanyEditScreen> {
                 ],
           ),
         ),
-        floatingActionButton: FloatingActionButton(
+        floatingActionButton: (Globals.anUserRoleId!=3) ? null : FloatingActionButton(
           onPressed: () {
             print('Данные введены правильно');
             httpCompanyUpdate().then((value) {

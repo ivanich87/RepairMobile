@@ -201,10 +201,10 @@ class _scrSettingsScreenState extends State<scrSettingsScreen> {
             SizedBox(height: 30,),
             Card(
               child: ListTile(
-                title: Text('Удалить аккаунт', style: TextStyle(color: Colors.red)),
+                title: Text('Удалить аккаунт компании', style: TextStyle(color: Colors.red)),
                 leading: Icon(Icons.delete),
                 onTap: () async {
-                  final _res = await showAlertDialog(context, 'Удалить аккаунт?', 'Все ваши данные будут удалены!');
+                  final _res = await showAlertDialog(context, 'Удалить аккаунт?', 'Все ваши данные, данные компании, данные сотрудников, объекты и документы будут удалены!');
                   if (_res==true) {
                     httpDeleteUser().then((value) {
                       if (value==true)

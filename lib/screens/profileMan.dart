@@ -80,7 +80,7 @@ class _scrProfileManState extends State<scrProfileMan> {
         title: Text('Профиль'),
         centerTitle: true,
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        actions: <Widget>[_menuAppBar()],
+        actions: (Globals.anUserRoleId!=3) ? null : <Widget>[_menuAppBar()],
       ),
       body: Column(
         children: [
@@ -169,7 +169,7 @@ class _scrProfileManState extends State<scrProfileMan> {
           ),
         ],
       ),
-        floatingActionButton: FloatingActionButton(
+        floatingActionButton: (Globals.anUserRoleId!=3) ? null : FloatingActionButton(
           onPressed: () async {
             print('старая почта ' + mail);
             Map<String, dynamic> _result = await Navigator.push(context, MaterialPageRoute(builder: (context) => scrProfileManEditScreen(id: widget.id, name: name, email: mail, phone: phone, type: type),));
