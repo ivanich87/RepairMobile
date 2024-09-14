@@ -36,6 +36,7 @@ class _scrAccessUserScreenState extends State<scrAccessUserScreen> {
   String kassaKol = '0';
   int kassaKolAll = 0;
   bool accessCreatePlat = false;
+  bool accessCreateObject=false;
   bool accessApprovalPlat  = false;
   String kassaApprovedKol = '0';
   int kassaApprovedKolAll=0;
@@ -72,6 +73,7 @@ class _scrAccessUserScreenState extends State<scrAccessUserScreen> {
         objectKolAll = notesJson['objectKolAll'];
         dogovorKolAll = notesJson['dogovorKolAll'];
         accessCreatePlat = notesJson['accessCreatePlat'];
+        accessCreateObject = notesJson['accessCreateObject'];
 
         kassaKol = notesJson['kassaKol'];
         kassaKolAll = notesJson['kassaKolAll'];
@@ -116,6 +118,7 @@ class _scrAccessUserScreenState extends State<scrAccessUserScreen> {
       'id': widget.id,
       'access': access,
       'roleId': roleId,
+      'accessCreateObject': accessCreateObject,
       'accessCreatePlat': accessCreatePlat,
       'accessApprovalPlat': accessApprovalPlat,
       'selectedObject': selectedObject!.map((v) => v.toJson()).toList(),
@@ -240,6 +243,21 @@ class _scrAccessUserScreenState extends State<scrAccessUserScreen> {
               //
               //   },
               // ),
+              Divider(),
+              ListTile(
+                title: Text('Создание новых объектов:', style: TextStyle(fontWeight: FontWeight.normal, fontSize: 18),),
+                subtitle: Text('Может ли сотрудник создавать новые объекты и договора'),
+                trailing: Switch.adaptive(
+                  value: accessCreateObject,
+                  onChanged: !accessEnable
+                      ? null
+                      : (bool value) {
+                    setState(() {
+                      accessCreateObject = value;
+                    });
+                  },
+                ),
+              ),
               Divider(),
               ListTile(
                 title: Text('Создание платежей:', style: TextStyle(fontWeight: FontWeight.normal, fontSize: 18),),

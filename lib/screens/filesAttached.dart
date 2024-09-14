@@ -61,7 +61,7 @@ class _scrAttachedScreenState extends State<scrAttachedScreen> {
 
   addImage() async {
     try {
-      XFile? selectedImage = await imagePicker.pickImage(source: ImageSource.camera, maxHeight: 1400);
+      XFile? selectedImage = await imagePicker.pickImage(source: ImageSource.camera, maxHeight: 800);
       if (selectedImage!=null) {
         _namePhoto = '${DateFormat('ddMMyyyyHHmmss').format(DateTime.now())}';
         print('_namePhoto = $_namePhoto');

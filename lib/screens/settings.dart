@@ -206,9 +206,20 @@ class _scrSettingsScreenState extends State<scrSettingsScreen> {
                 onTap: () async {
                   final _res = await showAlertDialog(context, 'Удалить аккаунт?', 'Все ваши данные, данные компании, данные сотрудников, объекты и документы будут удалены!');
                   if (_res==true) {
+                    var prefs = await SharedPreferences.getInstance();
                     httpDeleteUser().then((value) {
-                      if (value==true)
+                      if (value==true) {
+                        String userInfoKey = 'userInfoKey';
+                        prefs.remove(userInfoKey);
+                        Globals.setLogin('');
+                        Globals.setPhone('');
+                        Globals.setPasswodr('');
+                        Globals.setServer('ut.acewear.ru');
+                        Globals.setPath('/repair/hs/v1/');
+                        Globals.setCompanyId('');
+                        Globals.setCompanyName('');
                         Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => scrLogonScreen()), (Route<dynamic> route) => false);
+                      }
                     });
                   }
                 },

@@ -26,8 +26,9 @@ class scrCashListScreen extends StatefulWidget {
   final String kassaSotrId;
   final String kassaSortName;
   final bool selected;
+  final bool approve;
 
-  scrCashListScreen({required this.idCash, required this.cashName, required this.analytic, required this.analyticName, required this.objectId, required this.objectName, required this.platType, required this.dateRange, required this.kassaSotrId, required this.kassaSortName, this.selected = false});
+  scrCashListScreen({required this.idCash, required this.cashName, required this.analytic, required this.analyticName, required this.objectId, required this.objectName, required this.platType, required this.dateRange, required this.kassaSotrId, required this.kassaSortName, this.selected = false, this.approve = false});
 
   @override
   State<scrCashListScreen> createState() => _scrCashListScreenState();
@@ -40,14 +41,15 @@ class _scrCashListScreenState extends State<scrCashListScreen> {
   //DateTimeRange dateRange = DateTimeRange(start: DateTime.now(), end: DateTime.now());
 
   Future httpGetListPlat() async {
-    final queryParameters = {
+    var queryParameters = <String, dynamic> {
       'analyticId': widget.analytic,
       'objectId': widget.objectId,
       'platType': widget.platType,
       'kassaSortId': widget.kassaSotrId,
-      'userId': Globals.anPhone
+      'userId': Globals.anPhone,
+      'approve': widget.approve.toString(),
     };
-
+    print(jsonEncode(queryParameters));
     var _url = Uri(path: '${Globals.anPath}platlist/${DateFormat('yyyyMMdd').format(widget.dateRange.start)}/${DateFormat('yyyyMMdd').format(widget.dateRange.end)}/${widget.idCash}',
         queryParameters: queryParameters,
         host: Globals.anServer,

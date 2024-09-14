@@ -95,14 +95,15 @@ class _scrHomeScreenState extends State<scrHomeScreen> {
 
         _sharedFiles.clear();
         _sharedFiles.addAll(value);
-        if (_sharedFiles.length>0)
+        if (_sharedFiles.length>0) {
           Navigator.push(context, MaterialPageRoute(builder: (context) => scrInputSharedFilesScreen(_sharedFiles)));
 
-        print('Пришел файл из вне 2');
-        print(_sharedFiles.map((f) => f.toMap()));
+          print('Пришел файл из вне 2');
+          print(_sharedFiles.map((f) => f.toMap()));
 
-        // Tell the library that we are done processing the intent.
-        ReceiveSharingIntent.instance.reset();
+          // Tell the library that we are done processing the intent.
+          ReceiveSharingIntent.instance.reset();
+        }
       }
 
     });
@@ -112,7 +113,7 @@ class _scrHomeScreenState extends State<scrHomeScreen> {
       });
     });
     // TODO: implement initState
-    super.initState();
+    //super.initState();
 
   }
 
@@ -214,8 +215,23 @@ class _scrHomeScreenState extends State<scrHomeScreen> {
                         trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(CashSummaPO), style: TextStyle(fontSize: 18, color: (CashSummaPO>0) ? Colors.red : Colors.green),
                         ),
                         onTap: () async {
-                          //Navigator.push(context, MaterialPageRoute(builder: (context) => scrInputSharedFilesScreen(_sharedFiles)));
-                          await {Navigator.push(context, MaterialPageRoute(builder: (context) => scrCashListScreen(idCash: '0', cashName: 'Все', analytic: '', analyticName: '', objectId: '', objectName: '', platType: '', dateRange: DateTimeRange(start: DateTime(2023), end: DateTime.now()), kassaSotrId: Globals.anUserId, kassaSortName: Globals.anUserName,  )))};
+                          await Navigator.push(context, MaterialPageRoute(builder: (context) => scrCashListScreen(idCash: '0', cashName: 'Все', analytic: '', analyticName: '', objectId: '', objectName: '', platType: '', dateRange: DateTimeRange(start: DateTime(2023), end: DateTime.now()), kassaSotrId: Globals.anUserId, kassaSortName: Globals.anUserName,  )));
+                          initState();
+                        },
+                      ),
+                    ),
+                    Card(
+                      child: ListTile(
+                        title: Text(
+                          'Согласовать',
+                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
+                        ),
+                        subtitle: Text('Платежи, требующие вашего согласования'),
+                        leading: Icon(Icons.warning_amber),
+                        trailing: Text('2', style: TextStyle(fontSize: 18, color: (CashSummaPO>0) ? Colors.red : Colors.green),
+                        ),
+                        onTap: () async {
+                          await Navigator.push(context, MaterialPageRoute(builder: (context) => scrCashListScreen(idCash: '0', cashName: 'Все', analytic: '', analyticName: '', objectId: '', objectName: '', platType: '', dateRange: DateTimeRange(start: DateTime(2023), end: DateTime.now()), kassaSotrId: '', kassaSortName: '', approve: true, )));
                           initState();
                         },
                       ),

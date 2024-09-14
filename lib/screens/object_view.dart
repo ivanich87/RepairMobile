@@ -45,7 +45,7 @@ class _scrObjectsViewScreenState extends State<scrObjectsViewScreen> {
   int percent = 0;
   int payment = 0;
   num area = 0;
-
+  bool _visibleFloatingActionButton = true;
 
   Future httpGetInfoObject() async {
     print('!!!!!!!!!!!!!!!!!!' + widget.id.toString());
@@ -161,7 +161,14 @@ class _scrObjectsViewScreenState extends State<scrObjectsViewScreen> {
                 style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
               ),
               Divider(),
-              TabBar(tabs: _tabs, ),
+              TabBar(tabs: _tabs, onTap: (value) {
+                print(value);
+                setState(() {
+                  _visibleFloatingActionButton = (value==0) ? true : false;
+                  print(_visibleFloatingActionButton);
+                });
+
+              },),
               Expanded(
                 child: TabBarView(children: <Widget> [
                   _pageGeneral(),
@@ -170,7 +177,7 @@ class _scrObjectsViewScreenState extends State<scrObjectsViewScreen> {
               ),
             ],
           ),
-          floatingActionButton: (Globals.anUserRoleId!=3) ? null : FloatingActionButton(
+          floatingActionButton: (Globals.anUserRoleId!=3) ? null : (_visibleFloatingActionButton==false) ? null : FloatingActionButton(
             onPressed: () async {
               await Navigator.push(context, MaterialPageRoute(builder: (context) => scrObjectEditScreen(objectId: widget.id, clientId: idClient, clientName: nameClient, clientEMail: emailClient, clientPhone: phoneClient, address: address, area: area),));
               initState();

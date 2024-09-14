@@ -46,6 +46,43 @@ class _scrPlatsViewScreenState extends State<scrPlatsViewScreen> {
 
   bool userDataEdit = false;
 
+  Future<bool> httpStatusUpdate(bool _accept) async {
+    bool _result=false;
+    String _message = 'Ошибка';
+    final _queryParameters = {'userId': Globals.anPhone};
+    var _url=Uri(path: '${Globals.anPath}plataccept/${widget.plat.id}/${(_accept==true) ? '1' : '0'}', host: Globals.anServer, scheme: 'https', queryParameters: _queryParameters);
+    var _headers = <String, String> {
+      'Accept': 'application/json',
+      'Authorization': Globals.anAuthorization
+    };
+    try {
+      var response = await http.get(_url, headers: _headers);
+      print('Код ответа: ${response.statusCode} Тело ответа: ${response.body}');
+      if (response.statusCode == 200) {
+        var data = json.decode(response.body);
+        _result = data['Успешно'] ?? '';
+        _message = data['Сообщение'] ?? '';
+
+        print('Платеж согласован. Результат:  $_result. Сообщение:  $_message');
+      }
+      else {
+        _result = false;
+        _message = response.body;
+      }
+      if (_result == false)
+        throw _message;
+    }
+    catch (error) {
+      _result = false;
+      print("Ошибка при выгрузке платежа: $error");
+      final snackBar = SnackBar(
+        content: Text('$error'),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    }
+    return _result ?? false;
+  }
+
   @override
   Widget build(BuildContext context) {
     print('Идентификатор платежа: ${widget.plat.id}');
@@ -56,81 +93,140 @@ class _scrPlatsViewScreenState extends State<scrPlatsViewScreen> {
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
           actions: (Globals.anCreatePlat==false || (Globals.anUserRoleId!=3 && widget.plat.accept==true)) ? null : <Widget>[_menuAppBar()],
         ),
-        body: ListView(
+        body: Stack(
           children: [
-            Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              //crossAxisAlignment: CrossAxisAlignment.end,
+            ListView(
               children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  //crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        children: [
+                          Text(
+                            widget.plat.name,
+                            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                          ),
+                          Text(
+                            '№ ${widget.plat.number} от ${DateFormat('dd.MM.yyyy').format(widget.plat.date)}',
+                            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                          ),
+                          if (widget.plat.accept==false && widget.plat.del==false)
+                            Text('Платеж не подтвержден', style: TextStyle(color: Colors.amber),),
+                          if (widget.plat.del==true)
+                            Text('Платеж удален', style: TextStyle(color: Colors.red),),
+                        ],
+                      ),
+                    ),
+                    Divider(),
+                    Card(
+                      child: ListTile(
+                        title: Text('Посмотреть фото (${widget.plat.attachedKol})'),
+                        leading: Icon(Icons.photo),
+                        trailing: Icon(Icons.navigate_next),
+                        onTap: () {
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => scrAttachedScreen(widget.plat.id)));
+                        },
+                      ),
+                    ),
+                    Divider(),
+                    _payer(widget: widget,),
+                    Divider(),
+                    if (widget.plat.objectName!='')
+                    SingleSection(
+                      title: 'Сведения об объекте',
+                      children: [
+                        _CustomListTile(
+                            title: 'Договор № ${widget.plat.dogNumber} от ${DateFormat('dd.MM.yyyy').format(widget.plat.dogDate)}',
+                            icon: Icons.paste_rounded,
+                            id: '',
+                            idType: ''),
+                        _CustomListTile(
+                            title: 'Объект: ${widget.plat.objectName}',
+                            icon: Icons.location_on_outlined,
+                            id: widget.plat.objectId,
+                            idType: 'scrObjectsViewScreen'),
+                      ],
+                    ),
+                    if (widget.plat.objectName!='')
+                    Divider(),
+                    _recipient(widget: widget,),
+                    Divider(),
+                    SingleSection(
+                      title: 'Аналитика и комментарий',
+                      children: [
+                        if (widget.plat.platType!='Перемещение' && widget.plat.type!='Выдача денежных средств в подотчет')
+                        _CustomListTile(
+                            title: "${widget.plat.analyticName}",
+                            icon: Icons.analytics,
+                            id: '',
+                            idType: ''),
+                        _CustomListTile(
+                            title: widget.plat.comment,
+                            icon: Icons.comment_outlined,
+                            id: '',
+                            idType: ''),
+                      ],
+                    ),
+                    Text('${NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(widget.plat.summa)} руб.', style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold, color: (widget.plat.summa>=0) ? Colors.green : Colors.red)),
+                    SizedBox(height: 55,)
+                  ],
+                ),
+              ],
+            ),
+            if (widget.plat.accept==false && widget.plat.del==false)
+            Align(alignment: Alignment.bottomCenter,
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 12.0, left: 8, right: 8),
+                child: SafeArea(
+                  child:
+                  Row(mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(
-                        widget.plat.name,
-                        style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                      ElevatedButton.icon(
+                        icon: Icon(Icons.check, color: Colors.black),
+                        label: Text('Согласовать', style: TextStyle(color: Colors.black, fontSize: 15)),
+                        onPressed: () {
+                          httpStatusUpdate(true).then((value) async {
+                            if (value==true) {
+                              setState(() {
+                                widget.plat.accept=true;
+                              });
+                              Navigator.pop(context);
+                            }
+                          });
+                        },
+                        style: ElevatedButton.styleFrom(backgroundColor: Colors.green,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16.0),
+                          ),
+                        ),
                       ),
-                      Text(
-                        '№ ${widget.plat.number} от ${DateFormat('dd.MM.yyyy').format(widget.plat.date)}',
-                        style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                      ),
-                      if (widget.plat.accept==false)
-                        Text('Платеж не подтвержден', style: TextStyle(color: Colors.amber),),
+                      SizedBox(width: 15),
+                      ElevatedButton.icon(
+                          icon: const Icon(Icons.delete, color: Colors.black),
+                          label: const Text("Отклонить", style: TextStyle(color: Colors.black, fontSize: 15)),
+                          onPressed: () async {
+                            httpStatusUpdate(false).then((value) async {
+                              if (value==true) {
+                                setState(() {
+                                  widget.plat.del=true;
+                                });
+                                Navigator.pop(context);
+                              }
+                            });
+                          },
+                          style: ElevatedButton.styleFrom(backgroundColor: Colors.red,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16.0),
+                            ),
+                          ),
+                      )
                     ],
                   ),
                 ),
-                Divider(),
-                Card(
-                  child: ListTile(
-                    title: Text('Посмотреть фото (${widget.plat.attachedKol})'),
-                    leading: Icon(Icons.photo),
-                    trailing: Icon(Icons.navigate_next),
-                    onTap: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => scrAttachedScreen(widget.plat.id)));
-                    },
-                  ),
-                ),
-                Divider(),
-                _payer(widget: widget,),
-                Divider(),
-                if (widget.plat.objectName!='')
-                SingleSection(
-                  title: 'Сведения об объекте',
-                  children: [
-                    _CustomListTile(
-                        title: 'Договор № ${widget.plat.dogNumber} от ${DateFormat('dd.MM.yyyy').format(widget.plat.dogDate)}',
-                        icon: Icons.paste_rounded,
-                        id: '',
-                        idType: ''),
-                    _CustomListTile(
-                        title: 'Объект: ${widget.plat.objectName}',
-                        icon: Icons.location_on_outlined,
-                        id: widget.plat.objectId,
-                        idType: 'scrObjectsViewScreen'),
-                  ],
-                ),
-                if (widget.plat.objectName!='')
-                Divider(),
-                _recipient(widget: widget,),
-                Divider(),
-                SingleSection(
-                  title: 'Аналитика и комментарий',
-                  children: [
-                    if (widget.plat.platType!='Перемещение' && widget.plat.type!='Выдача денежных средств в подотчет')
-                    _CustomListTile(
-                        title: "${widget.plat.analyticName}",
-                        icon: Icons.analytics,
-                        id: '',
-                        idType: ''),
-                    _CustomListTile(
-                        title: widget.plat.comment,
-                        icon: Icons.comment_outlined,
-                        id: '',
-                        idType: ''),
-                  ],
-                ),
-                Text('${NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(widget.plat.summa)} руб.', style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold, color: (widget.plat.summa>=0) ? Colors.green : Colors.red)),
-              ],
+              ),
             ),
           ],
         ),
