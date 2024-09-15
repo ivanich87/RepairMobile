@@ -30,6 +30,7 @@ class _scrReceiptEditScreenState extends State<scrReceiptEditScreen> {
 
   Future<bool> httpPlatUpdate(Receipt _body) async {
     bool _result=false;
+    bool _accept = false;
     final _queryParameters = {'userId': Globals.anPhone};
     var _url=Uri(path: '${Globals.anPath}platUpdate/', host: Globals.anServer, scheme: 'https', queryParameters: _queryParameters); //тут нужно заменить функцию на новую
     var _headers = <String, String> {
@@ -46,6 +47,8 @@ class _scrReceiptEditScreenState extends State<scrReceiptEditScreen> {
         String _id = data['Код'] ?? '';
         _result = data['Успешно'] ?? '';
         String _message = data['Сообщение'] ?? '';
+        _accept = data['Проведен'] ?? false;
+        widget.receiptData.accept = _accept;
         if (widget.receiptData.id=='')
           _body.id = _id;
 

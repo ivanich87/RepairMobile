@@ -176,7 +176,7 @@ class _scrPlatsViewScreenState extends State<scrPlatsViewScreen> {
                 ),
               ],
             ),
-            if (widget.plat.accept==false && widget.plat.del==false)
+            if (widget.plat.accept==false && widget.plat.del==false && Globals.anApprovalPlat && widget.plat.id!='')
             Align(alignment: Alignment.bottomCenter,
               child: Padding(
                 padding: const EdgeInsets.only(bottom: 12.0, left: 8, right: 8),

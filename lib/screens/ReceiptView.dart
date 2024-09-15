@@ -89,6 +89,44 @@ class _scrReceiptViewScreenState extends State<scrReceiptViewScreen> {
     }
   }
 
+  Future<bool> httpStatusUpdate(bool _accept) async {
+    bool _result=false;
+    String _message = 'Ошибка';
+    final _queryParameters = {'userId': Globals.anPhone};
+    var _url=Uri(path: '${Globals.anPath}plataccept/${recipientdata.id}/${(_accept==true) ? '1' : '0'}', host: Globals.anServer, scheme: 'https', queryParameters: _queryParameters);
+    var _headers = <String, String> {
+      'Accept': 'application/json',
+      'Authorization': Globals.anAuthorization
+    };
+    try {
+      var response = await http.get(_url, headers: _headers);
+      print('Код ответа: ${response.statusCode} Тело ответа: ${response.body}');
+      if (response.statusCode == 200) {
+        var data = json.decode(response.body);
+        _result = data['Успешно'] ?? '';
+        _message = data['Сообщение'] ?? '';
+
+        print('Платеж согласован. Результат:  $_result. Сообщение:  $_message');
+      }
+      else {
+        _result = false;
+        _message = response.body;
+      }
+      if (_result == false)
+        throw _message;
+    }
+    catch (error) {
+      _result = false;
+      print("Ошибка при выгрузке платежа: $error");
+      final snackBar = SnackBar(
+        content: Text('$error'),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    }
+    return _result ?? false;
+  }
+
+
   @override
   void initState() {
     httpGetInfoObject().then((value) {
@@ -106,115 +144,171 @@ class _scrReceiptViewScreenState extends State<scrReceiptViewScreen> {
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
           actions: (Globals.anCreatePlat==false || (Globals.anUserRoleId!=3 && recipientdata.accept==true)) ? null : <Widget>[_menuAppBar()],
         ),
-        body: ListView(
+        body: Stack(
           children: [
-            Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              //crossAxisAlignment: CrossAxisAlignment.end,
+            ListView(
               children: [
-                Text(
-                  'Покупка стройматериалов',
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                ),
-                Text(
-                  '№ ${recipientdata.number} от ${DateFormat('dd.MM.yyyy').format(recipientdata.date)}',
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                ),
-                Divider(),
-                Card(
-                  child: ListTile(
-                    title: Text('Посмотреть фото (${recipientdata.attachedKol})'),
-                    leading: Icon(Icons.photo),
-                    trailing: Icon(Icons.navigate_next),
-                    onTap: () async {
-                      await Navigator.push(context, MaterialPageRoute(builder: (context) => scrAttachedScreen(recipientdata.id)));
-                      initState();
-                    },
-                  ),
-                ),
-                if (recipientdata.tovarUse)
-                  Card(
-                    child: ListTile(
-                      title: Text('Посмотреть товары'),
-                      leading: Icon(Icons.list_alt),
-                      trailing: Icon(Icons.navigate_next),
-                      onTap: () {
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => scrReceiptSostScreen(recipientdata.receiptSost!.toList())));
-                      },
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  //crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text(
+                      'Покупка стройматериалов',
+                      style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                     ),
-                  ),
-                Divider(),
-                SingleSection(
-                  title: 'Данные по объекту',
-                  children: [
-                    _CustomListTile(
-                        title: recipientdata.clientNmame,
-                        icon: Icons.man,
-                        id: recipientdata.clientId),
-                    _CustomListTile(
-                        title: recipientdata.objectName,
-                        icon: Icons.location_on_outlined,
-                        id: ''),
-                    _CustomListTile(
-                        title: '№${recipientdata.dogNumber} от ${DateFormat('dd.MM.yyyy').format(recipientdata.dogDate)}',//InfoObject['address'],//ObjectData,  //infoObjectData['address'].toString()
-                        icon: Icons.document_scanner,
-                        id: ''),
-                  ],
-                ),
-                Divider(),
-                SingleSection(
-                  title: 'Поставщик',
-                  children: [
-                    _CustomListTile(
-                        title: recipientdata.contractorName,
-                        icon: Icons.manage_accounts,
-                        id: ''),
-                  ],
-                ),
-                Divider(),
-                SingleSection(
-                  title: 'Аналитика и комментарий',
-                  children: [
-                    _CustomListTile(
-                        title: recipientdata.analyticName,
-                        icon: Icons.analytics,
-                        id: ''),
-                    _CustomListTile(
-                        title: recipientdata.comment,
-                        icon: Icons.comment_outlined,
-                        id: ''),
-                  ],
-                ),
-                Divider(),
-                SingleSection(
-                  title: 'Суммы',
-                  children: [
-                    _CustomListTile(
-                        title: "Сумма за материалы",
-                        trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(recipientdata.summaClient), style: MyTextStyle()),
-                        icon: Icons.attach_money,
-                        id: ''),
-                    if (recipientdata.summaClient!=recipientdata.summaOrg)
-                    _CustomListTile(
-                        title: "Сумма факт",
-                        trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(recipientdata.summaOrg), style: MyTextStyle()),
-                        icon: Icons.attach_money,
-                        id: ''),
-                    if (recipientdata.summa!=recipientdata.summaOrg)
-                    _CustomListTile(
-                        title: "Списать деньги",
-                        trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(recipientdata.summa), style: MyTextStyle()),
-                        icon: Icons.attach_money,
-                        id: ''),
-                    _CustomListTile(
-                        title: '${(recipientdata.kassaType==0) ? recipientdata.kassaName : (recipientdata.kassaType==1) ? recipientdata.kassaSotrName : 'Без списния'}',
-                        icon: Icons.payment_outlined,
-                        id: '')
+                    Text(
+                      '№ ${recipientdata.number} от ${DateFormat('dd.MM.yyyy').format(recipientdata.date)}',
+                      style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                    ),
+                    Divider(),
+                    Card(
+                      child: ListTile(
+                        title: Text('Посмотреть фото (${recipientdata.attachedKol})'),
+                        leading: Icon(Icons.photo),
+                        trailing: Icon(Icons.navigate_next),
+                        onTap: () async {
+                          await Navigator.push(context, MaterialPageRoute(builder: (context) => scrAttachedScreen(recipientdata.id)));
+                          initState();
+                        },
+                      ),
+                    ),
+                    if (recipientdata.tovarUse)
+                      Card(
+                        child: ListTile(
+                          title: Text('Посмотреть товары'),
+                          leading: Icon(Icons.list_alt),
+                          trailing: Icon(Icons.navigate_next),
+                          onTap: () {
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => scrReceiptSostScreen(recipientdata.receiptSost!.toList())));
+                          },
+                        ),
+                      ),
+                    Divider(),
+                    SingleSection(
+                      title: 'Данные по объекту',
+                      children: [
+                        _CustomListTile(
+                            title: recipientdata.clientNmame,
+                            icon: Icons.man,
+                            id: recipientdata.clientId),
+                        _CustomListTile(
+                            title: recipientdata.objectName,
+                            icon: Icons.location_on_outlined,
+                            id: ''),
+                        _CustomListTile(
+                            title: '№${recipientdata.dogNumber} от ${DateFormat('dd.MM.yyyy').format(recipientdata.dogDate)}',//InfoObject['address'],//ObjectData,  //infoObjectData['address'].toString()
+                            icon: Icons.document_scanner,
+                            id: ''),
+                      ],
+                    ),
+                    Divider(),
+                    SingleSection(
+                      title: 'Поставщик',
+                      children: [
+                        _CustomListTile(
+                            title: recipientdata.contractorName,
+                            icon: Icons.manage_accounts,
+                            id: ''),
+                      ],
+                    ),
+                    Divider(),
+                    SingleSection(
+                      title: 'Аналитика и комментарий',
+                      children: [
+                        _CustomListTile(
+                            title: recipientdata.analyticName,
+                            icon: Icons.analytics,
+                            id: ''),
+                        _CustomListTile(
+                            title: recipientdata.comment,
+                            icon: Icons.comment_outlined,
+                            id: ''),
+                      ],
+                    ),
+                    Divider(),
+                    SingleSection(
+                      title: 'Суммы',
+                      children: [
+                        _CustomListTile(
+                            title: "Сумма за материалы",
+                            trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(recipientdata.summaClient), style: MyTextStyle()),
+                            icon: Icons.attach_money,
+                            id: ''),
+                        if (recipientdata.summaClient!=recipientdata.summaOrg)
+                        _CustomListTile(
+                            title: "Сумма факт",
+                            trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(recipientdata.summaOrg), style: MyTextStyle()),
+                            icon: Icons.attach_money,
+                            id: ''),
+                        if (recipientdata.summa!=recipientdata.summaOrg)
+                        _CustomListTile(
+                            title: "Списать деньги",
+                            trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(recipientdata.summa), style: MyTextStyle()),
+                            icon: Icons.attach_money,
+                            id: ''),
+                        _CustomListTile(
+                            title: '${(recipientdata.kassaType==0) ? recipientdata.kassaName : (recipientdata.kassaType==1) ? recipientdata.kassaSotrName : 'Без списния'}',
+                            icon: Icons.payment_outlined,
+                            id: '')
+                      ],
+                    )
                   ],
                 )
-              ],
-            )
 
+              ],
+            ),
+            if (recipientdata.accept==false && recipientdata.del==false && Globals.anApprovalPlat && recipientdata.id!='')
+              Align(alignment: Alignment.bottomCenter,
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 12.0, left: 8, right: 8),
+                  child: SafeArea(
+                    child:
+                    Row(mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        ElevatedButton.icon(
+                          icon: Icon(Icons.check, color: Colors.black),
+                          label: Text('Согласовать', style: TextStyle(color: Colors.black, fontSize: 15)),
+                          onPressed: () {
+                            httpStatusUpdate(true).then((value) async {
+                              if (value==true) {
+                                setState(() {
+                                  recipientdata.accept=true;
+                                });
+                                Navigator.pop(context);
+                              }
+                            });
+                          },
+                          style: ElevatedButton.styleFrom(backgroundColor: Colors.green,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16.0),
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 15),
+                        ElevatedButton.icon(
+                          icon: const Icon(Icons.delete, color: Colors.black),
+                          label: const Text("Отклонить", style: TextStyle(color: Colors.black, fontSize: 15)),
+                          onPressed: () async {
+                            httpStatusUpdate(false).then((value) async {
+                              if (value==true) {
+                                setState(() {
+                                  recipientdata.del=true;
+                                });
+                                Navigator.pop(context);
+                              }
+                            });
+                          },
+                          style: ElevatedButton.styleFrom(backgroundColor: Colors.red,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16.0),
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+              ),
           ],
         ),
         floatingActionButton: (Globals.anCreatePlat==false || (Globals.anUserRoleId!=3 && recipientdata.accept==true)) ? null : FloatingActionButton(

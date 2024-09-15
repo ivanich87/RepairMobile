@@ -23,6 +23,7 @@ class Globals {
   static var anIsDarkTheme = false;
   static var anCreatePlat = true;
   static var anCreateObject = true;
+  static var anApprovalPlat = false;
 
   static printInteger() {
     print(anThemeIndex);
@@ -96,6 +97,10 @@ class Globals {
 
   static setCreateObject(bool a) {
     anCreateObject = a;
+  }
+
+  static setApprovalPlat(bool a) {
+    anApprovalPlat = a;
   }
 
   static setPlatform(String a) {

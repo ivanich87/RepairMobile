@@ -40,7 +40,7 @@ class _scrAccessUserScreenState extends State<scrAccessUserScreen> {
   bool accessApprovalPlat  = false;
   String kassaApprovedKol = '0';
   int kassaApprovedKolAll=0;
-  bool kassaApprovedEnabled = false;
+  bool kassaApprovedEnabled = true;
   List<sprListSelected> selectedObject=[];
   List<sprListSelected> selectedDogovor=[];
   List<sprListSelected> selectedKassaPay=[];
@@ -184,7 +184,7 @@ class _scrAccessUserScreenState extends State<scrAccessUserScreen> {
         centerTitle: true,
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
       ),
-        body: Column(
+        body: ListView(
           children: [
             Text('${widget.name}', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500)),
             Divider(),
@@ -276,7 +276,7 @@ class _scrAccessUserScreenState extends State<scrAccessUserScreen> {
               if (accessCreatePlat)
                 ListTile(
                   title: Text('Доступные кассы: ', style: TextStyle(fontWeight: FontWeight.normal, fontSize: 18),),
-                  subtitle: Text('Список доступных касс/счетов для списания при создании платежей'),
+                  subtitle: Text('Список доступных касс/счетов для списания при создании платежей. Если нет доступа ни к одному элементу, то он может создавать платежи только из подотчетных стредств.'),
                   trailing: Text(kassaKol, style: TextStyle(fontWeight: FontWeight.normal, fontSize: 16),),
                   onTap: () async {
                     var res = await Navigator.push(context, MaterialPageRoute(builder: (context) {return scrAccessUserKassaSelectedScreen(sprName: 'Кассы', onType: 'pop', selectedList: selectedKassaPay,);}));
@@ -291,7 +291,7 @@ class _scrAccessUserScreenState extends State<scrAccessUserScreen> {
               Divider(),
               ListTile(
                 title: Text('Подтверждение платежей:', style: TextStyle(fontWeight: FontWeight.normal, fontSize: 18),),
-                subtitle: Text('Данный функционал в разработке'),
+                subtitle: Text('Функция проверки и подтверждения правильности создания платежей прорабами.'),
                 trailing: Switch.adaptive(
                   value: accessApprovalPlat,
                   onChanged: !kassaApprovedEnabled
@@ -303,16 +303,17 @@ class _scrAccessUserScreenState extends State<scrAccessUserScreen> {
                   },
                 ),
               ),
-              if (accessApprovalPlat)
-                ListTile(
-                  title: Text('Доступные кассы: ', style: TextStyle(fontWeight: FontWeight.normal, fontSize: 18),),
-                  subtitle: Text('Список доступных касс/счетов для подтверждения созданных платежей'),
-                  trailing: Text(kassaApprovedKol, style: TextStyle(fontWeight: FontWeight.normal, fontSize: 16),),
-                  onTap: () {
-
-                  },
-                ),
+              // if (accessApprovalPlat)
+              //   ListTile(
+              //     title: Text('Доступные кассы: ', style: TextStyle(fontWeight: FontWeight.normal, fontSize: 18),),
+              //     subtitle: Text('Список доступных касс/счетов для подтверждения созданных платежей'),
+              //     trailing: Text(kassaApprovedKol, style: TextStyle(fontWeight: FontWeight.normal, fontSize: 16),),
+              //     onTap: () {
+              //
+              //     },
+              //   ),
               Divider(),
+              SizedBox(height: 40,)
             ],
           ],
         ),

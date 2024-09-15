@@ -28,6 +28,7 @@ class _scrHomeScreenState extends State<scrHomeScreen> {
   num CashSummaAll = 0;
   num CashSummaPO = 0;
   int ObjectKol = 0;
+  int ApprovalKol=0;
   
   Future httpGetInfo() async {
     final _queryParameters = {'userId': Globals.anPhone};
@@ -47,6 +48,7 @@ class _scrHomeScreenState extends State<scrHomeScreen> {
         CashSummaAll = notesJson['summa'];
         CashSummaPO = notesJson['summaPO'];
         ObjectKol = notesJson['objectKol'];
+        ApprovalKol=notesJson['approvalKol'];
         Globals.setOwnerId(notesJson['ownerId']);
         Globals.setOwnerName(notesJson['ownerName']);
         Globals.setUserId(notesJson['userId']);
@@ -59,6 +61,7 @@ class _scrHomeScreenState extends State<scrHomeScreen> {
 
         Globals.setCreateObject(notesJson['createObject']);
         Globals.setCreatePlat(notesJson['createPlat']);
+        Globals.setApprovalPlat(notesJson['approvalPlat']);
       }
       else
         throw 'Ответ от процедуры /info: ${response.statusCode}; ${response.body}';
@@ -136,123 +139,121 @@ class _scrHomeScreenState extends State<scrHomeScreen> {
         SafeArea(
           child: Stack(
             children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Text('${Globals.anCompanyName}', textAlign: TextAlign.right, style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, fontStyle: FontStyle.italic)),
-                    Text('${Globals.anUserName}', textAlign: TextAlign.right, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, fontStyle: FontStyle.italic)),
-                    Text('${Globals.anUserRole}', textAlign: TextAlign.right, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, fontStyle: FontStyle.italic)),
-                  ],
-                ),
+              ListView(shrinkWrap: true,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Text('${Globals.anCompanyName}', textAlign: TextAlign.right, style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, fontStyle: FontStyle.italic)),
+                        Text('${Globals.anUserName}', textAlign: TextAlign.right, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, fontStyle: FontStyle.italic)),
+                        Text('${Globals.anUserRole}', textAlign: TextAlign.right, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, fontStyle: FontStyle.italic)),
+                        //Text('Версия 1.0.1', textAlign: TextAlign.right),
+                        Container(height: 160,
+                          child: Column(mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Image.asset('assets/icons/repair.png', height: 100,),
+                              SizedBox(height: 8,),
+                              Text('РемонтКвартир', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 24, fontStyle: FontStyle.italic),)
+                            ],
+                          ),
+                        ),
+                        Card(
+                          child: ListTile(
+                            title: Text(
+                              'Объекты',
+                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
+                            ),
+                            subtitle: Text('Информация по действующим объектам'),
+                            leading: Icon(Icons.account_balance_sharp),
+                            trailing: Text(
+                              ObjectKol.toString(),
+                              style: TextStyle(fontSize: 18, color: Colors.green),
+                            ),
+                            onTap: () async {
+                              await Navigator.push(context, MaterialPageRoute(builder: (context) => scrObjectsScreen()));
+                              initState();
+                            },
+                          ),
+                        ),
+                        if (Globals.anUserRoleId==3)
+                          Card(
+                            child: ListTile(
+                              title: Text(
+                                'Финансы',
+                                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
+                              ),
+                              subtitle: Text('Баланс по организации'),
+                              leading: Icon(Icons.currency_ruble_rounded),
+                              trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(CashSummaAll), style: TextStyle(fontSize: 18, color: Colors.green),
+                              ),
+                              onTap: () async {
+                                //Navigator.push(context, MaterialPageRoute(builder: (context) => scrInputSharedFilesScreen(_sharedFiles)));
+                                await Navigator.push(context, MaterialPageRoute(builder: (context) => scrCashHomeScreen()));
+                                initState();
+                              },
+                            ),
+                          ),
+                        Card(
+                          child: ListTile(
+                            title: Text(
+                              'Подотчет',
+                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
+                            ),
+                            subtitle: Text('Мой баланс П/О средств'),
+                            leading: Icon(Icons.currency_ruble_rounded),
+                            trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(CashSummaPO), style: TextStyle(fontSize: 18, color: (CashSummaPO>0) ? Colors.red : Colors.green),
+                            ),
+                            onTap: () async {
+                              await Navigator.push(context, MaterialPageRoute(builder: (context) => scrCashListScreen(idCash: '0', cashName: 'Все', analytic: '', analyticName: '', objectId: '', objectName: '', platType: '', dateRange: DateTimeRange(start: DateTime(2023), end: DateTime.now()), kassaSotrId: Globals.anUserId, kassaSortName: Globals.anUserName,  )));
+                              initState();
+                            },
+                          ),
+                        ),
+                        if (Globals.anApprovalPlat==true)
+                          Card(
+                            child: ListTile(
+                              title: Text(
+                                'Согласовать',
+                                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
+                              ),
+                              subtitle: Text('Платежи, требующие вашего согласования'),
+                              leading: Icon(Icons.warning_amber),
+                              trailing: Text('${ApprovalKol}', style: TextStyle(fontSize: 18, color: (CashSummaPO>0) ? Colors.red : Colors.green),
+                              ),
+                              onTap: () async {
+                                await Navigator.push(context, MaterialPageRoute(builder: (context) => scrCashListScreen(idCash: '0', cashName: 'Все', analytic: '', analyticName: '', objectId: '', objectName: '', platType: '', dateRange: DateTimeRange(start: DateTime(2023), end: DateTime.now()), kassaSotrId: '', kassaSortName: '', approve: true, )));
+                                initState();
+                              },
+                            ),
+                          ),
+                        Card(
+                          child: ListTile(
+                            title: Text(
+                              'Задачи',
+                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
+                            ),
+                            subtitle: Text('Управление задачами'),
+                            leading: Icon(Icons.event_note_outlined),
+                            trailing: Text('12/3', style: TextStyle(fontSize: 18, color: Colors.green),
+                            ),
+                            onTap: () async {
+                              final snackBar = SnackBar(content: Text('Этот функционал в разработке'),);
+                              ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                            },
+                          ),
+                        ),
+                        SizedBox(height: 30,)
+                      ],
+                    ),
+                  ),
+                ],
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Column(mainAxisAlignment: MainAxisAlignment.end, crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Text('Версия: 1.0.0', textAlign: TextAlign.right, style: TextStyle(fontSize: 18, fontWeight: FontWeight.normal, fontStyle: FontStyle.italic)),
-                  ],
-                ),
-              ),
-              Center(
-                child: ListView(shrinkWrap: true,
-                  //mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(height: 200,
-                    child: Column(mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Image.asset('assets/icons/repair.png'),
-                        SizedBox(height: 8,),
-                        Text('РемонтКвартир', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 24, fontStyle: FontStyle.italic),)
-                      ],
-                    ),
-                    ),
-                    //SizedBox(height: 200,),
-                    Card(
-                      child: ListTile(
-                        title: Text(
-                          'Объекты',
-                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
-                        ),
-                        subtitle: Text('Информация по действующим объектам'),
-                        leading: Icon(Icons.account_balance_sharp),
-                        trailing: Text(
-                          ObjectKol.toString(),
-                          style: TextStyle(fontSize: 18, color: Colors.green),
-                        ),
-                        onTap: () async {
-                          await Navigator.push(context, MaterialPageRoute(builder: (context) => scrObjectsScreen()));
-                          initState();
-                        },
-                      ),
-                    ),
-                    if (Globals.anUserRoleId==3)
-                      Card(
-                        child: ListTile(
-                          title: Text(
-                            'Финансы',
-                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
-                          ),
-                          subtitle: Text('Баланс по организации'),
-                          leading: Icon(Icons.currency_ruble_rounded),
-                          trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(CashSummaAll), style: TextStyle(fontSize: 18, color: Colors.green),
-                          ),
-                          onTap: () async {
-                            //Navigator.push(context, MaterialPageRoute(builder: (context) => scrInputSharedFilesScreen(_sharedFiles)));
-                            await Navigator.push(context, MaterialPageRoute(builder: (context) => scrCashHomeScreen()));
-                            initState();
-                          },
-                        ),
-                      ),
-                    Card(
-                      child: ListTile(
-                        title: Text(
-                          'Подотчет',
-                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
-                        ),
-                        subtitle: Text('Мой баланс П/О средств'),
-                        leading: Icon(Icons.currency_ruble_rounded),
-                        trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(CashSummaPO), style: TextStyle(fontSize: 18, color: (CashSummaPO>0) ? Colors.red : Colors.green),
-                        ),
-                        onTap: () async {
-                          await Navigator.push(context, MaterialPageRoute(builder: (context) => scrCashListScreen(idCash: '0', cashName: 'Все', analytic: '', analyticName: '', objectId: '', objectName: '', platType: '', dateRange: DateTimeRange(start: DateTime(2023), end: DateTime.now()), kassaSotrId: Globals.anUserId, kassaSortName: Globals.anUserName,  )));
-                          initState();
-                        },
-                      ),
-                    ),
-                    Card(
-                      child: ListTile(
-                        title: Text(
-                          'Согласовать',
-                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
-                        ),
-                        subtitle: Text('Платежи, требующие вашего согласования'),
-                        leading: Icon(Icons.warning_amber),
-                        trailing: Text('2', style: TextStyle(fontSize: 18, color: (CashSummaPO>0) ? Colors.red : Colors.green),
-                        ),
-                        onTap: () async {
-                          await Navigator.push(context, MaterialPageRoute(builder: (context) => scrCashListScreen(idCash: '0', cashName: 'Все', analytic: '', analyticName: '', objectId: '', objectName: '', platType: '', dateRange: DateTimeRange(start: DateTime(2023), end: DateTime.now()), kassaSotrId: '', kassaSortName: '', approve: true, )));
-                          initState();
-                        },
-                      ),
-                    ),
-                    Card(
-                      child: ListTile(
-                        title: Text(
-                          'Задачи',
-                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
-                        ),
-                        subtitle: Text('Управление задачами'),
-                        leading: Icon(Icons.event_note_outlined),
-                        trailing: Text('12/3', style: TextStyle(fontSize: 18, color: Colors.green),
-                        ),
-                        onTap: () async {
-                          final snackBar = SnackBar(content: Text('Этот функционал в разработке'),);
-                          ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                        },
-                      ),
-                    )
-
+                    Text('Версия: 1.0.1', textAlign: TextAlign.right, style: TextStyle(fontSize: 14, fontWeight: FontWeight.normal, fontStyle: FontStyle.italic)),
                   ],
                 ),
               ),
