@@ -173,7 +173,7 @@ class _scrObjectsViewScreenState extends State<scrObjectsViewScreen> {
                 child: TabBarView(children: <Widget> [
                   _pageGeneral(),
                   _pageFinteh()
-                ]),
+                ], ),
               ),
             ],
           ),
