@@ -75,17 +75,17 @@ class _scrFilesAttachedGalleryState extends State<scrFilesAttachedGallery> {
                     ))),
           ),
           Positioned (// Close in the upper right corner
-            top: 40,
-            right: 40,
+            top: 50,
+            right: 50,
             child: Container(
               alignment: Alignment.centerLeft,
-              width: 20,
+              width: 30,
               child: GestureDetector(
                 onTap: () {
                   // Hidden preview
                   Navigator.pop(context);
                 },
-                child: Icon(Icons.close_rounded, color: Colors.white),
+                child: CircleAvatar(child: Icon(Icons.close, color: Colors.white, size: 30), backgroundColor: Colors.grey,),
               ),
             ),
           ),

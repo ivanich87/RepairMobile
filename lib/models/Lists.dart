@@ -24,6 +24,7 @@ class Globals {
   static var anCreatePlat = true;
   static var anCreateObject = true;
   static var anApprovalPlat = false;
+  static var anFinTech = false;
 
   static printInteger() {
     print(anThemeIndex);
@@ -97,6 +98,10 @@ class Globals {
 
   static setCreateObject(bool a) {
     anCreateObject = a;
+  }
+
+  static setFinTech(bool a) {
+    anFinTech = a;
   }
 
   static setApprovalPlat(bool a) {
@@ -947,7 +952,7 @@ class Receipt {
 
 class ReceiptSost {
   String? name;
-  int? kol;
+  num? kol;
   num? price;
   num? summa;
 

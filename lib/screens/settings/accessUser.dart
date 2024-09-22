@@ -38,6 +38,7 @@ class _scrAccessUserScreenState extends State<scrAccessUserScreen> {
   bool accessCreatePlat = false;
   bool accessCreateObject=false;
   bool accessApprovalPlat  = false;
+  bool accessFinTech = false;
   String kassaApprovedKol = '0';
   int kassaApprovedKolAll=0;
   bool kassaApprovedEnabled = true;
@@ -74,12 +75,12 @@ class _scrAccessUserScreenState extends State<scrAccessUserScreen> {
         dogovorKolAll = notesJson['dogovorKolAll'];
         accessCreatePlat = notesJson['accessCreatePlat'];
         accessCreateObject = notesJson['accessCreateObject'];
+        accessFinTech = notesJson['accessFinTech'];
 
         kassaKol = notesJson['kassaKol'];
         kassaKolAll = notesJson['kassaKolAll'];
 
         accessApprovalPlat = notesJson['accessApprovalPlat'];
-        print('3');
         kassaApprovedKol = notesJson['kassaApprovedKol'];
         kassaApprovedKolAll = notesJson['kassaApprovedKolAll'];
 
@@ -89,11 +90,9 @@ class _scrAccessUserScreenState extends State<scrAccessUserScreen> {
         for (var noteJson in notesJson['selectedObject']) {
           selectedObject.add(sprListSelected.fromJson(noteJson));
         }
-        print('4');
         for (var noteJson in notesJson['selectedDogovor']) {
           selectedDogovor.add(sprListSelected.fromJson(noteJson));
         }
-        print('5');
         for (var noteJson in notesJson['selectedKassaPay']) {
           selectedKassaPay.add(sprListSelected.fromJson(noteJson));
         }
@@ -121,6 +120,7 @@ class _scrAccessUserScreenState extends State<scrAccessUserScreen> {
       'accessCreateObject': accessCreateObject,
       'accessCreatePlat': accessCreatePlat,
       'accessApprovalPlat': accessApprovalPlat,
+      'accessFinTech': accessFinTech,
       'selectedObject': selectedObject!.map((v) => v.toJson()).toList(),
       'selectedDogovor': selectedDogovor!.map((v) => v.toJson()).toList(),
       'selectedKassaPay': selectedKassaPay!.map((v) => v.toJson()).toList()
@@ -243,6 +243,21 @@ class _scrAccessUserScreenState extends State<scrAccessUserScreen> {
               //
               //   },
               // ),
+              Divider(),
+              ListTile(
+                title: Text('Вкладка финансы:', style: TextStyle(fontWeight: FontWeight.normal, fontSize: 18),),
+                subtitle: Text('Доступ к информаци ина вкладке финансы в объекте или договоре'),
+                trailing: Switch.adaptive(
+                  value: accessFinTech,
+                  onChanged: !accessEnable
+                      ? null
+                      : (bool value) {
+                    setState(() {
+                      accessFinTech = value;
+                    });
+                  },
+                ),
+              ),
               Divider(),
               ListTile(
                 title: Text('Создание новых объектов:', style: TextStyle(fontWeight: FontWeight.normal, fontSize: 18),),

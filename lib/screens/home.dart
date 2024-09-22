@@ -62,6 +62,7 @@ class _scrHomeScreenState extends State<scrHomeScreen> {
         Globals.setCreateObject(notesJson['createObject']);
         Globals.setCreatePlat(notesJson['createPlat']);
         Globals.setApprovalPlat(notesJson['approvalPlat']);
+        Globals.setFinTech(notesJson['finTech']);
       }
       else
         throw 'Ответ от процедуры /info: ${response.statusCode}; ${response.body}';
@@ -78,11 +79,17 @@ class _scrHomeScreenState extends State<scrHomeScreen> {
     // Listen to media sharing coming from outside the app while the app is in the memory.
     _intentSub = ReceiveSharingIntent.instance.getMediaStream().listen((value) {
       if (value !=null) {
-        print('Входящие данные в приложение в памяти: ' + value.toString());
-        _sharedFiles.clear();
-        _sharedFiles.addAll(value);
-        if (_sharedFiles.length > 0)
-          Navigator.push(context, MaterialPageRoute(builder: (context) => scrInputSharedFilesScreen(_sharedFiles)));
+        if (_sharedFiles.length==0) {
+          print('Входящие данные1 в приложение в памяти: ' + value[0].toString());
+          _sharedFiles.addAll(value);
+          if (_sharedFiles.length > 0) {
+            print('Пришел файл из вне 1');
+            Navigator.push(context, MaterialPageRoute(builder: (context) => scrInputSharedFilesScreen(_sharedFiles)));
+          }
+        } else {
+          print('Пришел файл, но еще не заколнчилась обработка предыдущего. Удаляем');
+          value.clear();
+        }
       };
 
       print(_sharedFiles.map((f) => f.toMap()));
@@ -94,7 +101,7 @@ class _scrHomeScreenState extends State<scrHomeScreen> {
     // Get the media sharing coming from outside the app while the app is closed.
     ReceiveSharingIntent.instance.getInitialMedia().then((value) {
       if (value !=null) {
-        print('Входящие данные: ' + value.toString());
+        print('Входящие данные2: ' + value.toString());
 
         _sharedFiles.clear();
         _sharedFiles.addAll(value);
@@ -119,7 +126,10 @@ class _scrHomeScreenState extends State<scrHomeScreen> {
     //super.initState();
 
   }
-
+  void dispose() {
+    _intentSub.cancel();
+    super.dispose();
+  }
 
 
   Widget build(BuildContext context) {

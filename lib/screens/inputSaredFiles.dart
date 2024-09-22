@@ -22,6 +22,8 @@ class scrInputSharedFilesScreen extends StatefulWidget {
 }
 
 class _scrInputSharedFilesScreenState extends State<scrInputSharedFilesScreen> {
+  bool _isLoad = false;
+  String _errorParsingJson='';
   String platId='';
   bool _isJson = false;
   DateTime recipientDate = DateTime.now();
@@ -46,6 +48,7 @@ class _scrInputSharedFilesScreenState extends State<scrInputSharedFilesScreen> {
     //   "last_name": "tttt"
     // };
     try {
+      _errorParsingJson='';
       print('Отправляем файл json на сервер');
       var response = await http.post(_url, headers: _headers, body: (await file.readAsBytesSync()));
       print(response.statusCode.toString());
@@ -64,11 +67,13 @@ class _scrInputSharedFilesScreenState extends State<scrInputSharedFilesScreen> {
         for (var noteJson in notesJson['СоставЧека']) {
           receiptSost.add(ReceiptSost(name: noteJson['Наименование'], kol: noteJson['Количество'], price: noteJson['Цена'], summa: noteJson['Сумма']));
         }
+        _isJson=true;
       }
       else
         throw 'Код ответа: ${response.statusCode.toString()}. Ответ: ${response.body}';
     } catch (error) {
       print("Ошибка при формировании списка: $error");
+      _errorParsingJson = 'Ошибка чтения JSON: $error';
     }
   }
 
@@ -106,6 +111,7 @@ class _scrInputSharedFilesScreenState extends State<scrInputSharedFilesScreen> {
         print(widget._sharedFiles[i].path);
         await addImage(context, platId, widget._sharedFiles[i].path);
       }
+      widget._sharedFiles.clear();
       Navigator.pop(context);
     }
   }
@@ -113,27 +119,22 @@ class _scrInputSharedFilesScreenState extends State<scrInputSharedFilesScreen> {
   @override
   void initState() {
     // TODO: implement initState
-    super.initState();
+    //super.initState();
     print('На всходе пришел файл, будем его проверять на json');
     String pp = widget._sharedFiles[0].path;
 
     if (pp.substring(widget._sharedFiles[0].path.length-4)=='json') {
       _isJson == true;
       print('На сходе пришел json, будем его распаковывать на сервере');
-      httpGetJsonUnPacked(File(pp));
-      setState(() {
-
+      httpGetJsonUnPacked(File(pp)).then((value) {
+        setState(() {
+        });
       });
     }
 
   }
 
   @override
-  void dispose() {
-    //_intentSub.cancel();
-    super.dispose();
-  }
-
   Widget build(BuildContext context) {
 
     return Scaffold(
@@ -142,7 +143,8 @@ class _scrInputSharedFilesScreenState extends State<scrInputSharedFilesScreen> {
         centerTitle: true,
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
       ),
-        body: ListView(padding: EdgeInsets.all(8),
+        body: (_isLoad) ? Center(child: CircularProgressIndicator()) :
+        ListView(padding: EdgeInsets.all(8),
           //mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Divider(),
@@ -163,7 +165,13 @@ class _scrInputSharedFilesScreenState extends State<scrInputSharedFilesScreen> {
                     print('Платеж выбран и можно прикрепить фото');
                     for(var i = 0; i < widget._sharedFiles.length; i++){
                       print(widget._sharedFiles[i].path);
+                      setState(() {
+                        _isLoad=true;
+                      });
                       await addImage(context, platId, widget._sharedFiles[i].path);
+                      setState(() {
+                        _isLoad=false;
+                      });
                     }
                     Navigator.pop(context);
                     },
@@ -240,10 +248,18 @@ class _scrInputSharedFilesScreenState extends State<scrInputSharedFilesScreen> {
                   Receipt recipientdata = Receipt('', '', recipientDate, true, false, false, '', '', '', '', true, '', '', DateTime.now(), recipientSumma, recipientSumma, recipientSumma, recipientTovarUse, recipientComment, recipientContractorId, recipientContractorName, 'Расход', 0, '7fa144f2-14ca-11ed-80dd-00155d753c19', 'Покупка стройматериалов', '', '', '', '', 0, 'Покупка стройматериалов', 0, receiptSost);
                   await Navigator.push(context, MaterialPageRoute(builder: (context) => scrReceiptEditScreen(receiptData: recipientdata,)));
                   if (recipientdata.id!='') {
-                    print('Платеж создан и можно прикрепить фото');
-                    for(var i = 0; i < widget._sharedFiles.length; i++){
-                      print(widget._sharedFiles[i].path);
-                      await addImage(context, recipientdata.id, widget._sharedFiles[i].path);
+                    if (_isJson==false) {
+                      print('Платеж создан и можно прикрепить фото');
+                      for(var i = 0; i < widget._sharedFiles.length; i++){
+                        print(widget._sharedFiles[i].path);
+                        setState(() {
+                          _isLoad=true;
+                        });
+                        await addImage(context, recipientdata.id, widget._sharedFiles[i].path);
+                        setState(() {
+                          _isLoad=false;
+                        });
+                      }
                     }
                     Navigator.pop(context);
                   }
@@ -262,7 +278,7 @@ class _scrInputSharedFilesScreenState extends State<scrInputSharedFilesScreen> {
                   subtitle: Text('Создать документ выдачи денег сотруднику'),
                   leading: Icon(Icons.remove, color: Colors.red),
                   onTap: () async {
-                    createNewPlat(context, Menu.platUpSotr);
+                    createNewPlat(context, Menu.platDownSotr);
                   },
                 ),
               ),
@@ -275,7 +291,7 @@ class _scrInputSharedFilesScreenState extends State<scrInputSharedFilesScreen> {
                   subtitle: Text('Создать документ возврата денег от сотрудника'),
                   leading: Icon(Icons.add, color: Colors.green),
                   onTap: () async {
-                    createNewPlat(context, Menu.platDownSotr);
+                    createNewPlat(context, Menu.platUpSotr);
                   },
                 ),
               ),
@@ -295,9 +311,11 @@ class _scrInputSharedFilesScreenState extends State<scrInputSharedFilesScreen> {
               ),
               Divider(),
             ],
-            // Text(widget._sharedFiles
-            //     .map((f) => f.toMap())
-            //     .join(",\n****************\n")),
+             // Text(widget._sharedFiles
+             //     .map((f) => f.toMap())
+             //     .join(",\n****************\n")),
+            if (_errorParsingJson.length>0)
+              Text(_errorParsingJson)
           ],
         )//backgroundColor: Colors.grey[900]),
     );

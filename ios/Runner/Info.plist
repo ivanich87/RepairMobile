@@ -39,7 +39,6 @@
     			</array>
     		</dict>
     	</array>
-
     <key>NSPhotoLibraryUsageDescription</key>
     <string>To upload photos, please allow permission to access your photo library.</string>
 	<key>CFBundleVersion</key>

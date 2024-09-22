@@ -300,7 +300,8 @@ class _scrObjectsViewScreenState extends State<scrObjectsViewScreen> {
   }
 
   _pageFinteh() {
-    return Column(
+    return (Globals.anFinTech==false) ? Center(child: Text('Нет доступа')) :
+    Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

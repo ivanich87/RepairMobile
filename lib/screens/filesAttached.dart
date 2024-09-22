@@ -23,6 +23,7 @@ class scrAttachedScreen extends StatefulWidget {
 }
 
 class _scrAttachedScreenState extends State<scrAttachedScreen> {
+  bool _isLoad = false;
   //File? image;
   String _namePhoto='';
   late ImagePicker imagePicker;
@@ -61,6 +62,9 @@ class _scrAttachedScreenState extends State<scrAttachedScreen> {
 
   addImage() async {
     try {
+      setState(() {
+        _isLoad = true;
+      });
       XFile? selectedImage = await imagePicker.pickImage(source: ImageSource.camera, maxHeight: 800);
       if (selectedImage!=null) {
         _namePhoto = '${DateFormat('ddMMyyyyHHmmss').format(DateTime.now())}';
@@ -81,7 +85,9 @@ class _scrAttachedScreenState extends State<scrAttachedScreen> {
       final snackBar = SnackBar(content: Text('$error'),);
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
-
+    setState(() {
+      _isLoad=false;
+    });
   }
 
   uploadImage(String title, File file) async {
@@ -152,21 +158,27 @@ class _scrAttachedScreenState extends State<scrAttachedScreen> {
       ),
         body: (objectList.length==0) ? Center(child: Text('Нет фото')) :
 
-        ListView.builder(
-          padding: EdgeInsets.all(10),
-          physics: BouncingScrollPhysics(),
-          reverse: false,
-          itemCount: objectList.length,
-            itemBuilder: (_, index) =>
-                ListTile(
-                  title: Image.network(objectList[index].path, height: 150,alignment: Alignment.center,),
-                  //subtitle: Text(objectList[index].name, textAlign: TextAlign.center,),
-                  onTap: () {
-                    //Navigator.push(context, MaterialPageRoute(builder: (context) => scrAttachPreviewScreen(objectList[index].path)));
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => scrFilesAttachedGallery(imageItems: images, defaultIndex: index)));
-                  },
-                ),
-          ),
+        Stack(
+          children: [
+            if (_isLoad)
+              Center(child: CircularProgressIndicator()),
+            ListView.builder(
+              padding: EdgeInsets.all(10),
+              physics: BouncingScrollPhysics(),
+              reverse: false,
+              itemCount: objectList.length,
+                itemBuilder: (_, index) =>
+                    ListTile(
+                      title: Image.network(objectList[index].path, height: 150,alignment: Alignment.center,),
+                      //subtitle: Text(objectList[index].name, textAlign: TextAlign.center,),
+                      onTap: () {
+                        //Navigator.push(context, MaterialPageRoute(builder: (context) => scrAttachPreviewScreen(objectList[index].path)));
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => scrFilesAttachedGallery(imageItems: images, defaultIndex: index)));
+                      },
+                    ),
+              ),
+          ],
+        ),
           floatingActionButton: FloatingActionButton(
             onPressed: () {
                addImage();
