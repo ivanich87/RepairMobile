@@ -974,3 +974,141 @@ class ReceiptSost {
     return data;
   }
 }
+
+
+class Akt {
+  String id = '';
+  String number = '';
+  DateTime date = DateTime.now();
+  bool accept = true;
+  bool del = false;
+  bool acceptRuk = false;
+  String statusId = '';
+  String status = '';
+  String dogId = '';
+  String smetaId = '';
+  DateTime dateStart = DateTime.now();
+  DateTime dateStop = DateTime.now();
+  num summa = 0;
+  num seb = 0;
+  //List<AktSost>? aktSost;
+
+
+  Akt(this.id, this.number, this.date, this.accept, this.del, this.acceptRuk, this.statusId, this.status, this.dogId, this.smetaId, this.dateStart, this.dateStop, this.summa, this.seb);
+
+  Akt.fromJson(Map<String, dynamic> json) {
+    id = json['id'] ?? '';
+    number = json['number'] ?? '';
+    date = DateTime.tryParse(json['date']) ?? DateTime(2023);
+    accept = json['accept'] ?? false;
+    del = json['del'] ?? false;
+    acceptRuk = json['acceptRuk'] ?? false;
+    statusId = json['statusId'] ?? '';
+    status = json['status'] ?? '';
+    dogId = json['dogId'] ?? '';
+    smetaId = json['smetaId'] ?? '';
+    dateStart = DateTime.tryParse(json['dateStart']) ?? DateTime(2023);
+    dateStop = DateTime.tryParse(json['dateStop']) ?? DateTime(2023);
+    summa = json['summa'] ?? 0;
+    seb = json['seb'] ?? 0;
+  }
+
+  Map<String, dynamic> toJson() =>
+      {
+        'id': id,
+        'number': number,
+        'date': date.toIso8601String(),
+        'accept': accept,
+        'del': del,
+        'acceptRuk': acceptRuk,
+        'statusId': statusId,
+        'status': status ?? '',
+        'dogId': dogId ?? '',
+        'smetaId': smetaId ?? '',
+        'dateStart': dateStart.toIso8601String(),
+        'dateStop': dateStop.toIso8601String(),
+        'summa': summa ?? 'Пусто',
+        'seb': seb
+        //'aktSost': aktSost!.map((v) => v.toJson()).toList()
+      };
+
+  Akt copyWith({
+    String? id,
+    String? number,
+    DateTime? date,
+    bool? accept,
+    bool? del,
+    bool? acceptRuk,
+    String? statusId,
+    String? status,
+    String? dogId,
+    String? smetaId,
+    DateTime? dateStart,
+    DateTime? dateStop,
+    num? summa,
+    num? seb
+    //List<AktSost>? aktSost
+  }) {
+    return Akt(
+        id = id ?? this.id,
+        number = number ?? this.number,
+        date = date ?? this.date,
+        accept = accept ?? this.accept,
+        del = del ?? this.del,
+        acceptRuk = acceptRuk ?? this.acceptRuk,
+        statusId = statusId ?? this.statusId,
+        status = status ?? this.status,
+        dogId = dogId ?? this.dogId,
+        smetaId = smetaId ?? this.smetaId,
+        dateStart = dateStart ?? this.dateStart,
+        dateStop = dateStop ?? this.dateStop,
+        summa = summa ?? this.summa,
+        seb = seb ?? this.seb
+        //aktSost = aktSost ?? this.aktSost
+    );
+  }
+
+  Akt.fromTo(Akt original, Akt a) {
+    original.id = a.id ?? this.id;
+    original.number = a.number ?? this.number;
+    original.date = a.date ?? this.date;
+    original.accept = a.accept ?? this.accept;
+    original.del = a.del ?? this.del;
+    original.acceptRuk = a.acceptRuk ?? this.acceptRuk;
+    original.statusId = a.statusId ?? this.statusId;
+    original.status = a.status ?? this.status;
+    original.dogId = a.dogId ?? this.dogId;
+    original.smetaId = a.smetaId ?? this.smetaId;
+    original.dateStart = a.dateStart ?? this.dateStart;
+    original.dateStop = a.dateStop ?? this.dateStop;
+    original.seb = a.seb ?? this.seb;
+    original.summa = a.summa ?? this.summa;
+    //original.aktSost = a.aktSost ?? this.aktSost;
+  }
+}
+
+class AktSost {
+  String? name;
+  num? kol;
+  num? price;
+  num? summa;
+
+  AktSost({this.name, this.kol, this.price, this.summa});
+
+  AktSost.fromJson(Map<String, dynamic> json) {
+    name = json['name'];
+    kol = json['kol'];
+    price = json['price'];
+    summa = json['summa'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['name'] = this.name;
+    data['kol'] = this.kol;
+    data['price'] = this.price;
+    data['summa'] = this.summa;
+    return data;
+  }
+}
+

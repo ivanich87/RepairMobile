@@ -62,13 +62,14 @@ class _scrAttachedScreenState extends State<scrAttachedScreen> {
 
   addImage() async {
     try {
-      setState(() {
-        _isLoad = true;
-      });
       XFile? selectedImage = await imagePicker.pickImage(source: ImageSource.camera, maxHeight: 800);
       if (selectedImage!=null) {
+        print('Запускаем загрузку');
+        setState(() {
+          _isLoad = true;
+        });
         _namePhoto = '${DateFormat('ddMMyyyyHHmmss').format(DateTime.now())}';
-        print('_namePhoto = $_namePhoto');
+        //print('_namePhoto = $_namePhoto');
         returnResult res = await httpUploadImage(_namePhoto, File(selectedImage.path));
         if (res.resultCode==0) {
           returnResult res2 = await httpSetListAttached(widget.id, _namePhoto, res.resultText);
@@ -85,6 +86,7 @@ class _scrAttachedScreenState extends State<scrAttachedScreen> {
       final snackBar = SnackBar(content: Text('$error'),);
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
+    print('Завершаем загрузку');
     setState(() {
       _isLoad=false;
     });

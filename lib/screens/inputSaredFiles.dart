@@ -109,7 +109,13 @@ class _scrInputSharedFilesScreenState extends State<scrInputSharedFilesScreen> {
       print('Платеж создан и можно прикрепить фото');
       for(var i = 0; i < widget._sharedFiles.length; i++){
         print(widget._sharedFiles[i].path);
+        setState(() {
+          _isLoad=true;
+        });
         await addImage(context, platId, widget._sharedFiles[i].path);
+        setState(() {
+          _isLoad=false;
+        });
       }
       widget._sharedFiles.clear();
       Navigator.pop(context);
@@ -173,6 +179,7 @@ class _scrInputSharedFilesScreenState extends State<scrInputSharedFilesScreen> {
                         _isLoad=false;
                       });
                     }
+                    widget._sharedFiles.clear();
                     Navigator.pop(context);
                     },
                 ),
@@ -261,6 +268,7 @@ class _scrInputSharedFilesScreenState extends State<scrInputSharedFilesScreen> {
                         });
                       }
                     }
+                    widget._sharedFiles.clear();
                     Navigator.pop(context);
                   }
                   },

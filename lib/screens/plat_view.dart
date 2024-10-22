@@ -126,8 +126,12 @@ class _scrPlatsViewScreenState extends State<scrPlatsViewScreen> {
                         title: Text('Посмотреть фото (${widget.plat.attachedKol})'),
                         leading: Icon(Icons.photo),
                         trailing: Icon(Icons.navigate_next),
-                        onTap: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => scrAttachedScreen(widget.plat.id)));
+                        onTap: () async {
+                          await Navigator.push(context, MaterialPageRoute(builder: (context) => scrAttachedScreen(widget.plat.id)));
+                          print(widget.plat.attachedKol);
+                          setState(() {
+
+                          });
                         },
                       ),
                     ),

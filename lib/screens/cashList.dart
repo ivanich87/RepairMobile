@@ -25,10 +25,12 @@ class scrCashListScreen extends StatefulWidget {
   DateTimeRange dateRange;
   final String kassaSotrId;
   final String kassaSortName;
+  final String kassaContractorId;
+  final String kassaContractorName;
   final bool selected;
   final bool approve;
 
-  scrCashListScreen({required this.idCash, required this.cashName, required this.analytic, required this.analyticName, required this.objectId, required this.objectName, required this.platType, required this.dateRange, required this.kassaSotrId, required this.kassaSortName, this.selected = false, this.approve = false});
+  scrCashListScreen({required this.idCash, required this.cashName, required this.analytic, required this.analyticName, required this.objectId, required this.objectName, required this.platType, required this.dateRange, required this.kassaSotrId, required this.kassaSortName, this.kassaContractorId='', this.kassaContractorName='', this.selected = false, this.approve = false});
 
   @override
   State<scrCashListScreen> createState() => _scrCashListScreenState();
@@ -46,9 +48,11 @@ class _scrCashListScreenState extends State<scrCashListScreen> {
       'objectId': widget.objectId,
       'platType': widget.platType,
       'kassaSortId': widget.kassaSotrId,
+      'kassaContractorId': widget.kassaContractorId,
       'userId': Globals.anPhone,
       'approve': widget.approve.toString(),
     };
+
     print(jsonEncode(queryParameters));
     var _url = Uri(path: '${Globals.anPath}platlist/${DateFormat('yyyyMMdd').format(widget.dateRange.start)}/${DateFormat('yyyyMMdd').format(widget.dateRange.end)}/${widget.idCash}',
         queryParameters: queryParameters,

@@ -51,7 +51,7 @@ class _scrObjectsViewScreenState extends State<scrObjectsViewScreen> {
     print('!!!!!!!!!!!!!!!!!!' + widget.id.toString());
     final _queryParameters = {'userId': Globals.anPhone};
     var _url=Uri(path: '${Globals.anPath}obinfo/'+widget.id+'/', host: Globals.anServer, scheme: 'https', queryParameters: _queryParameters);
-    
+    print(_url.path);
     var _headers = <String, String> {
       'Accept': 'application/json',
       'Authorization': Globals.anAuthorization

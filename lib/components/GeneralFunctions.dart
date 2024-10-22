@@ -18,7 +18,7 @@ Future httpUploadImage(String title, File file) async {
   };
   try {
     var response = await http.post(_url, headers: _headers, body: (await file.readAsBytesSync()));
-    print(response.statusCode.toString());
+    //print(response.statusCode.toString());
     if (response.statusCode == 200) {
       var notesJson = json.decode(response.body);
       _path = notesJson['path'];
@@ -50,9 +50,9 @@ Future httpSetListAttached(objectId, title, path) async {
       "path": path,
     };
     var response = await http.post(_url, headers: _headers, body: jsonEncode(_body));
-    print(response.statusCode.toString());
+    //print(response.statusCode.toString());
     if (response.statusCode == 200) {
-      print(response.body.toString());
+      //print(response.body.toString());
       // var notesJson = json.decode(response.body);
       // for (var noteJson in notesJson) {
       //   objectList.add(ListAttach.fromJson(noteJson));
