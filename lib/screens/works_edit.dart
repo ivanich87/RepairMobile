@@ -8,21 +8,23 @@ import 'package:repairmodule/components/SingleSelections.dart';
 import 'package:repairmodule/models/ListWorks.dart';
 import 'package:repairmodule/models/Lists.dart';
 import 'package:http/http.dart' as http;
+import 'package:repairmodule/screens/work_editing.dart';
 
 import 'object_create.dart';
 import 'object_view.dart';
 
 
-class scrWorkEditScreen extends StatefulWidget {
+class scrWorksEditScreen extends StatefulWidget {
   final String id;
+  final bool additionalWork;
 
-  scrWorkEditScreen(this.id);
+  scrWorksEditScreen(this.id, this.additionalWork);
 
   @override
-  State<scrWorkEditScreen> createState() => _scrWorkEditScreenState();
+  State<scrWorksEditScreen> createState() => _scrWorksEditScreenState();
 }
 
-class _scrWorkEditScreenState extends State<scrWorkEditScreen> {
+class _scrWorksEditScreenState extends State<scrWorksEditScreen> {
   List<Works> ListWorks = [];
   List<Works> filteredListWorks = [];
   List<Works> ListWorksTitle = [];
@@ -116,9 +118,9 @@ class _scrWorkEditScreenState extends State<scrWorkEditScreen> {
   List<Widget> _generateChildrens(event) {
     var widgetList = <Widget>[];
 
-     var value = event.workId;
-     //print(event.workName);
-     var _filtered = ListWorks.where((element) => element.parentId!.toLowerCase()==(value.toLowerCase())).toList();
+    var value = event.workId;
+    //print(event.workName);
+    var _filtered = ListWorks.where((element) => element.parentId!.toLowerCase()==(value.toLowerCase())).toList();
 
     for (var str in _filtered) {
       //print(str);
@@ -126,8 +128,30 @@ class _scrWorkEditScreenState extends State<scrWorkEditScreen> {
         widgetList.add(
           ListTile(
             title: Text(str.workName ?? ''),
-            trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 0).format(str.summa), style: TextStyle(fontSize: 16)),
+            trailing: Checkbox(value: (str.kol==0) ? false : true, onChanged: (value) {
+              setState(() {
+                num summaDifference = 0;
+                if (value==true) {
+                  str.kol = str.kolRemains;
+                  summaDifference = str.price! * str.kol!;
+                }
+                else {
+                  summaDifference = -1*(str.price! * str.kol!);
+                  str.kol=0;
+                }
+                _ref(str, summaDifference);
+              });
+            }, ),
             subtitle: Text('Цена: ${str.price.toString()}; Кол-во: ${str.kol}', style: TextStyle(fontStyle: FontStyle.italic),),
+            onTap: () async {
+              num summaDifference_old = str.price! * str.kol!;
+              await Navigator.push(context, MaterialPageRoute(builder: (context) => scrWorkEditingScreen(str, widget.additionalWork)));
+              setState(() {
+                num summaDifference = 0;
+                summaDifference = (str.price! * str.kol!) - summaDifference_old;
+                _ref(str, summaDifference);
+              });
+            },
           )
         );
       else
@@ -139,26 +163,16 @@ class _scrWorkEditScreenState extends State<scrWorkEditScreen> {
         ),
         );
     }
-    //widgetList.add(ListTile(title: Text('вава')),);
 
     return widgetList;
-
-    // var widgetList = <Widget>[];
-    // widgetList.add(ListTile(title: Text('Sub-item 01')),);
-    // widgetList.add(ListTile(title: Text('Sub-item 02')),);
-    // return widgetList.toList().expand((i) => i).toList();
-
-    // var list = myObjects.map<List<Widget>>(
-    //       (data) {
-    //     var widgetList = <Widget>[];
-    //     widgetList.add(ListTile(title: Text('Sub-item 01')),);
-    //     widgetList.add(ListTile(title: Text('Sub-item 02')),);
-    //     return widgetList;
-    //   },
-    // ).toList();
-    // var flat = list.expand((i) => i).toList();
-    // return flat;
   }
 
+  _ref(var str, summaDifference) {
+    var _filtered2 = ListWorks.where((element) => element.workId!.toLowerCase()==(str.parentId!.toLowerCase())).toList();
+    for (var str2 in _filtered2) {
+      str2.summa=str2.summa!+summaDifference;
+      _ref(str2, summaDifference);
+    }
+  }
 }
 

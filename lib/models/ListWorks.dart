@@ -31,7 +31,7 @@ class Works {
     workName = json['workName'];
     kolSmeta = json['kolSmeta'];
     kolUsed = json['kolUsed'];
-    kolRemains = json['KolRemains'];
+    kolRemains = json['kolRemains'];
     kol = json['kol'];
     price = json['price'];
     priceSub = json['priceSub'];

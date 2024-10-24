@@ -983,6 +983,7 @@ class Akt {
   bool accept = true;
   bool del = false;
   bool acceptRuk = false;
+  bool additionalWork = false;
   String statusId = '';
   String status = '';
   String dogId = '';
@@ -994,7 +995,7 @@ class Akt {
   //List<AktSost>? aktSost;
 
 
-  Akt(this.id, this.number, this.date, this.accept, this.del, this.acceptRuk, this.statusId, this.status, this.dogId, this.smetaId, this.dateStart, this.dateStop, this.summa, this.seb);
+  Akt(this.id, this.number, this.date, this.accept, this.del, this.acceptRuk, this.additionalWork, this.statusId, this.status, this.dogId, this.smetaId, this.dateStart, this.dateStop, this.summa, this.seb);
 
   Akt.fromJson(Map<String, dynamic> json) {
     id = json['id'] ?? '';
@@ -1003,6 +1004,7 @@ class Akt {
     accept = json['accept'] ?? false;
     del = json['del'] ?? false;
     acceptRuk = json['acceptRuk'] ?? false;
+    additionalWork = json['additionalWork'] ?? false;
     statusId = json['statusId'] ?? '';
     status = json['status'] ?? '';
     dogId = json['dogId'] ?? '';
@@ -1021,6 +1023,7 @@ class Akt {
         'accept': accept,
         'del': del,
         'acceptRuk': acceptRuk,
+        'additionalWork': additionalWork,
         'statusId': statusId,
         'status': status ?? '',
         'dogId': dogId ?? '',
@@ -1039,6 +1042,7 @@ class Akt {
     bool? accept,
     bool? del,
     bool? acceptRuk,
+    bool? additionalWork,
     String? statusId,
     String? status,
     String? dogId,
@@ -1056,6 +1060,7 @@ class Akt {
         accept = accept ?? this.accept,
         del = del ?? this.del,
         acceptRuk = acceptRuk ?? this.acceptRuk,
+        additionalWork = additionalWork ?? this.additionalWork,
         statusId = statusId ?? this.statusId,
         status = status ?? this.status,
         dogId = dogId ?? this.dogId,
@@ -1075,6 +1080,7 @@ class Akt {
     original.accept = a.accept ?? this.accept;
     original.del = a.del ?? this.del;
     original.acceptRuk = a.acceptRuk ?? this.acceptRuk;
+    original.additionalWork = a.additionalWork ?? this.additionalWork;
     original.statusId = a.statusId ?? this.statusId;
     original.status = a.status ?? this.status;
     original.dogId = a.dogId ?? this.dogId;

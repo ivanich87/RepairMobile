@@ -8,7 +8,7 @@ import 'package:repairmodule/components/SingleSelections.dart';
 import 'package:repairmodule/models/ListWorks.dart';
 import 'package:repairmodule/models/Lists.dart';
 import 'package:http/http.dart' as http;
-import 'package:repairmodule/screens/work_edit.dart';
+import 'package:repairmodule/screens/works_edit.dart';
 
 import 'object_create.dart';
 import 'object_view.dart';
@@ -154,7 +154,7 @@ class _scrAktViewScreenState extends State<scrAktViewScreen> {
       children: [
         ElevatedButton(
           child: Container(width: 220, child: Row(crossAxisAlignment: CrossAxisAlignment.center , mainAxisAlignment: MainAxisAlignment.center, children: [Icon(Icons.edit), Text(' Редактировать работы')],)),
-          onPressed: () {Navigator.push(context, MaterialPageRoute(builder: (context) => scrWorkEditScreen(widget.akt.id)));},
+          onPressed: () {Navigator.push(context, MaterialPageRoute(builder: (context) => scrWorksEditScreen(widget.akt.id, widget.akt.additionalWork)));},
           style: ElevatedButton.styleFrom(
               backgroundColor: Colors.white70, elevation: 4,
               //padding: EdgeInsets.symmetric(horizontal: 50, vertical: 20),
