@@ -30,7 +30,7 @@ class _scrAktViewScreenState extends State<scrAktViewScreen> {
   var myObjects = [];
 
   Future httpGetInfoObject() async {
-    final _queryParameters = {'userId': Globals.anPhone};
+    final _queryParameters = {'userId': Globals.anPhone, 'dogId': widget.akt.dogId};
 
     var _url=Uri(path: '${Globals.anPath}aktinfo/${widget.akt.id}/', host: Globals.anServer, scheme: 'https', queryParameters: _queryParameters);
     print(_url.path);
@@ -44,6 +44,12 @@ class _scrAktViewScreenState extends State<scrAktViewScreen> {
       print(response.statusCode.toString());
       if (response.statusCode == 200) {
         print(response.body.toString());
+        //widget.akt = Akt.fromJson(json.decode(response.body));
+        widget.akt.summa = json.decode(response.body)['summa'];
+        widget.akt.seb = json.decode(response.body)['seb'];
+        widget.akt.number = json.decode(response.body)['number'];
+        //widget.akt.date = json.decode(response.body)['date'];
+
         var notesJson = json.decode(response.body)['sost'];
         for (var noteJson in notesJson) {
           ListWorks.add(Works.fromJson(noteJson));
@@ -154,7 +160,15 @@ class _scrAktViewScreenState extends State<scrAktViewScreen> {
       children: [
         ElevatedButton(
           child: Container(width: 220, child: Row(crossAxisAlignment: CrossAxisAlignment.center , mainAxisAlignment: MainAxisAlignment.center, children: [Icon(Icons.edit), Text(' Редактировать работы')],)),
-          onPressed: () {Navigator.push(context, MaterialPageRoute(builder: (context) => scrWorksEditScreen(widget.akt.id, widget.akt.additionalWork)));},
+          onPressed: () async {
+              var _res = await Navigator.push(context, MaterialPageRoute(builder: (context) =>
+                  scrWorksEditScreen(widget.akt.id, widget.akt.dogId,
+                      widget.akt.additionalWork)));
+              if (_res!=null) {
+                widget.akt.id = _res;
+                initState();
+              }
+            },
           style: ElevatedButton.styleFrom(
               backgroundColor: Colors.white70, elevation: 4,
               //padding: EdgeInsets.symmetric(horizontal: 50, vertical: 20),

@@ -15,10 +15,11 @@ import 'object_view.dart';
 
 
 class scrWorksEditScreen extends StatefulWidget {
-  final String id;
+  String id;
+  final String dogId;
   final bool additionalWork;
 
-  scrWorksEditScreen(this.id, this.additionalWork);
+  scrWorksEditScreen(this.id, this.dogId, this.additionalWork);
 
   @override
   State<scrWorksEditScreen> createState() => _scrWorksEditScreenState();
@@ -29,9 +30,10 @@ class _scrWorksEditScreenState extends State<scrWorksEditScreen> {
   List<Works> filteredListWorks = [];
   List<Works> ListWorksTitle = [];
   var myObjects = [];
+  bool _isUpdating = false;
 
   Future httpGetInfoObject() async {
-    final _queryParameters = {'userId': Globals.anPhone};
+    final _queryParameters = {'userId': Globals.anPhone, 'dogId': widget.dogId};
 
     var _url=Uri(path: '${Globals.anPath}workedit/${widget.id}/', host: Globals.anServer, scheme: 'https', queryParameters: _queryParameters);
     print(_url.path);
@@ -59,6 +61,54 @@ class _scrWorksEditScreenState extends State<scrWorksEditScreen> {
     }
   }
 
+  Future<bool> httpObjectUpdate() async {
+    bool _result=false;
+    bool _accept = false;
+    //final _queryParameters = {'userId': Globals.anPhone};
+    print('dogId: ${widget.dogId}');
+    final _queryParameters = {'userId': Globals.anPhone, 'dogId': widget.dogId};
+
+    var _url=Uri(path: '${Globals.anPath}workedit/${widget.id}/', host: Globals.anServer, scheme: 'https', queryParameters: _queryParameters);
+    var _headers = <String, String> {
+      'Accept': 'application/json',
+      'Authorization': Globals.anAuthorization
+    };
+
+    try {
+      print('Start export works!!!!');
+      print(json.encode(ListWorks));
+      var response = await http.post(_url, headers: _headers, body: json.encode(ListWorks));
+      print('Код ответа: ${response.statusCode} Тело ответа: ${response.body}');
+
+      var data = json.decode(response.body);
+      String _id = data['Код'] ?? '';
+      _result = data['Успешно'] ?? false;
+      String _message = data['Сообщение'] ?? '';
+
+      widget.id = _id;
+
+      print('Работы по акту выгружены. Результат:  $_result. Сообщение:  $_message');
+
+      if (response.statusCode != 200) {
+        _result = false;
+        final snackBar = SnackBar(
+          content: Text('${_message}'),
+        );
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      }
+    } catch (error) {
+      _result = false;
+      print("Ошибка при выгрузке работ по акту: $error");
+      _result = false;
+      final snackBar = SnackBar(
+        content: Text('$error'),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    }
+    return _result ?? false;
+  }
+
+
   @override
   void initState() {
     print('initState');
@@ -82,18 +132,8 @@ class _scrWorksEditScreenState extends State<scrWorksEditScreen> {
           IconButton(onPressed: () {}, icon: Icon(Icons.menu))
         ],
       ),
-        body: Column(
+        body: (_isUpdating==true) ? Center(child: CircularProgressIndicator()) : Column(
           children: [
-            ElevatedButton(
-              child: Container(width: 220, child: Row(crossAxisAlignment: CrossAxisAlignment.center , mainAxisAlignment: MainAxisAlignment.center, children: [Icon(Icons.edit), Text(' Редактировать работы')],)),
-              onPressed: () {},
-              style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white70, elevation: 4,
-                  //padding: EdgeInsets.symmetric(horizontal: 50, vertical: 20),
-                  textStyle: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.normal)),
-            ),
             Expanded(
               child: ListView.builder(
                 padding: EdgeInsets.all(10),
@@ -103,19 +143,37 @@ class _scrWorksEditScreenState extends State<scrWorksEditScreen> {
                 itemBuilder: (_, index) => Card(
                   child:
                   ExpansionTile(
-                    title: Text(ListWorksTitle[index].workName ?? 'dd'),
+                    title: Text(ListWorksTitle[index].workName ?? 'dd', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),),
                     children: //<Widget>[
-                    _generateChildrens(ListWorksTitle[index]),
+                    _generateChildrens(ListWorksTitle[index], 0),
                   ),
                 ),
               ),
             ),
           ],
-        )
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+          print('Сохраняем работы');
+          setState(() {
+            _isUpdating = true;
+          });
+          httpObjectUpdate().then((value) {
+            setState(() {
+              _isUpdating = false;
+            });
+            if (value==true) {
+              Navigator.pop(context, widget.id);
+            }
+          });
+          },
+          child: Icon(Icons.save),
+    )
+
     );
   }
 
-  List<Widget> _generateChildrens(event) {
+  List<Widget> _generateChildrens(event, double level) {
     var widgetList = <Widget>[];
 
     var value = event.workId;
@@ -126,40 +184,42 @@ class _scrWorksEditScreenState extends State<scrWorksEditScreen> {
       //print(str);
       if (str.isFolder != true)
         widgetList.add(
-          ListTile(
-            title: Text(str.workName ?? ''),
-            trailing: Checkbox(value: (str.kol==0) ? false : true, onChanged: (value) {
-              setState(() {
-                num summaDifference = 0;
-                if (value==true) {
-                  str.kol = str.kolRemains;
-                  summaDifference = str.price! * str.kol!;
-                }
-                else {
-                  summaDifference = -1*(str.price! * str.kol!);
-                  str.kol=0;
-                }
-                _ref(str, summaDifference);
-              });
-            }, ),
-            subtitle: Text('Цена: ${str.price.toString()}; Кол-во: ${str.kol}', style: TextStyle(fontStyle: FontStyle.italic),),
-            onTap: () async {
-              num summaDifference_old = str.price! * str.kol!;
-              await Navigator.push(context, MaterialPageRoute(builder: (context) => scrWorkEditingScreen(str, widget.additionalWork)));
-              setState(() {
-                num summaDifference = 0;
-                summaDifference = (str.price! * str.kol!) - summaDifference_old;
-                _ref(str, summaDifference);
-              });
-            },
+          Card(color: Colors.white54,
+            child: ListTile(
+              title: Text(str.workName ?? '', style: TextStyle(fontSize: 18, ),),
+              trailing: Checkbox(value: (str.kol==0) ? false : true, onChanged: (value) {
+                setState(() {
+                  num summaDifference = 0;
+                  if (value==true) {
+                    str.kol = str.kolRemains;
+                    summaDifference = str.price! * str.kol!;
+                  }
+                  else {
+                    summaDifference = -1*(str.price! * str.kol!);
+                    str.kol=0;
+                  }
+                  _ref(str, summaDifference);
+                });
+              }, ),
+              subtitle: Text('Цена: ${str.price.toString()}; Кол-во: ${str.kol}', style: TextStyle(fontStyle: FontStyle.italic),),
+              onTap: () async {
+                num summaDifference_old = str.price! * str.kol!;
+                await Navigator.push(context, MaterialPageRoute(builder: (context) => scrWorkEditingScreen(str, widget.additionalWork)));
+                setState(() {
+                  num summaDifference = 0;
+                  summaDifference = (str.price! * str.kol!) - summaDifference_old;
+                  _ref(str, summaDifference);
+                });
+              },
+            ),
           )
         );
       else
         widgetList.add(ExpansionTile(
-          title: Text(str.workName.toString()),
+          title: Text('${str.workName}'),
           //leading: Container(child: Text(str.workName ?? '', style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),), width: 200,),
           subtitle: Text('Сумма: ${NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 0).format(str.summa)}', style: TextStyle(fontWeight: FontWeight.w700, fontStyle: FontStyle.italic)),
-          children: _generateChildrens(str),
+          children: _generateChildrens(str, level+10),
         ),
         );
     }

@@ -1,4 +1,5 @@
 class Works {
+  String? roomId;
   String? workId;
   String? workName;
   num? kolSmeta;
@@ -13,7 +14,8 @@ class Works {
   String? parentId;
 
   Works(
-      {this.workId,
+      {this.roomId,
+        this.workId,
         this.workName,
         this.kolSmeta,
         this.kolUsed,
@@ -27,6 +29,7 @@ class Works {
         this.parentId});
 
   Works.fromJson(Map<String, dynamic> json) {
+    roomId = json['roomId'];
     workId = json['workId'];
     workName = json['workName'];
     kolSmeta = json['kolSmeta'];
@@ -43,6 +46,7 @@ class Works {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['roomId'] = this.roomId;
     data['workId'] = this.workId;
     data['workName'] = this.workName;
     data['kolSmeta'] = this.kolSmeta;

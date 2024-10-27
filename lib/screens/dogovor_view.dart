@@ -21,9 +21,11 @@ class scrDogovorViewScreen extends StatefulWidget {
   State<scrDogovorViewScreen> createState() => _scrDogovorViewScreenState();
 }
 
-class _scrDogovorViewScreenState extends State<scrDogovorViewScreen> {
+class _scrDogovorViewScreenState extends State<scrDogovorViewScreen> with SingleTickerProviderStateMixin {
   List<analyticObjectList> AnalyticObjectList = [];
   List<Akt> aktList = [];
+  late TabController _tabController;
+
   num summaDown = 0;
   num summaUp = 0;
 
@@ -115,6 +117,7 @@ class _scrDogovorViewScreenState extends State<scrDogovorViewScreen> {
       var response = await http.get(_url, headers: _headers);
       print('Код ответа от запроса аналитик: ' + response.statusCode.toString());
       if (response.statusCode == 200) {
+        AnalyticObjectList.clear();
         var notesJson = json.decode(response.body);
         for (var noteJson in notesJson) {
           AnalyticObjectList.add(analyticObjectList.fromJson(noteJson));
@@ -132,6 +135,9 @@ class _scrDogovorViewScreenState extends State<scrDogovorViewScreen> {
 
   @override
   void initState() {
+    _tabController = TabController(length: 3, vsync: this, initialIndex: 0);
+    _tabController.addListener(_handleTabIndex);
+
     httpGetInfoObject().then((value) async {
       await httpGetAnalyticListObject();
 
@@ -141,13 +147,25 @@ class _scrDogovorViewScreenState extends State<scrDogovorViewScreen> {
     // TODO: implement initState
     super.initState();
   }
+
+  @override
+  void dispose() {
+    _tabController.removeListener(_handleTabIndex);
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  void _handleTabIndex() {
+    setState(() {});
+  }
+  @override
   Widget build(BuildContext context) {
     return DefaultTabController(
       length: 3,
       child: Scaffold(
           appBar: AppBar(
             title: Text('Карточка договора'),
-            bottom: TabBar(tabs: _tabs, isScrollable: true,),
+            bottom: TabBar(controller: _tabController, tabs: _tabs, isScrollable: true,),
             centerTitle: false,
             backgroundColor: Theme.of(context).colorScheme.inversePrimary,
             actions: [IconButton(onPressed: () {}, icon: Icon(Icons.menu))],
@@ -161,7 +179,7 @@ class _scrDogovorViewScreenState extends State<scrDogovorViewScreen> {
               Divider(),
               //TabBar(tabs: _tabs, isScrollable: true,),
               Expanded(
-                child: TabBarView(children: <Widget> [
+                child: TabBarView(controller: _tabController, children: <Widget> [
                   _pageGeneral(),
                   _pageComplit(),
                   _pageFinteh()
@@ -169,16 +187,58 @@ class _scrDogovorViewScreenState extends State<scrDogovorViewScreen> {
               ),
             ],
           ),
-          floatingActionButton: (Globals.anUserRoleId!=3) ? null : FloatingActionButton(
+          floatingActionButton: _bottomButtons()
+          //backgroundColor: Colors.grey[900]),
+          ),
+    );
+  }
+
+  Widget? _bottomButtons() {
+    switch (_tabController.index) {
+      case 0:
+        if (Globals.anUserRoleId!=3)
+          return null;
+        else
+          return FloatingActionButton(
             onPressed: () async {
               DateTimeRange dateRange = DateTimeRange(start: dtStart, end: dtStop);
               await Navigator.push(context, MaterialPageRoute(builder: (context) => scrDogovorCreateScreen(objectId: idObject, objectName: address, clientId: idClient, clientName: nameClient, newDogovorId: widget.id, managerId: idManager, managerName: nameManager, prorabId: idProrab, prorabName: nameProrab, nameDog: name, summa: summa, summaSeb: summaSeb, dateRange: dateRange,),));
               initState();
             },
             child: Icon(Icons.edit),
-          )
-          //backgroundColor: Colors.grey[900]),
-          ),
+          );
+      case 1:
+        return FloatingActionButton(
+          onPressed: () async {
+            await Navigator.push(context, MaterialPageRoute(builder: (context) => scrAktViewScreen(Akt('0', '', DateTime.now(), false, false, false, false, '956d8376-8b56-400a-ab32-1788d71dbb15', 'На согласовании', widget.id, smetaId, DateTime.now(), DateTime.now(), 0, 0))));
+            await httpGetInfoObject();
+            setState(() {
+
+            });
+          },
+          child: Icon(Icons.add),
+        );
+      case 2:
+        return null;
+    }
+
+    return _tabController.index == 0
+        ? FloatingActionButton(
+        shape: StadiumBorder(),
+        onPressed: null,
+        backgroundColor: Colors.redAccent,
+        child: Icon(
+          Icons.message,
+          size: 20.0,
+        ))
+        : FloatingActionButton(
+      shape: StadiumBorder(),
+      onPressed: null,
+      backgroundColor: Colors.redAccent,
+      child: Icon(
+        Icons.edit,
+        size: 20.0,
+      ),
     );
   }
 
