@@ -25,6 +25,7 @@ class Globals {
   static var anCreateObject = true;
   static var anApprovalPlat = false;
   static var anFinTech = false;
+  static var anAdditionalWork = false;
 
   static printInteger() {
     print(anThemeIndex);
@@ -98,6 +99,10 @@ class Globals {
 
   static setCreateObject(bool a) {
     anCreateObject = a;
+  }
+
+  static setAdditionalWork(bool a) {
+    anAdditionalWork = a;
   }
 
   static setFinTech(bool a) {
@@ -376,9 +381,10 @@ class DogListObject {
   late num summaAkt;
   late num summaOplata;
   late num summa;
+  late num summaSeb;
   late String name;
 
-  DogListObject(this.id, this.Number, this.Date, this.StartDate, this.StopDate, this.nameProrab, this.Status, this.TipId, this.nameMan, this.summaAkt, this.summaOplata, this.summa, this.name);
+  DogListObject(this.id, this.Number, this.Date, this.StartDate, this.StopDate, this.nameProrab, this.Status, this.TipId, this.nameMan, this.summaAkt, this.summaOplata, this.summa, this.summaSeb, this.name);
 
   DogListObject.fromJson(Map<String, dynamic> json) {
     id = json['id'] ?? '0';
@@ -394,6 +400,7 @@ class DogListObject {
     summaAkt = json['summaAkt'];
     summaOplata = json['summaOplata'];
     summa = json['summa'];
+    summaSeb = json['summaSeb'];
     name = json['name'];
   }
 

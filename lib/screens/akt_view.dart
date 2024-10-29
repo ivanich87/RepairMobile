@@ -84,8 +84,8 @@ class _scrAktViewScreenState extends State<scrAktViewScreen> {
         appBar: AppBar(
           title: Text('Акт'),
           bottom: TabBar(tabs: [
-            Tab(icon: Row(children:[Icon(Icons.home_rounded), Text('Основное')]), iconMargin: EdgeInsets.zero),
-            Tab(icon: Row(children:[Icon(Icons.home_rounded), Text('Работы')]), iconMargin: EdgeInsets.zero),
+            Tab(icon: Row(children:[Icon(Icons.hardware_outlined), Text('Работы')]), iconMargin: EdgeInsets.zero),
+            Tab(icon: Row(children:[Icon(Icons.format_list_bulleted), Text('Основное')]), iconMargin: EdgeInsets.zero),
           ], isScrollable: true,),
           centerTitle: true,
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
@@ -94,10 +94,21 @@ class _scrAktViewScreenState extends State<scrAktViewScreen> {
           ],
         ),
           body: TabBarView(children: <Widget> [
-            _pageGeneral(),
-            _pageWork()
-          ])
-
+            _pageWork(),
+            _pageGeneral()
+          ]),
+          floatingActionButton: FloatingActionButton(
+            onPressed: () async {
+              var _res = await Navigator.push(context, MaterialPageRoute(builder: (context) =>
+                  scrWorksEditScreen(widget.akt.id, 2, widget.akt.dogId,
+                      widget.akt.additionalWork)));
+              if (_res!=null) {
+                widget.akt.id = _res;
+                initState();
+              }
+            },
+            child: Icon(Icons.edit),
+        )
 
       ),
     );
@@ -141,58 +152,45 @@ class _scrAktViewScreenState extends State<scrAktViewScreen> {
         titleHeader('Суммы'),
         ListTile(minVerticalPadding: 1,
           title: Text('Сумма для клиента'),
-          trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(widget.akt.summa)),
+          trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(widget.akt.summa), style: TextStyle(fontSize: 16)),
         ),
         ListTile(minVerticalPadding: 1,
           title: Text('Сумма мастерам'),
-          trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(widget.akt.seb)),
+          trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(widget.akt.seb), style: TextStyle(fontSize: 16)),
         ),
         ListTile(minVerticalPadding: 1,
           title: Text('Разница'),
-          trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(widget.akt.summa-widget.akt.seb)),
+          trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(widget.akt.summa-widget.akt.seb), style: TextStyle(fontSize: 16)),
         ),
+        Divider(),
+        Card(
+          child: ListTile(
+            title: Text('Открыть акт в PDF'),
+            leading: Icon(Icons.calculate),
+            trailing: Icon(Icons.navigate_next),
+            onTap: () {
+              //httpGetAktPDF();
+            },
+          ),
+        )
       ],
     );
   }
 
   _pageWork() {
-    return Column(
-      children: [
-        ElevatedButton(
-          child: Container(width: 220, child: Row(crossAxisAlignment: CrossAxisAlignment.center , mainAxisAlignment: MainAxisAlignment.center, children: [Icon(Icons.edit), Text(' Редактировать работы')],)),
-          onPressed: () async {
-              var _res = await Navigator.push(context, MaterialPageRoute(builder: (context) =>
-                  scrWorksEditScreen(widget.akt.id, widget.akt.dogId,
-                      widget.akt.additionalWork)));
-              if (_res!=null) {
-                widget.akt.id = _res;
-                initState();
-              }
-            },
-          style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.white70, elevation: 4,
-              //padding: EdgeInsets.symmetric(horizontal: 50, vertical: 20),
-              textStyle: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.normal)),
+    return ListView.builder(
+      padding: EdgeInsets.all(10),
+      physics: BouncingScrollPhysics(),
+      reverse: false,
+      itemCount: ListWorksTitle.length,
+      itemBuilder: (_, index) => Card(
+        child:
+        ExpansionTile(
+          title: Text(ListWorksTitle[index].workName ?? 'dd'),
+          children: //<Widget>[
+          _generateChildrens(ListWorksTitle[index]),
         ),
-        Expanded(
-          child: ListView.builder(
-            padding: EdgeInsets.all(10),
-            physics: BouncingScrollPhysics(),
-            reverse: false,
-            itemCount: ListWorksTitle.length,
-            itemBuilder: (_, index) => Card(
-              child:
-              ExpansionTile(
-                title: Text(ListWorksTitle[index].workName ?? 'dd'),
-                children: //<Widget>[
-                _generateChildrens(ListWorksTitle[index]),
-              ),
-            ),
-          ),
-        ),
-      ],
+      ),
     );
   }
 }

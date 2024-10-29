@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:repairmodule/components/SingleSelections.dart';
 import 'package:repairmodule/models/Lists.dart';
+import 'package:repairmodule/screens/dogovor_view.dart';
 import 'package:repairmodule/screens/profileMan.dart';
 import 'package:repairmodule/screens/settings/accessObjects.dart';
 
@@ -22,7 +23,7 @@ class scrObjectsViewScreen extends StatefulWidget {
 
 class _scrObjectsViewScreenState extends State<scrObjectsViewScreen> {
   List<analyticObjectList> AnalyticObjectList = [];
-
+  List<DogListObject> dogList = [];
   num summaDown = 0;
   num summaUp = 0;
 
@@ -128,7 +129,33 @@ class _scrObjectsViewScreenState extends State<scrObjectsViewScreen> {
     }
   }
 
+  Future httpGetListObject() async {
+    dogList.clear();
+    final _queryParameters = {'userId': Globals.anPhone};
+    var _url=Uri(path: '${Globals.anPath}dogList/${widget.id}/', host: Globals.anServer, scheme: 'https', queryParameters: _queryParameters);
+    var _headers = <String, String> {
+      'Accept': 'application/json',
+      'Authorization': Globals.anAuthorization
+    };
+    try {
+      var response = await http.get(_url, headers: _headers);
+      if (response.statusCode == 200) {
+        var notesJson = json.decode(response.body);
+        for (var noteJson in notesJson) {
+          dogList.add(DogListObject.fromJson(noteJson));
+        }
+      }
+      else {
+        print('Код ответа от сервера: ${response.statusCode}');
+        print('Ошибка:  ${response.body}');
+      }
+    } catch (error) {
+      print("Ошибка при формировании списка: $error");
+    }
+  }
+
   ref() async {
+    httpGetListObject();
     await httpGetInfoObject();
     await httpGetAnalyticListObject();
     setState(() {
@@ -145,7 +172,7 @@ class _scrObjectsViewScreenState extends State<scrObjectsViewScreen> {
   }
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 2,
+      length: 3,
       child: Scaffold(
           appBar: AppBar(
             title: Text('Карточка объекта'),
@@ -161,7 +188,7 @@ class _scrObjectsViewScreenState extends State<scrObjectsViewScreen> {
                 style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
               ),
               Divider(),
-              TabBar(tabs: _tabs, onTap: (value) {
+              TabBar(isScrollable: true, tabs: _tabs, onTap: (value) {
                 print(value);
                 setState(() {
                   _visibleFloatingActionButton = (value==0) ? true : false;
@@ -172,6 +199,7 @@ class _scrObjectsViewScreenState extends State<scrObjectsViewScreen> {
               Expanded(
                 child: TabBarView(children: <Widget> [
                   _pageGeneral(),
+                  _pageDogList(),
                   _pageFinteh()
                 ], ),
               ),
@@ -256,24 +284,24 @@ class _scrObjectsViewScreenState extends State<scrObjectsViewScreen> {
                 ],
               ),
               Divider(),
-              SingleSection(
-                title: 'Документы',
-                children: [
-                  _CustomListTile(
-                      title: "Договора и соглашения",
-                      icon: Icons.document_scanner,
-                      id: '{"objectId": "${widget.id}", "objectName": "${address}", "clientId": "${idClient}", "clientName": "${nameClient.replaceAll('"', '')}"}',
-                      idType: 'objectsListSelectedDog'),
-                  _CustomListTile(
-                      title: "Акты выполненных работ",
-                      icon: Icons.document_scanner_outlined,
-                      id: '', idType: ''),
-                  _CustomListTile(
-                      title: "Финансовые показатели",
-                      icon: Icons.monetization_on_outlined,
-                      id: '', idType: '',),
-                ],
-              ),
+              // SingleSection(
+              //   title: 'Документы',
+              //   children: [
+              //     _CustomListTile(
+              //         title: "Договора и соглашения",
+              //         icon: Icons.document_scanner,
+              //         id: '{"objectId": "${widget.id}", "objectName": "${address}", "clientId": "${idClient}", "clientName": "${nameClient.replaceAll('"', '')}"}',
+              //         idType: 'objectsListSelectedDog'),
+              //     _CustomListTile(
+              //         title: "Акты выполненных работ",
+              //         icon: Icons.document_scanner_outlined,
+              //         id: '', idType: ''),
+              //     _CustomListTile(
+              //         title: "Финансовые показатели",
+              //         icon: Icons.monetization_on_outlined,
+              //         id: '', idType: '',),
+              //   ],
+              // ),
               SingleSection(
                 title: 'Суммы',
                 children: [
@@ -296,6 +324,89 @@ class _scrObjectsViewScreenState extends State<scrObjectsViewScreen> {
 
         ],
       ),
+    );
+  }
+
+  _pageDogList() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        titleHeader('Общие показатели'),
+        Container(height: 100,
+          child: ListView(scrollDirection: Axis.horizontal,
+              children: [
+                InkWell(
+                  onTap: () {},
+                  child: _CustomRowTile(
+                    title: 'Клиент',
+                    subtitle: summa,
+                    icon: Icons.trending_neutral,
+                    id: '',
+                  ),
+                ),
+                InkWell(
+                  onTap: () {},
+                  child: _CustomRowTile(
+                    title: 'Мастера',
+                    subtitle: -summaSeb,
+                    icon: Icons.trending_down,
+                    id: '',
+                  ),
+                ),
+                InkWell(
+                  onTap: () {},
+                  child: _CustomRowTile(
+                    title: 'Оплата',
+                    subtitle: summaOpl,
+                    icon: Icons.trending_up,
+                    id: '',
+                  ),
+                ),
+                InkWell(
+                  onTap: () {},
+                  child: _CustomRowTile(
+                    title: 'Выполнено (%)',
+                    subtitle: (summa!=0) ? summaAkt/summa*100 : 0,
+                    icon: Icons.trending_up,
+                    id: '',
+                  ),
+                ),
+              ]
+          ),
+        ),
+        Divider(),
+        titleHeader('Список договоров'),
+        Expanded(
+            child: RefreshIndicator(
+              onRefresh: () async {
+                initState();
+                return Future<void>.delayed(const Duration(seconds: 2));
+              },
+              child: ListView.builder(
+                padding: EdgeInsets.all(10),
+                physics: BouncingScrollPhysics(),
+                reverse: false,
+                itemCount: dogList.length,
+                itemBuilder: (_, index) => Card(
+                  child: ListTile(
+                    title: Text('№${dogList[index].Number} от ${DateFormat('dd.MM.yyyy').format(dogList[index].Date)}'),
+                    subtitle: Text('${dogList[index].name}'),
+                    trailing: Column(
+                      children: [
+                        Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 0).format(dogList[index].summa), style: TextStyle(fontSize: 16, color: Colors.green)),
+                        Text('${NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 0).format(dogList[index].summaAkt/dogList[index].summa*100)}%', style: TextStyle(fontSize: 16, color: Colors.green)),
+                      ],
+                    ),
+                    onTap: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => scrDogovorViewScreen(id: dogList[index].id)));
+                    },
+                  ),
+                ),
+              ),
+            )
+        ),
+      ],
     );
   }
 
@@ -437,11 +548,14 @@ class _CustomRowTile extends StatelessWidget {
 }
 
 const _tabs = [
-  Tab(icon: Row(children:[Icon(Icons.home_rounded), Text('  Основное')]),
+  Tab(icon: Row(children:[Icon(Icons.home_rounded), Text(' Основное')]),
     //text: "Основное"
     iconMargin: EdgeInsets.zero
   ),
-  Tab(icon: Row(children:[Icon(Icons.shopping_bag_rounded), Text('  Финансы')]),
+  Tab(icon: Row(children:[Icon(Icons.document_scanner), Text(' Договора')]),
+    //text: "Договора",
+    iconMargin: EdgeInsets.zero,),
+  Tab(icon: Row(children:[Icon(Icons.shopping_bag_rounded), Text(' Финансы')]),
     //text: "Финансы",
     iconMargin: EdgeInsets.zero,),
 ];

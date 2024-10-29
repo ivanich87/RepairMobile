@@ -1,7 +1,14 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
+
+export 'package:path_provider_platform_interface/path_provider_platform_interface.dart'
+    show StorageDirectory;
+
 import 'package:repairmodule/components/SingleSelections.dart';
 import 'package:repairmodule/models/Lists.dart';
 import 'package:repairmodule/screens/akt_view.dart';
@@ -53,6 +60,7 @@ class _scrDogovorViewScreenState extends State<scrDogovorViewScreen> with Single
   num payment = 0;
   num area = 0;
 
+  PathProviderPlatform get _platform => PathProviderPlatform.instance;
 
   Future httpGetInfoObject() async {
     print('!!!!!!!!!!!!!!!!!!' + widget.id.toString());
@@ -125,6 +133,41 @@ class _scrDogovorViewScreenState extends State<scrDogovorViewScreen> with Single
           summaDown=summaDown+AnalyticObjectList[i].summaDown;
           i++;
         }
+      }
+      else
+        throw response.body;
+    } catch (error) {
+      print("Ошибка при формировании списка: $error");
+    }
+  }
+
+  Future httpGetSmetaPDF() async {
+    int i =0;
+    final _queryParameters = {'userId': Globals.anPhone};
+    var _url=Uri(path: '${Globals.anPath}print/${smetaId}/3/', host: Globals.anServer, scheme: 'https', queryParameters: _queryParameters);
+    var _headers = <String, String> {
+      'Accept': 'application/json',
+      'Authorization': Globals.anAuthorization
+    };
+    try {
+      print('1');
+      //final Directory tempDir = getTemporaryPath();
+      final String? tempPath = await _platform.getTemporaryPath();
+
+      //String tempPath = tempDir.path;
+      print(tempPath);
+
+      var response = await http.get(_url, headers: _headers);
+      print('Код ответа от запроса аналитик: ' + response.statusCode.toString());
+      if (response.statusCode == 200) {
+        if (response.contentLength == 0){
+          return;
+        }
+        File file = new File('$tempPath/${number}.pdf');
+        print('Начинаем сохранять пдф');
+        await file.writeAsBytes(response.bodyBytes);
+        //displayImage(file);
+        print('Сохранили пдф');
       }
       else
         throw response.body;
@@ -269,7 +312,7 @@ class _scrDogovorViewScreenState extends State<scrDogovorViewScreen> with Single
                   leading: Icon(Icons.calculate),
                   trailing: Icon(Icons.navigate_next),
                 onTap: () {
-
+                  httpGetSmetaPDF();
                 },
               ),
             ),
@@ -341,57 +384,56 @@ class _scrDogovorViewScreenState extends State<scrDogovorViewScreen> with Single
   }
 
   _pageComplit() {
-    return (Globals.anFinTech==false) ? Center(child: Text('Нет доступа')) :
-    Column(
+    return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        titleHeader('Общие показатели'),
-        Container(height: 100,
-          child: ListView(scrollDirection: Axis.horizontal,
-              children: [
-                InkWell(
-                  onTap: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => scrCashListScreen(idCash: '0', cashName: 'Все', analytic: '', analyticName: '', objectId: widget.id, objectName: name, platType: '', dateRange: DateTimeRange(start: DateTime(2023), end: DateTime.now()), kassaSotrId: '', kassaSortName: '',  )));
-                  },
-                  child: _CustomRowTile(
-                    title: 'Баланс',
-                    subtitle: summaUp-summaDown,
-                    icon: Icons.trending_neutral,
-                    id: '',
-                  ),
-                ),
-                InkWell(
-                  onTap: () {Navigator.push(context, MaterialPageRoute(builder: (context) => scrCashListScreen(idCash: '0', cashName: 'Все', analytic: '', analyticName: '', objectId: widget.id, objectName: name, platType: 'Расход', dateRange: DateTimeRange(start: DateTime(2023), end: DateTime.now()), kassaSotrId: '', kassaSortName: '',  )));},
-                  child: _CustomRowTile(
-                    title: 'Расходы',
-                    subtitle: -summaDown,
-                    icon: Icons.trending_down,
-                    id: '',
-                  ),
-                ),
-                InkWell(
-                  onTap: () {Navigator.push(context, MaterialPageRoute(builder: (context) => scrCashListScreen(idCash: '0', cashName: 'Все', analytic: '', analyticName: '', objectId: widget.id, objectName: name, platType: 'Приход', dateRange: DateTimeRange(start: DateTime(2023), end: DateTime.now()), kassaSotrId: '', kassaSortName: '',  )));},
-                  child: _CustomRowTile(
-                    title: 'Поступления',
-                    subtitle: summaUp,
-                    icon: Icons.trending_up,
-                    id: '',
-                  ),
-                ),
-                InkWell(
-                  onTap: () {},
-                  child: _CustomRowTile(
-                    title: 'Маржа',
-                    subtitle: (summaUp!=0) ? (summaUp-summaDown)/summaUp*100 : 0,
-                    icon: Icons.trending_up,
-                    id: '',
-                  ),
-                ),
-              ]
-          ),
-        ),
-        Divider(),
+        //titleHeader('Общие показатели'),
+        // Container(height: 100,
+        //   child: ListView(scrollDirection: Axis.horizontal,
+        //       children: [
+        //         InkWell(
+        //           onTap: () {
+        //             Navigator.push(context, MaterialPageRoute(builder: (context) => scrCashListScreen(idCash: '0', cashName: 'Все', analytic: '', analyticName: '', objectId: widget.id, objectName: name, platType: '', dateRange: DateTimeRange(start: DateTime(2023), end: DateTime.now()), kassaSotrId: '', kassaSortName: '',  )));
+        //           },
+        //           child: _CustomRowTile(
+        //             title: 'Баланс',
+        //             subtitle: summaUp-summaDown,
+        //             icon: Icons.trending_neutral,
+        //             id: '',
+        //           ),
+        //         ),
+        //         InkWell(
+        //           onTap: () {Navigator.push(context, MaterialPageRoute(builder: (context) => scrCashListScreen(idCash: '0', cashName: 'Все', analytic: '', analyticName: '', objectId: widget.id, objectName: name, platType: 'Расход', dateRange: DateTimeRange(start: DateTime(2023), end: DateTime.now()), kassaSotrId: '', kassaSortName: '',  )));},
+        //           child: _CustomRowTile(
+        //             title: 'Расходы',
+        //             subtitle: -summaDown,
+        //             icon: Icons.trending_down,
+        //             id: '',
+        //           ),
+        //         ),
+        //         InkWell(
+        //           onTap: () {Navigator.push(context, MaterialPageRoute(builder: (context) => scrCashListScreen(idCash: '0', cashName: 'Все', analytic: '', analyticName: '', objectId: widget.id, objectName: name, platType: 'Приход', dateRange: DateTimeRange(start: DateTime(2023), end: DateTime.now()), kassaSotrId: '', kassaSortName: '',  )));},
+        //           child: _CustomRowTile(
+        //             title: 'Поступления',
+        //             subtitle: summaUp,
+        //             icon: Icons.trending_up,
+        //             id: '',
+        //           ),
+        //         ),
+        //         InkWell(
+        //           onTap: () {},
+        //           child: _CustomRowTile(
+        //             title: 'Маржа',
+        //             subtitle: (summaUp!=0) ? (summaUp-summaDown)/summaUp*100 : 0,
+        //             icon: Icons.trending_up,
+        //             id: '',
+        //           ),
+        //         ),
+        //       ]
+        //   ),
+        // ),
+        //Divider(),
         titleHeader('Акты выполненных работ'),
         Expanded(
             child: ListView.builder(
@@ -403,7 +445,12 @@ class _scrDogovorViewScreenState extends State<scrDogovorViewScreen> with Single
                   Card(
                     child: ListTile(
                       title: Text('Акт ${aktList[index].number} от ${DateFormat('dd.MM.yyyy').format(aktList[index].date)}'),
-                      trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(aktList[index].summa), style: TextStyle(fontSize: 18, color: Colors.green)),
+                      trailing: Column(
+                        children: [
+                          Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(aktList[index].summa), style: TextStyle(fontSize: 18, color: Colors.green)),
+                          Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(aktList[index].seb), style: TextStyle(fontSize: 18, color: Colors.red)),
+                        ],
+                      ),
                       //subtitle: Text(objectList[index].name, textAlign: TextAlign.center,),
                       onTap: () {
                         Navigator.push(context, MaterialPageRoute(builder: (context) => scrAktViewScreen(aktList[index])));
@@ -547,14 +594,14 @@ class _CustomRowTile extends StatelessWidget {
 }
 
 const _tabs = [
-  Tab(icon: Row(children:[Icon(Icons.home_rounded), Text('  Основное')]),
+  Tab(icon: Row(children:[Icon(Icons.home_rounded), Text(' Основное')]),
     //text: "Основное"
     iconMargin: EdgeInsets.zero
   ),
-  Tab(icon: Row(children:[Icon(Icons.bar_chart), Text('  Выполнение')]),
+  Tab(icon: Row(children:[Icon(Icons.bar_chart), Text(' Акты')]),
     //text: "Выполнение",
     iconMargin: EdgeInsets.zero,),
-  Tab(icon: Row(children:[Icon(Icons.shopping_bag_rounded), Text('  Финансы')]),
+  Tab(icon: Row(children:[Icon(Icons.shopping_bag_rounded), Text(' Финансы')]),
     //text: "Финансы",
     iconMargin: EdgeInsets.zero,),
 ];

@@ -16,10 +16,11 @@ import 'object_view.dart';
 
 class scrWorksEditScreen extends StatefulWidget {
   String id;
+  final int type;
   final String dogId;
   final bool additionalWork;
 
-  scrWorksEditScreen(this.id, this.dogId, this.additionalWork);
+  scrWorksEditScreen(this.id, this.type, this.dogId, this.additionalWork);
 
   @override
   State<scrWorksEditScreen> createState() => _scrWorksEditScreenState();
@@ -31,11 +32,12 @@ class _scrWorksEditScreenState extends State<scrWorksEditScreen> {
   List<Works> ListWorksTitle = [];
   var myObjects = [];
   bool _isUpdating = false;
+  String titleName = '';
 
   Future httpGetInfoObject() async {
     final _queryParameters = {'userId': Globals.anPhone, 'dogId': widget.dogId};
 
-    var _url=Uri(path: '${Globals.anPath}workedit/${widget.id}/', host: Globals.anServer, scheme: 'https', queryParameters: _queryParameters);
+    var _url=Uri(path: '${Globals.anPath}workedit/${widget.id}/${widget.type}/', host: Globals.anServer, scheme: 'https', queryParameters: _queryParameters);
     print(_url.path);
     print(Globals.anAuthorization);
     var _headers = <String, String> {
@@ -68,7 +70,7 @@ class _scrWorksEditScreenState extends State<scrWorksEditScreen> {
     print('dogId: ${widget.dogId}');
     final _queryParameters = {'userId': Globals.anPhone, 'dogId': widget.dogId};
 
-    var _url=Uri(path: '${Globals.anPath}workedit/${widget.id}/', host: Globals.anServer, scheme: 'https', queryParameters: _queryParameters);
+    var _url=Uri(path: '${Globals.anPath}workedit/${widget.id}/${widget.type}/', host: Globals.anServer, scheme: 'https', queryParameters: _queryParameters);
     var _headers = <String, String> {
       'Accept': 'application/json',
       'Authorization': Globals.anAuthorization
@@ -123,14 +125,20 @@ class _scrWorksEditScreenState extends State<scrWorksEditScreen> {
     super.initState();
   }
   Widget build(BuildContext context) {
+    switch (widget.type) {
+      case 1:
+        titleName = 'Редактирвоание сметы';
+      case 2:
+        titleName = 'Редактирование акта';
+      case 3:
+        titleName = 'Выбор работы';
+    }
     return Scaffold(
       appBar: AppBar(
-        title: Text('Редактирование'),
+        title: Text(titleName),
         centerTitle: true,
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        actions: [
-          IconButton(onPressed: () {}, icon: Icon(Icons.menu))
-        ],
+        actions: <Widget>[_menuAppBar()], //(widget.additionalWork==true) ? null :
       ),
         body: (_isUpdating==true) ? Center(child: CircularProgressIndicator()) : Column(
           children: [
@@ -173,6 +181,30 @@ class _scrWorksEditScreenState extends State<scrWorksEditScreen> {
     );
   }
 
+  PopupMenuButton<MenuEditWorks> _menuAppBar() {
+    return PopupMenuButton<MenuEditWorks>(
+        icon: const Icon(Icons.menu, ),
+        offset: const Offset(0, 40),
+        onSelected: (MenuEditWorks item) async {
+          if (item == MenuEditWorks.itemWorkAdd) {
+            var _res = await Navigator.push(context, MaterialPageRoute(builder: (context) =>
+                scrWorksEditScreen(widget.id, 3, widget.dogId, false)));
+            if (_res!=null) {
+              ListWorks.add(_res);
+              setState(() {
+
+              });
+            }
+          }
+        },
+        itemBuilder: (BuildContext context) => <PopupMenuEntry<MenuEditWorks>>[
+          const PopupMenuItem<MenuEditWorks>(
+            value: MenuEditWorks.itemWorkAdd,
+            child: Text('Добавить доп работу'),
+          ),
+        ].toList());
+  }
+
   List<Widget> _generateChildrens(event, double level) {
     var widgetList = <Widget>[];
 
@@ -187,7 +219,7 @@ class _scrWorksEditScreenState extends State<scrWorksEditScreen> {
           Card(color: Colors.white54,
             child: ListTile(
               title: Text(str.workName ?? '', style: TextStyle(fontSize: 18, ),),
-              trailing: Checkbox(value: (str.kol==0) ? false : true, onChanged: (value) {
+              trailing: (widget.type==3) ? null : Checkbox(value: (str.kol==0) ? false : true, onChanged: (value) {
                 setState(() {
                   num summaDifference = 0;
                   if (value==true) {
@@ -210,6 +242,9 @@ class _scrWorksEditScreenState extends State<scrWorksEditScreen> {
                   summaDifference = (str.price! * str.kol!) - summaDifference_old;
                   _ref(str, summaDifference);
                 });
+                if (widget.type==3) {
+                  Navigator.pop(context, str);
+                }
               },
             ),
           )
@@ -236,3 +271,4 @@ class _scrWorksEditScreenState extends State<scrWorksEditScreen> {
   }
 }
 
+enum MenuEditWorks { itemWorkAdd }

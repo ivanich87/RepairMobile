@@ -263,7 +263,7 @@ class _scrHomeScreenState extends State<scrHomeScreen> {
                 padding: const EdgeInsets.all(8.0),
                 child: Column(mainAxisAlignment: MainAxisAlignment.end, crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Text('Версия: 1.0.1', textAlign: TextAlign.right, style: TextStyle(fontSize: 14, fontWeight: FontWeight.normal, fontStyle: FontStyle.italic)),
+                    Text('Версия: 1.0.2', textAlign: TextAlign.right, style: TextStyle(fontSize: 14, fontWeight: FontWeight.normal, fontStyle: FontStyle.italic)),
                   ],
                 ),
               ),
