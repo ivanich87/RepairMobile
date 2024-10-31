@@ -31,6 +31,7 @@ class _scrWorksEditScreenState extends State<scrWorksEditScreen> {
   List<Works> filteredListWorks = [];
   List<Works> ListWorksTitle = [];
   var myObjects = [];
+  bool _isActive=false;
   bool _isUpdating = false;
   String titleName = '';
 
@@ -39,6 +40,7 @@ class _scrWorksEditScreenState extends State<scrWorksEditScreen> {
 
     var _url=Uri(path: '${Globals.anPath}workedit/${widget.id}/${widget.type}/', host: Globals.anServer, scheme: 'https', queryParameters: _queryParameters);
     print(_url.path);
+    print(_queryParameters);
     print(Globals.anAuthorization);
     var _headers = <String, String> {
       'Accept': 'application/json',
@@ -48,10 +50,11 @@ class _scrWorksEditScreenState extends State<scrWorksEditScreen> {
       var response = await http.get(_url, headers: _headers);
       print(response.statusCode.toString());
       if (response.statusCode == 200) {
-        print(response.body.toString());
+        print('Ответ = ' + response.body.toString());
         var notesJson = json.decode(response.body)['sost'];
         for (var noteJson in notesJson) {
           ListWorks.add(Works.fromJson(noteJson));
+          filteredListWorks.add(Works.fromJson(noteJson));
           if (noteJson['parentId']==null)
             ListWorksTitle.add(Works.fromJson(noteJson));
         }
@@ -110,11 +113,17 @@ class _scrWorksEditScreenState extends State<scrWorksEditScreen> {
     return _result ?? false;
   }
 
+  void _findList(value) {
+    setState(() {
+      filteredListWorks = ListWorks.where((element) => element.workName.toString().toLowerCase().contains(value.toLowerCase())).toList();
+    });
+  }
 
   @override
   void initState() {
     print('initState');
     ListWorks.clear();
+    filteredListWorks.clear();
     ListWorksTitle.clear();
 
     httpGetInfoObject().then((value) {
@@ -135,7 +144,7 @@ class _scrWorksEditScreenState extends State<scrWorksEditScreen> {
     }
     return Scaffold(
       appBar: AppBar(
-        title: Text(titleName),
+        title: SearchBar(), //Text(titleName),
         centerTitle: true,
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         actions: <Widget>[_menuAppBar()], //(widget.additionalWork==true) ? null :
@@ -181,6 +190,57 @@ class _scrWorksEditScreenState extends State<scrWorksEditScreen> {
     );
   }
 
+  SearchBar() {
+    return Row(
+      children: [
+        if (!_isActive)
+          Text(titleName, style: Theme.of(context).appBarTheme.titleTextStyle),
+        Expanded(
+          child: Align(
+            alignment: Alignment.centerRight,
+            child: AnimatedSize(
+              duration: const Duration(milliseconds: 250),
+              child: (_isActive==true)
+                  ? Container(
+                  width: double.infinity,
+                  height: 40,
+                  decoration: BoxDecoration(
+                      color: Colors.white30,
+                      borderRadius: BorderRadius.circular(4.0)),
+                    child: TextField(autofocus: true,
+                        decoration: InputDecoration(
+                          hintText: 'Введите строку для поиска',
+
+                          prefixIcon: const Icon(Icons.search),
+                          suffixIcon: IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  _isActive = false;
+                                  filteredListWorks = ListWorks;
+                                  print('Сбросили фильтр');
+                                });
+                              },
+                              icon: const Icon(Icons.close))),
+                      onChanged: (value) {
+                        _findList(value);
+                      },
+                    ),
+              )
+                  : IconButton(
+                  onPressed: () {
+                    setState(() {
+                      _isActive = true;
+                    });
+                  },
+                  icon: const Icon(Icons.search)),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+
   PopupMenuButton<MenuEditWorks> _menuAppBar() {
     return PopupMenuButton<MenuEditWorks>(
         icon: const Icon(Icons.menu, ),
@@ -210,7 +270,7 @@ class _scrWorksEditScreenState extends State<scrWorksEditScreen> {
 
     var value = event.workId;
     //print(event.workName);
-    var _filtered = ListWorks.where((element) => element.parentId!.toLowerCase()==(value.toLowerCase())).toList();
+    var _filtered = filteredListWorks.where((element) => element.parentId!.toLowerCase()==(value.toLowerCase())).toList();
 
     for (var str in _filtered) {
       //print(str);
@@ -263,7 +323,7 @@ class _scrWorksEditScreenState extends State<scrWorksEditScreen> {
   }
 
   _ref(var str, summaDifference) {
-    var _filtered2 = ListWorks.where((element) => element.workId!.toLowerCase()==(str.parentId!.toLowerCase())).toList();
+    var _filtered2 = filteredListWorks.where((element) => element.workId!.toLowerCase()==(str.parentId!.toLowerCase())).toList();
     for (var str2 in _filtered2) {
       str2.summa=str2.summa!+summaDifference;
       _ref(str2, summaDifference);
