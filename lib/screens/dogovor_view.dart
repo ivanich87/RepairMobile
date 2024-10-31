@@ -253,7 +253,7 @@ class _scrDogovorViewScreenState extends State<scrDogovorViewScreen> with Single
       case 1:
         return FloatingActionButton(
           onPressed: () async {
-            await Navigator.push(context, MaterialPageRoute(builder: (context) => scrAktViewScreen(Akt('0', '', DateTime.now(), false, false, false, false, '956d8376-8b56-400a-ab32-1788d71dbb15', 'На согласовании', widget.id, smetaId, DateTime.now(), DateTime.now(), 0, 0))));
+            await Navigator.push(context, MaterialPageRoute(builder: (context) => scrAktViewScreen(Akt('0', '', DateTime.now(), false, false, false, true, '956d8376-8b56-400a-ab32-1788d71dbb15', 'На согласовании', widget.id, smetaId, DateTime.now(), DateTime.now(), 0, 0))));
             await httpGetInfoObject();
             setState(() {
 

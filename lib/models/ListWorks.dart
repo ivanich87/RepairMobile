@@ -52,7 +52,7 @@ class Works {
     data['kolSmeta'] = this.kolSmeta;
     data['kolUsed'] = this.kolUsed;
     data['KolRemains'] = this.kolRemains;
-    data['Kol'] = this.kol;
+    data['kol'] = this.kol;
     data['price'] = this.price;
     data['priceSub'] = this.priceSub;
     data['summa'] = this.summa;

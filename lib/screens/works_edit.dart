@@ -82,7 +82,7 @@ class _scrWorksEditScreenState extends State<scrWorksEditScreen> {
     try {
       print('Start export works!!!!');
       print(json.encode(ListWorks));
-      var response = await http.post(_url, headers: _headers, body: json.encode(ListWorks));
+      var response = await http.post(_url, headers: _headers, body: json.encode(filteredListWorks));
       print('Код ответа: ${response.statusCode} Тело ответа: ${response.body}');
 
       var data = json.decode(response.body);
