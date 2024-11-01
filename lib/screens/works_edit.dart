@@ -216,7 +216,7 @@ class _scrWorksEditScreenState extends State<scrWorksEditScreen> {
                               onPressed: () {
                                 setState(() {
                                   _isActive = false;
-                                  filteredListWorks = ListWorks;
+                                  filteredListWorks = List.from(ListWorks);
                                   print('Сбросили фильтр');
                                 });
                               },
@@ -284,23 +284,33 @@ class _scrWorksEditScreenState extends State<scrWorksEditScreen> {
                   num summaDifference = 0;
                   if (value==true) {
                     str.kol = str.kolRemains;
+                    str.summa = str.kol! * str.price!;
                     summaDifference = str.price! * str.kol!;
                   }
                   else {
                     summaDifference = -1*(str.price! * str.kol!);
                     str.kol=0;
+                    str.summa=0;
                   }
+
                   _ref(str, summaDifference);
+                  _refListWorks(str);
+                  //_ref2(str, summaDifference);
+
                 });
               }, ),
-              subtitle: Text('Цена: ${str.price.toString()}; Кол-во: ${str.kol}', style: TextStyle(fontStyle: FontStyle.italic),),
+              subtitle: Text('Цена: ${str.price.toString()}; Кол-во: ${str.kol}; Сумма: ${str.summa}', style: TextStyle(fontStyle: FontStyle.italic),),
               onTap: () async {
                 num summaDifference_old = str.price! * str.kol!;
+                print(summaDifference_old);
                 await Navigator.push(context, MaterialPageRoute(builder: (context) => scrWorkEditingScreen(str, widget.additionalWork)));
                 setState(() {
                   num summaDifference = 0;
                   summaDifference = (str.price! * str.kol!) - summaDifference_old;
+                  print(summaDifference);
                   _ref(str, summaDifference);
+                  _refListWorks(str);
+                  //_ref2(str, summaDifference);
                 });
                 if (widget.type==3) {
                   Navigator.pop(context, str);
@@ -323,10 +333,34 @@ class _scrWorksEditScreenState extends State<scrWorksEditScreen> {
   }
 
   _ref(var str, summaDifference) {
-    var _filtered2 = filteredListWorks.where((element) => element.workId!.toLowerCase()==(str.parentId!.toLowerCase())).toList();
+    var _filtered2 = filteredListWorks.where((element) => element.workId!.toLowerCase() == (str.parentId!.toLowerCase())).toList();
     for (var str2 in _filtered2) {
-      str2.summa=str2.summa!+summaDifference;
+      print('_ref1: ${str2.workName} = ${str2.summa}');
+      str2.summa = str2.summa! + summaDifference;
+      print('_ref1: ${str2.workName} = ${str2.summa}');
+      //print('${str2.workName} = ${str2.summa}');
       _ref(str2, summaDifference);
+    }
+  }
+
+  _ref2(var str, summaDifference) {
+    var _filtered3 = ListWorks.where((element) => element.workId!.toLowerCase()==(str.parentId!.toLowerCase())).toList();
+    for (var str3 in _filtered3) {
+      print('_ref2: ${str3.workName} = ${str3.summa}');
+      str3.summa=str3.summa!+summaDifference;
+      print('_ref2: ${str3.workName} = ${str3.summa}');
+      //str3.summaSub=str3.summaSub!+summaDifference;
+      _ref2(str3, summaDifference);
+    }
+  }
+
+  _refListWorks(var str) {
+    var _filtered2 = ListWorks.where((element) => element.workId!.toLowerCase()==(str.workId!.toLowerCase())).toList();
+    for (var str2 in _filtered2) {
+      str2.kol=str.kol;
+      str2.summa=str.summa;
+      str2.summaSub=str.summaSub;
+      print('${str2.workName} = ${str2.summa}');
     }
   }
 }
