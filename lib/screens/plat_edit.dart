@@ -267,7 +267,7 @@ class _scrPlatEditScreenState extends State<scrPlatEditScreen> {
                       TextField(
                         textAlign: TextAlign.center,
                         controller: _summaController,
-                        keyboardType: TextInputType.number,
+                        keyboardType: TextInputType.numberWithOptions(decimal: true),
                         style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold, color: (plat3.summa>=0) ? Colors.green : Colors.red),
                         //onSubmitted: (value) {
                           // if (plat3.platType=='Расход')

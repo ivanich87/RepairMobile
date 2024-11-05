@@ -391,7 +391,7 @@ class _scrReceiptEditScreenState extends State<scrReceiptEditScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           TextFormField(
-            keyboardType: TextInputType.number,
+            keyboardType: TextInputType.numberWithOptions(decimal: true),
             autofocus: true,
             textInputAction: TextInputAction.next,
             controller: _summaClientController,
@@ -409,7 +409,7 @@ class _scrReceiptEditScreenState extends State<scrReceiptEditScreen> {
           ),
           SizedBox(height: 10),
           TextFormField(
-            keyboardType: TextInputType.number,
+            keyboardType: TextInputType.numberWithOptions(decimal: true),
             textInputAction: TextInputAction.next,
             validator: (value) => valid(value),
             controller: _summaOrgController,
@@ -422,7 +422,7 @@ class _scrReceiptEditScreenState extends State<scrReceiptEditScreen> {
           ),
           SizedBox(height: 10),
           TextFormField(
-            keyboardType: TextInputType.number,
+            keyboardType: TextInputType.numberWithOptions(decimal: true ),
             controller: _summaController,
             decoration: InputDecoration(border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10)),

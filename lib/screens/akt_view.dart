@@ -10,9 +10,6 @@ import 'package:repairmodule/models/Lists.dart';
 import 'package:http/http.dart' as http;
 import 'package:repairmodule/screens/works_edit.dart';
 
-import 'object_create.dart';
-import 'object_view.dart';
-
 
 class scrAktViewScreen extends StatefulWidget {
   final Akt akt;
@@ -24,6 +21,7 @@ class scrAktViewScreen extends StatefulWidget {
 }
 
 class _scrAktViewScreenState extends State<scrAktViewScreen> {
+  int priceDefault=1;
   List<Works> ListWorks = [];
   List<Works> filteredListWorks = [];
   List<Works> ListWorksTitle = [];
@@ -66,6 +64,9 @@ class _scrAktViewScreenState extends State<scrAktViewScreen> {
 
   @override
   void initState() {
+    if (Globals.anUserRoleId!=3)
+      priceDefault=2;
+
     print('initState');
     ListWorks.clear();
     ListWorksTitle.clear();
@@ -89,9 +90,7 @@ class _scrAktViewScreenState extends State<scrAktViewScreen> {
           ], isScrollable: true,),
           centerTitle: true,
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-          actions: [
-            IconButton(onPressed: () {}, icon: Icon(Icons.menu))
-          ],
+          actions: <Widget>[_menuAppBar()],
         ),
           body: TabBarView(children: <Widget> [
             _pageWork(),
@@ -101,7 +100,7 @@ class _scrAktViewScreenState extends State<scrAktViewScreen> {
             onPressed: () async {
               var _res = await Navigator.push(context, MaterialPageRoute(builder: (context) =>
                   scrWorksEditScreen(widget.akt.id, 2, widget.akt.dogId,
-                      widget.akt.additionalWork)));
+                      widget.akt.additionalWork, priceDefault)));
               if (_res!=null) {
                 widget.akt.id = _res;
                 initState();
@@ -127,15 +126,15 @@ class _scrAktViewScreenState extends State<scrAktViewScreen> {
         widgetList.add(
           ListTile(
             title: Text(str.workName ?? ''),
-            trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 0).format(str.summa), style: TextStyle(fontSize: 16)),
-            subtitle: Text('Цена: ${str.price.toString()}; Кол-во: ${str.kol}', style: TextStyle(fontStyle: FontStyle.italic),),
+            trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 0).format((priceDefault==1) ? str.summa : str.summaSub), style: TextStyle(fontSize: 16, color: (priceDefault==1) ? Colors.green : Colors.red)),
+            subtitle: Text('Цена: ${(priceDefault==1) ? str.price.toString() : str.priceSub.toString()}; Кол-во: ${str.kol}', style: TextStyle(fontStyle: FontStyle.italic),),
           )
         );
       else
         widgetList.add(ExpansionTile(
           title: Text(str.workName.toString()),
           //leading: Container(child: Text(str.workName ?? '', style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),), width: 200,),
-          subtitle: Text('Сумма: ${NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 0).format(str.summa)}', style: TextStyle(fontWeight: FontWeight.w700, fontStyle: FontStyle.italic)),
+          subtitle: Text('Сумма: ${NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 0).format((priceDefault==1) ? str.summa : str.summaSub)}', style: TextStyle(fontWeight: FontWeight.w700, fontStyle: FontStyle.italic)),
           children: _generateChildrens(str),
         ),
         );
@@ -193,5 +192,50 @@ class _scrAktViewScreenState extends State<scrAktViewScreen> {
       ),
     );
   }
+
+  PopupMenuButton<MenuSelectPrice> _menuAppBar() {
+    return PopupMenuButton<MenuSelectPrice>(
+        icon: const Icon(Icons.menu, ),
+        offset: const Offset(0, 40),
+        onSelected: (MenuSelectPrice item) async {
+          if (item == MenuSelectPrice.itemPriceOpt) {
+            priceDefault = 2;
+          }
+          if (item == MenuSelectPrice.itemPriceRozn) {
+            priceDefault = 1;
+          }
+          setState(() {
+
+          });
+        },
+        itemBuilder: (BuildContext context) => <PopupMenuEntry<MenuSelectPrice>>[
+           PopupMenuItem<MenuSelectPrice>(
+            value: MenuSelectPrice.itemPriceRozn,
+            child: Row(
+              children: [
+                if (priceDefault==1)
+                  Icon(Icons.check)
+                else
+                  SizedBox(width: 24,),
+                Text(' Цены клиента'),
+              ],
+            ),
+          ),
+           PopupMenuItem<MenuSelectPrice>(
+            value: MenuSelectPrice.itemPriceOpt,
+            child: Row(
+              children: [
+                if (priceDefault==2)
+                  Icon(Icons.check)
+                else
+                  SizedBox(width: 24,),
+                Text(' Цены мастеров'),
+              ],
+            ),
+          ),
+        ].toList());
+  }
+
 }
 
+enum MenuSelectPrice { itemPriceRozn, itemPriceOpt }

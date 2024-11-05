@@ -19,8 +19,9 @@ class scrWorksEditScreen extends StatefulWidget {
   final int type;
   final String dogId;
   final bool additionalWork;
+  final int priceDefault;
 
-  scrWorksEditScreen(this.id, this.type, this.dogId, this.additionalWork);
+  scrWorksEditScreen(this.id, this.type, this.dogId, this.additionalWork, this.priceDefault);
 
   @override
   State<scrWorksEditScreen> createState() => _scrWorksEditScreenState();
@@ -248,7 +249,7 @@ class _scrWorksEditScreenState extends State<scrWorksEditScreen> {
         onSelected: (MenuEditWorks item) async {
           if (item == MenuEditWorks.itemWorkAdd) {
             var _res = await Navigator.push(context, MaterialPageRoute(builder: (context) =>
-                scrWorksEditScreen(widget.id, 3, widget.dogId, false)));
+                scrWorksEditScreen(widget.id, 3, widget.dogId, false, widget.priceDefault)));
             if (_res!=null) {
               ListWorks.add(_res);
               setState(() {
@@ -285,10 +286,17 @@ class _scrWorksEditScreenState extends State<scrWorksEditScreen> {
                   if (value==true) {
                     str.kol = str.kolRemains;
                     str.summa = str.kol! * str.price!;
-                    summaDifference = str.price! * str.kol!;
+                    str.summaSub = str.kol! * str.priceSub!;
+                    if (widget.priceDefault==1)
+                      summaDifference = str.price! * str.kol!;
+                    else
+                      summaDifference = str.priceSub! * str.kol!;
                   }
                   else {
-                    summaDifference = -1*(str.price! * str.kol!);
+                    if (widget.priceDefault==1)
+                      summaDifference = -1*(str.price! * str.kol!);
+                    else
+                      summaDifference = -1*(str.priceSub! * str.kol!);
                     str.kol=0;
                     str.summa=0;
                   }
@@ -299,14 +307,17 @@ class _scrWorksEditScreenState extends State<scrWorksEditScreen> {
 
                 });
               }, ),
-              subtitle: Text('Цена: ${str.price.toString()}; Кол-во: ${str.kol}; Сумма: ${str.summa}', style: TextStyle(fontStyle: FontStyle.italic),),
+              subtitle: Text('Цена: ${(widget.priceDefault==1) ? str.price.toString() : str.priceSub.toString()}; Кол-во: ${str.kol}; Сумма: ${(widget.priceDefault==1) ? str.summa : str.summaSub}', style: TextStyle(fontStyle: FontStyle.italic, color: _colors(str.kol)),),
               onTap: () async {
-                num summaDifference_old = str.price! * str.kol!;
+                num summaDifference_old = (widget.priceDefault==1) ? str.price! : str.priceSub! * str.kol!;
                 print(summaDifference_old);
                 await Navigator.push(context, MaterialPageRoute(builder: (context) => scrWorkEditingScreen(str, widget.additionalWork)));
                 setState(() {
                   num summaDifference = 0;
-                  summaDifference = (str.price! * str.kol!) - summaDifference_old;
+                  if (widget.priceDefault==1)
+                    summaDifference = (str.price! * str.kol!) - summaDifference_old;
+                  else
+                    summaDifference = (str.priceSub! * str.kol!) - summaDifference_old;
                   print(summaDifference);
                   _ref(str, summaDifference);
                   _refListWorks(str);
@@ -323,13 +334,22 @@ class _scrWorksEditScreenState extends State<scrWorksEditScreen> {
         widgetList.add(ExpansionTile(
           title: Text('${str.workName}'),
           //leading: Container(child: Text(str.workName ?? '', style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),), width: 200,),
-          subtitle: Text('Сумма: ${NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 0).format(str.summa)}', style: TextStyle(fontWeight: FontWeight.w700, fontStyle: FontStyle.italic)),
+          subtitle: Text('Сумма: ${NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 0).format((widget.priceDefault==1) ? str.summa : str.summaSub)}', style: TextStyle(fontWeight: FontWeight.w700, fontStyle: FontStyle.italic, color: _colors(str.summa))),
           children: _generateChildrens(str, level+10),
         ),
         );
     }
 
     return widgetList;
+  }
+
+  _colors(kol) {
+    if (kol==0)
+      return Colors.black;
+    if (widget.priceDefault==1)
+      return Colors.green;
+    else
+      return Colors.red;
   }
 
   _ref(var str, summaDifference) {

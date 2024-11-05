@@ -129,36 +129,36 @@ class _scrListScreenState extends State<scrListScreen> {
               duration: const Duration(milliseconds: 250),
               child: (_isActive==true)
                   ? Container(
-                width: double.infinity,
-                height: 40,
-                decoration: BoxDecoration(
-                    color: Colors.white30,
-                    borderRadius: BorderRadius.circular(4.0)),
-                child: TextField(
-                  decoration: InputDecoration(
-                      hintText: 'Введите строку для поиска',
-                      prefixIcon: const Icon(Icons.search),
-                      suffixIcon: IconButton(
-                          onPressed: () {
-                            setState(() {
-                              _isActive = false;
-                              objectListFiltered = objectList;
-                              print('Сбросили фильтр');
-                            });
-                          },
-                          icon: const Icon(Icons.close))),
-                  onChanged: (value) {
-                    _findList(value);
-                  },
-                ),
-              )
+                    width: double.infinity,
+                    height: 40,
+                    decoration: BoxDecoration(
+                        color: Colors.white30,
+                        borderRadius: BorderRadius.circular(4.0)),
+                    child: TextField(autofocus: true,
+                      decoration: InputDecoration(
+                          hintText: 'Введите строку для поиска',
+                          prefixIcon: const Icon(Icons.search),
+                          suffixIcon: IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  _isActive = false;
+                                  objectListFiltered = objectList;
+                                  print('Сбросили фильтр');
+                                });
+                              },
+                              icon: const Icon(Icons.close))),
+                      onChanged: (value) {
+                        _findList(value);
+                      },
+                    ),
+                  )
                   : IconButton(
-                  onPressed: () {
-                    setState(() {
-                      _isActive = true;
-                    });
-                  },
-                  icon: const Icon(Icons.search)),
+                    onPressed: () {
+                      setState(() {
+                        _isActive = true;
+                      });
+                    },
+                    icon: const Icon(Icons.search)),
             ),
           ),
         ),
