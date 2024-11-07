@@ -1,13 +1,14 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_simple_treeview/flutter_simple_treeview.dart';
+//import 'package:flutter_simple_treeview/flutter_simple_treeview.dart';
 import 'package:intl/intl.dart';
 import 'package:repairmodule/components/Cards.dart';
 import 'package:repairmodule/components/SingleSelections.dart';
 import 'package:repairmodule/models/ListWorks.dart';
 import 'package:repairmodule/models/Lists.dart';
 import 'package:http/http.dart' as http;
+import 'package:repairmodule/screens/pdf2.dart';
 import 'package:repairmodule/screens/works_edit.dart';
 
 
@@ -168,7 +169,7 @@ class _scrAktViewScreenState extends State<scrAktViewScreen> {
             leading: Icon(Icons.calculate),
             trailing: Icon(Icons.navigate_next),
             onTap: () {
-              //httpGetAktPDF();
+              Navigator.push(context, MaterialPageRoute(builder: (context) => PDFViewerFromUrl(url: 'https://ace:AxWyIvrAKZkw66S7S0BO@${Globals.anServer}${Globals.anPath}print/${widget.akt.id}/3/',)));
             },
           ),
         )

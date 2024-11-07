@@ -3,17 +3,21 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
-
-export 'package:path_provider_platform_interface/path_provider_platform_interface.dart'
-    show StorageDirectory;
+// import 'package:path_provider/path_provider.dart';
+// import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
+//
+// export 'package:path_provider_platform_interface/path_provider_platform_interface.dart'
+//     show StorageDirectory;
 
 import 'package:repairmodule/components/SingleSelections.dart';
 import 'package:repairmodule/models/Lists.dart';
 import 'package:repairmodule/screens/akt_view.dart';
+import 'package:repairmodule/screens/pdf.dart';
+import 'package:repairmodule/screens/pdf2.dart';
+import 'package:repairmodule/screens/pdf_viewer.dart';
 import 'package:repairmodule/screens/profileMan.dart';
 import 'package:repairmodule/screens/settings/accessObjects.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 import '../components/Cards.dart';
 import 'cashList.dart';
@@ -60,7 +64,7 @@ class _scrDogovorViewScreenState extends State<scrDogovorViewScreen> with Single
   num payment = 0;
   num area = 0;
 
-  PathProviderPlatform get _platform => PathProviderPlatform.instance;
+  //PathProviderPlatform get _platform => PathProviderPlatform.instance;
 
   Future httpGetInfoObject() async {
     print('!!!!!!!!!!!!!!!!!!' + widget.id.toString());
@@ -141,40 +145,40 @@ class _scrDogovorViewScreenState extends State<scrDogovorViewScreen> with Single
     }
   }
 
-  Future httpGetSmetaPDF() async {
-    int i =0;
-    final _queryParameters = {'userId': Globals.anPhone};
-    var _url=Uri(path: '${Globals.anPath}print/${smetaId}/3/', host: Globals.anServer, scheme: 'https', queryParameters: _queryParameters);
-    var _headers = <String, String> {
-      'Accept': 'application/json',
-      'Authorization': Globals.anAuthorization
-    };
-    try {
-      print('1');
-      //final Directory tempDir = getTemporaryPath();
-      final String? tempPath = await _platform.getTemporaryPath();
-
-      //String tempPath = tempDir.path;
-      print(tempPath);
-
-      var response = await http.get(_url, headers: _headers);
-      print('Код ответа от запроса аналитик: ' + response.statusCode.toString());
-      if (response.statusCode == 200) {
-        if (response.contentLength == 0){
-          return;
-        }
-        File file = new File('$tempPath/${number}.pdf');
-        print('Начинаем сохранять пдф');
-        await file.writeAsBytes(response.bodyBytes);
-        //displayImage(file);
-        print('Сохранили пдф');
-      }
-      else
-        throw response.body;
-    } catch (error) {
-      print("Ошибка при формировании списка: $error");
-    }
-  }
+  // Future httpGetSmetaPDF() async {
+  //   int i =0;
+  //   final _queryParameters = {'userId': Globals.anPhone};
+  //   var _url=Uri(path: '${Globals.anPath}print/${smetaId}/3/', host: Globals.anServer, scheme: 'https', queryParameters: _queryParameters);
+  //   var _headers = <String, String> {
+  //     'Accept': 'application/json',
+  //     'Authorization': Globals.anAuthorization
+  //   };
+  //   try {
+  //     print('1');
+  //     //final Directory tempDir = getTemporaryPath();
+  //     final String? tempPath = await _platform.getTemporaryPath();
+  //
+  //     //String tempPath = tempDir.path;
+  //     print(tempPath);
+  //
+  //     var response = await http.get(_url, headers: _headers);
+  //     print('Код ответа от запроса аналитик: ' + response.statusCode.toString());
+  //     if (response.statusCode == 200) {
+  //       if (response.contentLength == 0){
+  //         return;
+  //       }
+  //       File file = new File('$tempPath/${number}.pdf');
+  //       print('Начинаем сохранять пдф');
+  //       await file.writeAsBytes(response.bodyBytes);
+  //       //displayImage(file);
+  //       print('Сохранили пдф');
+  //     }
+  //     else
+  //       throw response.body;
+  //   } catch (error) {
+  //     print("Ошибка при формировании списка: $error");
+  //   }
+  // }
 
   @override
   void initState() {
@@ -312,7 +316,7 @@ class _scrDogovorViewScreenState extends State<scrDogovorViewScreen> with Single
                   leading: Icon(Icons.calculate),
                   trailing: Icon(Icons.navigate_next),
                 onTap: () {
-                  httpGetSmetaPDF();
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => PDFViewerFromUrl(url: 'https://ace:AxWyIvrAKZkw66S7S0BO@${Globals.anServer}${Globals.anPath}print/${smetaId}/2/',)));
                 },
               ),
             ),

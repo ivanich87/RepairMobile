@@ -13,7 +13,6 @@ import 'cashHome.dart';
 import 'objects.dart';
 
 
-
 class scrHomeScreen extends StatefulWidget {
   scrHomeScreen();
 
