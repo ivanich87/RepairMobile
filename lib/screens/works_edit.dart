@@ -137,9 +137,9 @@ class _scrWorksEditScreenState extends State<scrWorksEditScreen> {
   Widget build(BuildContext context) {
     switch (widget.type) {
       case 1:
-        titleName = 'Редактирвоание сметы';
+        titleName = 'Редактирование';
       case 2:
-        titleName = 'Редактирование акта';
+        titleName = 'Редактирование';
       case 3:
         titleName = 'Выбор работы';
     }

@@ -169,7 +169,7 @@ class _scrAktViewScreenState extends State<scrAktViewScreen> {
             leading: Icon(Icons.calculate),
             trailing: Icon(Icons.navigate_next),
             onTap: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => PDFViewerFromUrl(url: 'https://ace:AxWyIvrAKZkw66S7S0BO@${Globals.anServer}${Globals.anPath}print/${widget.akt.id}/3/',)));
+              _tripSelectPrice();
             },
           ),
         )
@@ -235,6 +235,32 @@ class _scrAktViewScreenState extends State<scrAktViewScreen> {
             ),
           ),
         ].toList());
+  }
+
+  void _tripSelectPrice() {
+    showModalBottomSheet(isScrollControlled: true, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)), context: context, builder: (BuildContext bc) {
+      return Container(
+        height: 400,
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: ListView(
+            children: [
+              ListTile(
+                title: Text('С ценами клиента'),
+                trailing: Icon(Icons.navigate_next),
+                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => PDFViewerFromUrl(url: 'https://ace:AxWyIvrAKZkw66S7S0BO@${Globals.anServer}${Globals.anPath}print/${widget.akt.id}/3/',)))
+              ),
+              ListTile(
+                title: Text('С ценами мастеров'),
+                trailing: Icon(Icons.navigate_next),
+                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => PDFViewerFromUrl(url: 'https://ace:AxWyIvrAKZkw66S7S0BO@${Globals.anServer}${Globals.anPath}print/${widget.akt.id}/33/',)))
+              )
+            ],
+          ),
+        ),
+      );
+
+    });
   }
 
 }
