@@ -278,6 +278,13 @@ class ListAttach {
     TipId=0;
   }
 
+  Map<String, dynamic> toJson() =>
+      {
+        'id': id,
+        'name': name,
+        'path': path,
+        'TipId': TipId
+      };
 }
 
 class sprList {

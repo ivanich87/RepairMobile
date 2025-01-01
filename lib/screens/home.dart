@@ -8,6 +8,7 @@ import 'package:repairmodule/models/Lists.dart';
 import 'package:repairmodule/screens/cashList.dart';
 import 'package:repairmodule/screens/inputSaredFiles.dart';
 import 'package:repairmodule/screens/settings.dart';
+import 'package:repairmodule/screens/task/taskList.dart';
 
 import 'cashHome.dart';
 import 'objects.dart';
@@ -236,22 +237,22 @@ class _scrHomeScreenState extends State<scrHomeScreen> {
                               },
                             ),
                           ),
-                        // Card(
-                        //   child: ListTile(
-                        //     title: Text(
-                        //       'Задачи',
-                        //       style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
-                        //     ),
-                        //     subtitle: Text('Управление задачами'),
-                        //     leading: Icon(Icons.event_note_outlined),
-                        //     trailing: Text('12/3', style: TextStyle(fontSize: 18, color: Colors.green),
-                        //     ),
-                        //     onTap: () async {
-                        //       final snackBar = SnackBar(content: Text('Этот функционал в разработке'),);
-                        //       ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                        //     },
-                        //   ),
-                        // ),
+                         Card(
+                           child: ListTile(
+                             title: Text(
+                               'Задачи',
+                               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
+                             ),
+                             subtitle: Text('Управление задачами'),
+                             leading: Icon(Icons.event_note_outlined),
+                             trailing: Text('12/3', style: TextStyle(fontSize: 18, color: Colors.green),
+                             ),
+                             onTap: () async {
+                               Navigator.push(context, MaterialPageRoute(builder: (context) => scrTaskListScreen()));
+
+                             },
+                           ),
+                         ),
                         SizedBox(height: 30,)
                       ],
                     ),
