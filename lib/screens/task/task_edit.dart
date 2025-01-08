@@ -38,8 +38,6 @@ class _scrTaskEditScreenState extends State<scrTaskEditScreen> {
   String _generalTaskId = '';
   String _objectName = '';
   String _objectId = '';
-  String _resultId = '';
-  String _resultName = '';
   String _resultText = '';
   bool _schemeTaxi = false;
 
@@ -56,6 +54,8 @@ class _scrTaskEditScreenState extends State<scrTaskEditScreen> {
       'Accept': 'application/json',
       'Authorization': Globals.anAuthorization
     };
+    print('mass observer');
+    print(_TaskObservertList.toList());
 
     var _body = <String, dynamic> {
       'id': widget.task.id,
@@ -65,8 +65,6 @@ class _scrTaskEditScreenState extends State<scrTaskEditScreen> {
       'executorId': _executorId,
       'dateTo': _dateTo.toIso8601String(),
       'reportToEnd': widget.task.reportToEnd,
-      'problemId': widget.task.problemId,
-      'resultId': _resultId,
       'resultText': _resultText,
       'objectId': _objectId,
       'generalTaskId': _generalTaskId,
@@ -75,7 +73,8 @@ class _scrTaskEditScreenState extends State<scrTaskEditScreen> {
       'resultControl': widget.task.resultControl,
       'taskCloseAuto': widget.task.taskCloseAuto,
       'deadlineFromSubtask': widget.task.deadlineFromSubtask,
-      'schemeTaxi': _schemeTaxi
+      'schemeTaxi': _schemeTaxi,
+      'taskObservertList': _TaskObservertList.toList()
     };
     print(jsonEncode(_body));
     print(_url.path);
@@ -118,8 +117,6 @@ class _scrTaskEditScreenState extends State<scrTaskEditScreen> {
       _generalTaskId = widget.task.generalTaskId;
       _objectName = (widget.task.objectName=='') ? 'Выбрать' : widget.task.objectName;
       _objectId = widget.task.objectId;
-      _resultName = (widget.task.result=='') ? 'Выбрать' : widget.task.result;
-      _resultId = widget.task.resultId;
 
       for (var noteJson in widget.TaskObservertList) {
         _TaskObservertList.add(noteJson);
@@ -170,6 +167,7 @@ class _scrTaskEditScreenState extends State<scrTaskEditScreen> {
                         titleHeader('Крайний срок'),
                         ListTile(leading: Icon(Icons.calendar_month), title: Text(DateFormat('dd.MM.yyyy – kk:mm').format(_dateTo).toString()),
                           onTap: () async {
+                            FocusManager.instance.primaryFocus?.unfocus();
                             DatePicker.showDatePicker(context, locale: DateTimePickerLocale.ru,
                               dateFormat: 'dd MMMM yyyy HH:mm',
                               initialDateTime: _dateTo,
@@ -190,6 +188,7 @@ class _scrTaskEditScreenState extends State<scrTaskEditScreen> {
                           subtitle: Text('Постановщик'),
                           leading: Icon(Icons.manage_accounts_rounded),
                           onTap: () async {
+                            FocusManager.instance.primaryFocus?.unfocus();
                             var res = await Navigator.push(context, MaterialPageRoute( builder: (context) => scrListScreen(sprName: 'Сотрудники', onType: 'pop')));
                             setState(() {
                               _directorId = res.id;
@@ -202,6 +201,7 @@ class _scrTaskEditScreenState extends State<scrTaskEditScreen> {
                           subtitle: Text('Исполнитель'),
                           leading: Icon(Icons.man),
                           onTap: () async {
+                            FocusManager.instance.primaryFocus?.unfocus();
                             bool _selectGroup = false;
                             if (_schemeTaxi==true)
                               _selectGroup = true;
@@ -219,6 +219,7 @@ class _scrTaskEditScreenState extends State<scrTaskEditScreen> {
                           leading: Icon(Icons.people),
                           trailing: Icon(Icons.add),
                           onTap: () async {
+                            FocusManager.instance.primaryFocus?.unfocus();
                             var res = await Navigator.push(context, MaterialPageRoute( builder: (context) => scrListScreen(sprName: 'Сотрудники', onType: 'pop')));
                             setState(() {
                               _TaskObservertList.add(taskObservertList(userId: res.id, userName: res.name));
@@ -231,6 +232,7 @@ class _scrTaskEditScreenState extends State<scrTaskEditScreen> {
                           title: Text(_generalTaskName),
                           trailing: Icon(Icons.navigate_next),
                           onTap: () async {
+                            FocusManager.instance.primaryFocus?.unfocus();
                             var res = await Navigator.push(context, MaterialPageRoute( builder: (context) => scrListScreen(sprName: 'Задачи', onType: 'pop',)));
                             setState(() {
                               _generalTaskId = res.id;
@@ -245,6 +247,7 @@ class _scrTaskEditScreenState extends State<scrTaskEditScreen> {
                           title: Text(_objectName),
                           //subtitle: Text('Клиент'),
                           onTap: () async {
+                            FocusManager.instance.primaryFocus?.unfocus();
                             var res = await Navigator.push(context, MaterialPageRoute( builder: (context) => scrListScreen(sprName: 'Объекты', onType: 'pop',)));
                             setState(() {
                               _objectId = res.id;
@@ -253,25 +256,13 @@ class _scrTaskEditScreenState extends State<scrTaskEditScreen> {
                           },
                         ),
                         Divider(),
-                        if (widget.task.result!='' || widget.task.resultText!='')
+                        if (widget.task.resultText!='' || widget.task.resultText!='')
                           titleHeader('Результаты'),
                         if (widget.task.resultText!='')
                           ListTile(
                             title: Text(widget.task.resultText),
                             subtitle: Text('Итоговый результат'),
                           ),
-                        if (widget.task.result!='')
-                          ListTile(
-                            title: Text(widget.task.result),
-                            subtitle: Text('Вид работ'),
-                            onTap: () async {
-                              var res = await Navigator.push(context, MaterialPageRoute( builder: (context) => scrListScreen(sprName: 'Сотрудники', onType: 'pop')));
-                              setState(() {
-                                _resultId = res.id;
-                                _resultName = res.name;
-                              });
-                            },
-                          )
                       ],
                     )
 

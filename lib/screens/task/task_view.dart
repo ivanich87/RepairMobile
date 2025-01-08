@@ -70,7 +70,6 @@ class _scrTaskViewScreenState extends State<scrTaskViewScreen> {
 
         widget.task.generalTaskDateCreate = (data['taskData']['generalTaskDateCreate']=='') ? DateTime.now() : DateTime.tryParse(data['taskData']['generalTaskDateCreate'] ?? DateTime.now().toIso8601String())!;
 
-        widget.task.result = data['taskData']['result'];
         widget.task.name = data['taskData']['name'];
         widget.task.dateTo = DateTime.tryParse(data['taskData']['dateTo'])!;
         widget.task.resultText = data['taskData']['resultText'];
@@ -78,7 +77,6 @@ class _scrTaskViewScreenState extends State<scrTaskViewScreen> {
         widget.task.content = data['taskData']['content'];
         widget.task.timeTracking = data['taskData']['timeTracking'];
         widget.task.reportToEnd = data['taskData']['reportToEnd'];
-        widget.task.resultId = data['taskData']['resultId'];
 
         widget.task.statusId = data['taskData']['statusId'];
         widget.task.status = data['taskData']['status'];
@@ -318,7 +316,7 @@ class _scrTaskViewScreenState extends State<scrTaskViewScreen> {
                         onTap: () {
                           //нужно получить объект task по widget.task.generalTaskId и открыть форму
                           //objectListFiltered = objectList.where((element) => element.resultFind.toLowerCase().contains(value.toLowerCase())).toList();
-                          taskList genTask = taskList(id: widget.task.generalTaskId, number: widget.task.generalTaskNumber, name: widget.task.generalTaskName, content: '', directorId: '', director: '', executorId: '', executor: '', dateCreate: DateTime.now(), dateTo: DateTime.now(), statusId: '', status: '', reportToEnd: true, resultId: '', result: '', resultText: '', objectId: '', objectName: '', generalTaskId: '', generalTaskName: '', generalTaskNumber: 0, generalTaskDateCreate: DateTime.now(), generalTaskExecutor: '', timeTracking: true, changeDeadline: true, resultControl: true, taskCloseAuto: true, deadlineFromSubtask: true, schemeTaxi: false, problemId: '', problemName: '');
+                          taskList genTask = taskList(id: widget.task.generalTaskId, number: widget.task.generalTaskNumber, name: widget.task.generalTaskName, content: '', directorId: '', director: '', executorId: '', executor: '', dateCreate: DateTime.now(), dateTo: DateTime.now(), statusId: '', status: '', reportToEnd: true, resultText: '', objectId: '', objectName: '', generalTaskId: '', generalTaskName: '', generalTaskNumber: 0, generalTaskDateCreate: DateTime.now(), generalTaskExecutor: '', timeTracking: true, changeDeadline: true, resultControl: true, taskCloseAuto: true, deadlineFromSubtask: true, schemeTaxi: false);
                           Navigator.push(context, MaterialPageRoute( builder: (context) => scrTaskViewScreen(task: genTask)));
                         },
                       ),
@@ -347,14 +345,14 @@ class _scrTaskViewScreenState extends State<scrTaskViewScreen> {
                               ],
                             ),
                             onTap: () async {
-                              taskList genTask = taskList(id: SubTaskList[index].id, number: SubTaskList[index].subTaskNumber, name: SubTaskList[index].subTaskName, content: '', directorId: '', director: '', executorId: SubTaskList[index].subTaskExecutorId, executor: SubTaskList[index].subTaskExecutor, dateCreate: SubTaskList[index].subTaskDateCreate, dateTo: DateTime.now(), statusId: '', status: '', reportToEnd: true, resultId: '', result: '', resultText: '', objectId: '', objectName: '', generalTaskId: '', generalTaskName: '', generalTaskNumber: 0, generalTaskDateCreate: DateTime.now(), generalTaskExecutor: '', timeTracking: true, changeDeadline: true, resultControl: true, taskCloseAuto: true, deadlineFromSubtask: true, schemeTaxi: false, problemId: '', problemName: '');
+                              taskList genTask = taskList(id: SubTaskList[index].id, number: SubTaskList[index].subTaskNumber, name: SubTaskList[index].subTaskName, content: '', directorId: '', director: '', executorId: SubTaskList[index].subTaskExecutorId, executor: SubTaskList[index].subTaskExecutor, dateCreate: SubTaskList[index].subTaskDateCreate, dateTo: DateTime.now(), statusId: '', status: '', reportToEnd: true, resultText: '', objectId: '', objectName: '', generalTaskId: '', generalTaskName: '', generalTaskNumber: 0, generalTaskDateCreate: DateTime.now(), generalTaskExecutor: '', timeTracking: true, changeDeadline: true, resultControl: true, taskCloseAuto: true, deadlineFromSubtask: true, schemeTaxi: false);
                               Navigator.push(context, MaterialPageRoute( builder: (context) => scrTaskViewScreen(task: genTask)));
                             },
                         ),
                   ),
                 ],
                 Divider(),
-                titleHeader('Даты'),
+                titleHeader('Даты и статус'),
                 ListTile(
                   title: Text(DateFormat('dd.MM.yyyy – kk:mm').format(widget.task.dateCreate), style: TextStyle(fontSize: 18)),
                   subtitle: Text('Дата создания'),
@@ -385,29 +383,25 @@ class _scrTaskViewScreenState extends State<scrTaskViewScreen> {
                   subtitle: Text('Наблюдатели'),
                   leading: Icon(Icons.people),
                 ),
+                if (widget.task.objectName!='') ...[
+                  Divider(),
+                  titleHeader('Привязка к объекту'),
+                  ListTile(
+                    title: Text(widget.task.objectName, style: TextStyle(fontSize: 18)),
+                    subtitle: Text('Объект'),
+                    trailing: Icon(Icons.navigate_next_outlined),
+                    onTap: () {
+                      Navigator.push(context, MaterialPageRoute( builder: (context) => scrObjectsViewScreen(id: widget.task.objectId)));
+                    },
+                  ),
+                ],
                 Divider(),
-                titleHeader('Привязка к оборудованию'),
-                ListTile(
-                  title: Text(widget.task.objectName, style: TextStyle(fontSize: 18)),
-                  subtitle: Text('Оборудование'),
-                  trailing: Icon(Icons.navigate_next_outlined),
-                  onTap: () {
-                    Navigator.push(context, MaterialPageRoute( builder: (context) => scrObjectsViewScreen(id: widget.task.objectId)));
-                  },
-                ),
-                Divider(),
-                if (widget.task.result!='' || widget.task.resultText!='')
-                titleHeader('Результаты'),
-                if (widget.task.resultText!='')
-                ListTile(
-                  title: Text(widget.task.resultText, style: TextStyle(fontSize: 18)),
-                  subtitle: Text('Итоговый результат'),
-                ),
-                if (widget.task.result!='')
-                ListTile(
-                  title: Text(widget.task.result, style: TextStyle(fontSize: 18)),
-                  subtitle: Text('Вид работ'),
-                )
+                if (widget.task.resultText!='') ...[
+                  titleHeader('Результат'),
+                  ListTile(
+                    title: Text(widget.task.resultText, style: TextStyle(fontSize: 18)),
+                  ),
+                ]
               ],
             )
 
@@ -676,7 +670,7 @@ class _scrTaskViewScreenState extends State<scrTaskViewScreen> {
           if (item == Menu.itemCopy) {
             //тут откроем новое окно с созданием новой задачи
             String _res ='';
-            _res = await Navigator.push(context, MaterialPageRoute(builder: (context) => scrTaskEditScreen(task: taskList(id: '', number: 0, name: widget.task.name, content: widget.task.content, directorId: Globals.anUserId, director: Globals.anUserName, executorId: '5fac3cbd-3875-11ef-a769-00155d02d23d', executor: 'Механики', dateCreate: DateTime.now(), dateTo: DateTime.now().add(Duration(hours: 4)), statusId: '52139514-180a-4b78-a882-187cc6832af2', status: 'Ждет исполнителя', reportToEnd: true, resultId: '', result: '', resultText: '', objectId: widget.task.objectId, objectName: widget.task.objectName, generalTaskId: widget.task.id, generalTaskName: widget.task.name, generalTaskNumber: widget.task.number, generalTaskDateCreate: widget.task.dateCreate, generalTaskExecutor: widget.task.executor, timeTracking: widget.task.timeTracking, changeDeadline: widget.task.changeDeadline, resultControl: false, taskCloseAuto: widget.task.taskCloseAuto, deadlineFromSubtask: widget.task.deadlineFromSubtask, schemeTaxi: widget.task.schemeTaxi, problemName: widget.task.problemName, problemId: widget.task.problemId), TaskObservertList: TaskObservertList))) ?? '';
+            _res = await Navigator.push(context, MaterialPageRoute(builder: (context) => scrTaskEditScreen(task: taskList(id: '', number: 0, name: widget.task.name, content: widget.task.content, directorId: Globals.anUserId, director: Globals.anUserName, executorId: '5fac3cbd-3875-11ef-a769-00155d02d23d', executor: 'Механики', dateCreate: DateTime.now(), dateTo: DateTime.now().add(Duration(hours: 4)), statusId: '52139514-180a-4b78-a882-187cc6832af2', status: 'Ждет исполнителя', reportToEnd: true, resultText: '', objectId: widget.task.objectId, objectName: widget.task.objectName, generalTaskId: widget.task.id, generalTaskName: widget.task.name, generalTaskNumber: widget.task.number, generalTaskDateCreate: widget.task.dateCreate, generalTaskExecutor: widget.task.executor, timeTracking: widget.task.timeTracking, changeDeadline: widget.task.changeDeadline, resultControl: false, taskCloseAuto: widget.task.taskCloseAuto, deadlineFromSubtask: widget.task.deadlineFromSubtask, schemeTaxi: widget.task.schemeTaxi), TaskObservertList: TaskObservertList))) ?? '';
             if (_res!='') {
               final snackBar = SnackBar(content: Text(_res), backgroundColor: Colors.green,);
               ScaffoldMessenger.of(context).showSnackBar(snackBar);
@@ -713,12 +707,12 @@ class _scrTaskViewScreenState extends State<scrTaskViewScreen> {
           ),
           const PopupMenuItem<Menu>(
             value: Menu.itemCopy,
-            child: Text('Добавить подзадачу (скопировать)'),
+            child: Text('Добавить подзадачу'),
           ),
-          // const PopupMenuItem<Menu>(
-          //   value: Menu.itemDelegate,
-          //   child: Text('Делегировать'),
-          // ),
+          const PopupMenuItem<Menu>(
+            value: Menu.itemDelegate,
+            child: Text('Делегировать'),
+           ),
         ].toList());
   }
 

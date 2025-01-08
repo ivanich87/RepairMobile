@@ -15,8 +15,6 @@ class taskList {
   String statusId;
   String status;
   bool reportToEnd;
-  String result;
-  String resultId;
   String resultText;
   String objectId;
   String objectName;
@@ -31,8 +29,6 @@ class taskList {
   bool taskCloseAuto;
   bool deadlineFromSubtask;
   bool schemeTaxi;
-  String problemId;
-  String problemName;
 
   taskList({
     required this.id,
@@ -48,8 +44,6 @@ class taskList {
     required this.statusId,
     required this.status,
     required this.reportToEnd,
-    required this.resultId,
-    required this.result,
     required this.resultText,
     required this.objectId,
     required this.objectName,
@@ -64,8 +58,6 @@ class taskList {
     required this.taskCloseAuto,
     required this.deadlineFromSubtask,
     required this.schemeTaxi,
-    required this.problemId,
-    required this.problemName,
   });
 
   Map<String, dynamic> toJson() =>
@@ -83,8 +75,6 @@ class taskList {
         'statusId': statusId,
         'status': status,
         'reportToEnd': reportToEnd,
-        'resultId': resultId,
-        'result': result ?? '',
         'resultText': resultText,
         'objectId': objectId ?? '',
         'objectName': objectName ?? '',
@@ -98,9 +88,7 @@ class taskList {
         'resultControl': resultControl,
         'taskCloseAuto': taskCloseAuto,
         'deadlineFromSubtask': deadlineFromSubtask,
-        'schemeTaxi': schemeTaxi,
-        'problemId': problemId,
-        'problemName': problemName
+        'schemeTaxi': schemeTaxi
       };
 
   taskList.fromJson(Map<String, dynamic> json) :
@@ -118,8 +106,6 @@ class taskList {
         status = json['status'],
         reportToEnd = json['reportToEnd'],
         resultText = json['resultText'],
-        resultId = json['resultId'],
-        result = json['result'],
         objectId = json['objectId'],
         objectName = json['objectName'],
         generalTaskId = json['generalTaskId'],
@@ -132,8 +118,6 @@ class taskList {
         resultControl = json['resultControl'],
         taskCloseAuto = json['taskCloseAuto'],
         deadlineFromSubtask = json['deadlineFromSubtask'],
-        problemId = json['problemId'],
-        problemName = json['problemName'],
         schemeTaxi = json['schemeTaxi'];
 }
 
@@ -180,6 +164,12 @@ class taskObservertList {
   taskObservertList.fromJson(Map<String, dynamic> json) :
         userId = json['observerId'],
         userName = json['observer'];
+
+  Map<String, dynamic> toJson() =>
+      {
+        'observerId': userId,
+        'observer': userName
+      };
 }
 
 class taskSubTaskList {

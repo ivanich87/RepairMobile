@@ -245,8 +245,8 @@ class _scrHomeScreenState extends State<scrHomeScreen> {
                              ),
                              subtitle: Text('Управление задачами'),
                              leading: Icon(Icons.event_note_outlined),
-                             trailing: Text('12/3', style: TextStyle(fontSize: 18, color: Colors.green),
-                             ),
+                             //trailing: Text('12/3', style: TextStyle(fontSize: 18, color: Colors.green),
+                             //),
                              onTap: () async {
                                Navigator.push(context, MaterialPageRoute(builder: (context) => scrTaskListScreen()));
 

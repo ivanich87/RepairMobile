@@ -25,8 +25,10 @@ class _scrTaskListScreenState extends State<scrTaskListScreen> {
   List<taskList> objectList = [];
   List<taskList> objectListAssignet = [];
   List<taskList> objectListDone = [];
+  List<taskList> objectListClose = [];
 
   Future httpGetListObject() async {
+    print('My id = ${Globals.anUserId}');
     var _queryParameters = {'userId': Globals.anPhone};
     var _url=Uri(path: '${Globals.anPath}tasklist/', host: Globals.anServer, scheme: 'https', queryParameters: _queryParameters);
     var _headers = <String, String> {
@@ -40,13 +42,17 @@ class _scrTaskListScreenState extends State<scrTaskListScreen> {
       if (response.statusCode == 200) {
         var notesJson = json.decode(response.body);
         for (var noteJson in notesJson) {
-           if (noteJson['statusId']=='52139514-180a-4b78-a882-187cc6832af2')
-             objectList.add(taskList.fromJson(noteJson));
-           if (noteJson['statusId']=='3815be37-b90a-4e77-9327-8f7c55730f4f' || noteJson['statusId']=='9cbedc69-9f5a-4247-adba-92db3c3cea10')
-             objectListAssignet.add(taskList.fromJson(noteJson));
-           if (noteJson['statusId']=='753614d8-7366-421e-84fc-0a62cacc6124' || noteJson['statusId']=='6e209268-b210-4920-ac97-1221175b8b08')
-             objectListDone.add(taskList.fromJson(noteJson));
-           print(noteJson['statusId']);
+           if (noteJson['statusId']=='52139514-180a-4b78-a882-187cc6832af2' || noteJson['statusId']=='3815be37-b90a-4e77-9327-8f7c55730f4f' || noteJson['statusId']=='9cbedc69-9f5a-4247-adba-92db3c3cea10') { //новые или назначенные или в процессе выполнения
+             if (noteJson['executorId']==Globals.anUserId) //мои
+               objectList.add(taskList.fromJson(noteJson));
+             else
+               objectListAssignet.add(taskList.fromJson(noteJson));
+           }
+           else
+             if (noteJson['statusId']=='753614d8-7366-421e-84fc-0a62cacc6124') //выполненные или закрытые ( || noteJson['statusId']=='6e209268-b210-4920-ac97-1221175b8b08')
+               objectListDone.add(taskList.fromJson(noteJson));
+             else
+               objectListClose.add(taskList.fromJson(noteJson));
         }
       }
       else {
@@ -66,6 +72,7 @@ class _scrTaskListScreenState extends State<scrTaskListScreen> {
     objectList.clear();
     objectListAssignet.clear();
     objectListDone.clear();
+    objectListClose.clear();
 
     httpGetListObject().then((value) {
       setState(() {
@@ -77,7 +84,7 @@ class _scrTaskListScreenState extends State<scrTaskListScreen> {
   Widget build(BuildContext context) {
     print('Кол-во задач: ${objectList.length}');
     return DefaultTabController(
-      length: 3,
+      length: 4,
       child: Scaffold(
         appBar: AppBar(
           title: Text('${Globals.anUserName}'),
@@ -89,14 +96,14 @@ class _scrTaskListScreenState extends State<scrTaskListScreen> {
           body: TabBarView(children: <Widget> [
             _oneScreen(),
             _twoScreen(),
-            _threeScreen()
-
-          ],),
+            _threeScreen(),
+            _fourScreen()
+          ], ),
             floatingActionButton: FloatingActionButton(
               onPressed: () async {
                 String _res ='';
                 List<taskObservertList> taskObservers=[];
-                _res = await Navigator.push(context, MaterialPageRoute(builder: (context) => scrTaskEditScreen(task: taskList(id: '', number: 0, name: '', content: '', directorId: Globals.anUserId, director: Globals.anUserName, executorId: '', executor: '', dateCreate: DateTime.now(), dateTo: DateTime.now(), statusId: '52139514-180a-4b78-a882-187cc6832af2', status: 'Ждет исполнителя', reportToEnd: true, resultId: '', result: '', resultText: '', objectId: '', objectName: '', generalTaskId: '', generalTaskName: '', generalTaskNumber: 0, generalTaskDateCreate: DateTime.now(), generalTaskExecutor: '', timeTracking: false, changeDeadline: false, resultControl: false, taskCloseAuto: false, deadlineFromSubtask: false, schemeTaxi: true, problemId: '', problemName: ''), TaskObservertList: taskObservers))) ?? '';
+                _res = await Navigator.push(context, MaterialPageRoute(builder: (context) => scrTaskEditScreen(task: taskList(id: '', number: 0, name: '', content: '', directorId: Globals.anUserId, director: Globals.anUserName, executorId: '', executor: '', dateCreate: DateTime.now(), dateTo: DateTime.now(), statusId: '52139514-180a-4b78-a882-187cc6832af2', status: 'Ждет исполнителя', reportToEnd: true, resultText: '', objectId: '', objectName: '', generalTaskId: '', generalTaskName: '', generalTaskNumber: 0, generalTaskDateCreate: DateTime.now(), generalTaskExecutor: '', timeTracking: false, changeDeadline: false, resultControl: false, taskCloseAuto: false, deadlineFromSubtask: false, schemeTaxi: true), TaskObservertList: taskObservers))) ?? '';
                 if (_res!='') {
                   final snackBar = SnackBar(content: Text(_res), backgroundColor: Colors.green,);
                   ScaffoldMessenger.of(context).showSnackBar(snackBar);
@@ -105,7 +112,7 @@ class _scrTaskListScreenState extends State<scrTaskListScreen> {
 
                 });
               },
-              child: Text('+'),)
+              child: Icon(Icons.add),)
             //backgroundColor: Colors.grey[900]),
       ),
     );
@@ -196,7 +203,6 @@ class _scrTaskListScreenState extends State<scrTaskListScreen> {
                 subtitle: Column(crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text('Задача №${objectListDone[index].number} от ${DateFormat('dd.MM.yyyy').format(objectListDone[index].dateCreate)}', style: TextStyle(fontStyle: FontStyle.italic)),
-                    Text(objectListDone[index].result),
                     Text(objectListDone[index].resultText),
                   ],
                 ),
@@ -206,6 +212,39 @@ class _scrTaskListScreenState extends State<scrTaskListScreen> {
                 },
                 onLongPress: () {})
         )
+
+      ),
+    );
+  }
+
+  _fourScreen() {
+    return RefreshIndicator(
+      onRefresh: () async {
+        initState();
+        return Future<void>.delayed(const Duration(seconds: 1));
+      },
+      child: ListView.builder(
+          padding: EdgeInsets.all(10),
+          physics: AlwaysScrollableScrollPhysics(),
+          reverse: false,
+          itemCount: objectListClose.length,
+          itemBuilder: (_, index) => //=>CardObjectList(event: objectList[index], onType: 'push',)
+          Card(
+              child: ListTile(
+                  title: Text(objectListClose[index].name, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),),
+                  //subtitle: Text(objectListDone[index].content),
+                  subtitle: Column(crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Задача №${objectListClose[index].number} от ${DateFormat('dd.MM.yyyy').format(objectListClose[index].dateCreate)}', style: TextStyle(fontStyle: FontStyle.italic)),
+                      Text(objectListClose[index].resultText),
+                    ],
+                  ),
+                  //trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 0).format(widget.event.summa), style: TextStyle(fontSize: 16, color: Colors.green)),
+                  onTap: () async {
+                    Navigator.push(context, MaterialPageRoute( builder: (context) => scrTaskViewScreen(task: objectListClose[index]..id)));
+                  },
+                  onLongPress: () {})
+          )
 
       ),
     );
@@ -224,10 +263,10 @@ class _scrTaskListScreenState extends State<scrTaskListScreen> {
           }
         },
         itemBuilder: (BuildContext context) => <PopupMenuEntry<MenuTaskList>>[
-          const PopupMenuItem<MenuTaskList>(
-            value: MenuTaskList.itemObjectList,
-            child: Text('Открыть список оборудования'),
-          ),
+          //const PopupMenuItem<MenuTaskList>(
+          //  value: MenuTaskList.itemObjectList,
+          //  child: Text('Открыть список объектов'),
+          //),
           const PopupMenuItem<MenuTaskList>(
             value: MenuTaskList.itemRefresh,
             child: Text('Обновить списки'),
@@ -238,10 +277,12 @@ class _scrTaskListScreenState extends State<scrTaskListScreen> {
 }
 
 const _tabs = [
-  Tab(icon: Icon(Icons.near_me_outlined),
-    text: "Новые"),
-  Tab(icon: Icon(Icons.access_alarm),
-      text: "В работе"),
+  Tab(icon: Icon(Icons.subdirectory_arrow_right_outlined),
+    text: "Делаю"),
+  Tab(icon: Icon(Icons.outbond_outlined),
+      text: "Наблюдаю"),
+  Tab(icon: Icon(Icons.question_mark),
+      text: "Выполненные"),
   Tab(icon: Icon(Icons.task_alt),
       text: "Закрытые")
 ];
