@@ -9,6 +9,7 @@ import 'package:repairmodule/screens/plat_edit.dart';
 import 'package:http/http.dart' as http;
 import 'package:repairmodule/screens/plat_view.dart';
 
+import '../models/httpRest.dart';
 import 'ReceiptEdit.dart';
 import 'ReceiptView.dart';
 
@@ -42,47 +43,47 @@ class _scrCashListScreenState extends State<scrCashListScreen> {
 
   //DateTimeRange dateRange = DateTimeRange(start: DateTime.now(), end: DateTime.now());
 
-  Future httpGetListPlat() async {
-    var queryParameters = <String, dynamic> {
-      'analyticId': widget.analytic,
-      'objectId': widget.objectId,
-      'platType': widget.platType,
-      'kassaSortId': widget.kassaSotrId,
-      'kassaContractorId': widget.kassaContractorId,
-      'userId': Globals.anPhone,
-      'approve': widget.approve.toString(),
-    };
-
-    print(jsonEncode(queryParameters));
-    var _url = Uri(path: '${Globals.anPath}platlist/${DateFormat('yyyyMMdd').format(widget.dateRange.start)}/${DateFormat('yyyyMMdd').format(widget.dateRange.end)}/${widget.idCash}',
-        queryParameters: queryParameters,
-        host: Globals.anServer,
-        scheme: 'https');
-    var _headers = <String, String>{
-      'Accept': 'application/json',
-      'Authorization': Globals.anAuthorization
-    };
-    try {
-      print(_url.path);
-      var response = await http.get(_url, headers: _headers);
-      if (response.statusCode == 200) {
-        objectList.clear();
-        var notesJson = json.decode(response.body);
-        for (var noteJson in notesJson) {
-          objectList.add(ListPlat.fromJson(noteJson));
-        }
-      }
-      else
-        throw response.body;
-    } catch (error) {
-      print("Ошибка при формировании списка платежей: $error");
-    }
-  }
+  // Future httpGetListPlat() async {
+  //   var queryParameters = <String, dynamic> {
+  //     'analyticId': widget.analytic,
+  //     'objectId': widget.objectId,
+  //     'platType': widget.platType,
+  //     'kassaSortId': widget.kassaSotrId,
+  //     'kassaContractorId': widget.kassaContractorId,
+  //     'userId': Globals.anPhone,
+  //     'approve': widget.approve.toString(),
+  //   };
+  //
+  //   print(jsonEncode(queryParameters));
+  //   var _url = Uri(path: '${Globals.anPath}platlist/${DateFormat('yyyyMMdd').format(widget.dateRange.start)}/${DateFormat('yyyyMMdd').format(widget.dateRange.end)}/${widget.idCash}',
+  //       queryParameters: queryParameters,
+  //       host: Globals.anServer,
+  //       scheme: 'https');
+  //   var _headers = <String, String>{
+  //     'Accept': 'application/json',
+  //     'Authorization': Globals.anAuthorization
+  //   };
+  //   try {
+  //     print(_url.path);
+  //     var response = await http.get(_url, headers: _headers);
+  //     if (response.statusCode == 200) {
+  //       objectList.clear();
+  //       var notesJson = json.decode(response.body);
+  //       for (var noteJson in notesJson) {
+  //         objectList.add(ListPlat.fromJson(noteJson));
+  //       }
+  //     }
+  //     else
+  //       throw response.body;
+  //   } catch (error) {
+  //     print("Ошибка при формировании списка платежей: $error");
+  //   }
+  // }
 
   @override
   void initState() {
     objectList.clear();
-    httpGetListPlat().then((value) {
+    httpGetListPlat(objectList, widget.analytic, widget.objectId, widget.platType, widget.kassaSotrId, widget.kassaContractorId, widget.idCash, widget.approve, widget.dateRange).then((value) {
       setState(() {});
     });
     // TODO: implement initState
@@ -213,7 +214,7 @@ class _scrCashListScreenState extends State<scrCashListScreen> {
             await Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => scrPlatEditScreen(plat2: ListPlat('', 'Новый платеж', DateTime.now(), false, '', true, '', '', '', useDog(item), (analyticId(item, true)=='') ? widget.analytic : analyticId(item, true), (analyticId(item, false)=='') ? widget.analyticName : analyticId(item, false), 0, 0, 0, widget.objectId, widget.objectName, '', '', DateTime.now(), useDog(item), '', '', defaultkassaSotr(widget.kassaSotrId, true), defaultkassaSotr(widget.kassaSortName, false), (defaultkassaSotr(widget.kassaSotrId, true)=='') ? 0 : 1, '', '', '', platType(item), type(item), '', '', '', '', 0, 0),)));
+                    builder: (context) => scrPlatEditScreen(plat2: ListPlat('', 'Новый платеж', DateTime.now(), false, '', true, '', '', '', useDog(item.name), (analyticId(item.name, true)=='') ? widget.analytic : analyticId(item.name, true), (analyticId(item.name, false)=='') ? widget.analyticName : analyticId(item.name, false), 0, 0, 0, widget.objectId, widget.objectName, '', '', DateTime.now(), useDog(item.name), '', '', defaultkassaSotr(widget.kassaSotrId, true), defaultkassaSotr(widget.kassaSortName, false), (defaultkassaSotr(widget.kassaSotrId, true)=='') ? 0 : 1, '', '', '', platType(item.name), type(item.name), '', '', '', '', 0, 0),)));
 
           initState();
         },
@@ -263,41 +264,41 @@ class _scrCashListScreenState extends State<scrCashListScreen> {
 enum Menu { oplataDog, oplataMaterials, platUp, platDown, check, platDownSotr, platUpSotr , platMove}
 
 
-String platType(Menu item) {
-  if (item==Menu.platMove)
+String platType(String item) {
+  if (item=='platMove')
     return('Перемещение');
-  if(item==Menu.oplataDog || item==Menu.oplataMaterials || item==Menu.platUp || item==Menu.platUpSotr)
+  if(item=='oplataDog' || item=='oplataMaterials' || item=='platUp' || item=='platUpSotr')
     return('Приход');
   else
     return('Расход');
 }
 
-String type(Menu item) {
-  if (item==Menu.platMove)
+String type(String item) {
+  if (item=='platMove')
     return('Перемещение денежных средств');
-  if (item==Menu.oplataDog)
+  if (item=='oplataDog')
     return('Оплата по договору');
-  if (item==Menu.oplataMaterials)
+  if (item=='oplataMaterials')
     return('Оплата стройматериалов');
-  if (item==Menu.platUp)
+  if (item=='platUp')
     return('Движение денежных средтв');
-  if (item==Menu.platDown)
+  if (item=='platDown')
     return('Движение денежных средтв');
-  if (item==Menu.platUpSotr)
+  if (item=='platUpSotr')
     return('Выдача денежных средств в подотчет');
-  if (item==Menu.platDownSotr)
+  if (item=='platDownSotr')
     return('Выдача денежных средств в подотчет');
 
   return('неопределено');
 }
 
-String analyticId(Menu item, bool identity) {
-  if (item==Menu.oplataDog)
+String analyticId(String item, bool identity) {
+  if (item=='oplataDog')
     if (identity==true)
       return('7fa144f5-14ca-11ed-80dd-00155d753c19');
     else
       return('Оплата клиентом отделочных работ');
-  if (item==Menu.oplataMaterials)
+  if (item=='oplataMaterials')
     if (identity==true)
       return('7fa144fa-14ca-11ed-80dd-00155d753c19');
     else
@@ -307,8 +308,8 @@ String analyticId(Menu item, bool identity) {
   return('');
 }
 
-bool useDog(Menu item) {
-  if (item==Menu.platDown || item==Menu.platUp)
+bool useDog(String item) {
+  if (item=='platDown' || item=='platUp')
     return(false);
 
   return(true);

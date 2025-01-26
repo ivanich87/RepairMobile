@@ -4,7 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:repairmodule/components/SingleSelections.dart';
 import 'package:repairmodule/models/Lists.dart';
+import 'package:repairmodule/screens/ReceiptEdit.dart';
+import 'package:repairmodule/screens/dogovor_create.dart';
 import 'package:repairmodule/screens/dogovor_view.dart';
+import 'package:repairmodule/screens/plat_edit.dart';
 import 'package:repairmodule/screens/profileMan.dart';
 import 'package:repairmodule/screens/settings/accessObjects.dart';
 
@@ -21,9 +24,12 @@ class scrObjectsViewScreen extends StatefulWidget {
   State<scrObjectsViewScreen> createState() => _scrObjectsViewScreenState();
 }
 
-class _scrObjectsViewScreenState extends State<scrObjectsViewScreen> {
+class _scrObjectsViewScreenState extends State<scrObjectsViewScreen> with SingleTickerProviderStateMixin {
   List<analyticObjectList> AnalyticObjectList = [];
   List<DogListObject> dogList = [];
+
+  late TabController _tabController;
+
   num summaDown = 0;
   num summaUp = 0;
 
@@ -165,11 +171,23 @@ class _scrObjectsViewScreenState extends State<scrObjectsViewScreen> {
 
   @override
   void initState() {
+    _tabController = TabController(length: 3, vsync: this, initialIndex: 0);
+    _tabController.addListener(_handleTabIndex);
     ref();
-
     // TODO: implement initState
     //super.initState();
   }
+  @override
+  void dispose() {
+    _tabController.removeListener(_handleTabIndex);
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  void _handleTabIndex() {
+    setState(() {});
+  }
+
   Widget build(BuildContext context) {
     return DefaultTabController(
       length: 3,
@@ -177,6 +195,7 @@ class _scrObjectsViewScreenState extends State<scrObjectsViewScreen> {
           appBar: AppBar(
             title: Text('Карточка объекта'),
             //bottom: TabBar(tabs: _tabs),
+            bottom: TabBar(controller: _tabController, tabs: _tabs, isScrollable: true,),
             centerTitle: true,
             backgroundColor: Theme.of(context).colorScheme.inversePrimary,
             actions: [IconButton(onPressed: () {}, icon: Icon(Icons.menu))],
@@ -188,16 +207,9 @@ class _scrObjectsViewScreenState extends State<scrObjectsViewScreen> {
                 style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
               ),
               Divider(),
-              TabBar(isScrollable: true, tabs: _tabs, onTap: (value) {
-                print(value);
-                setState(() {
-                  _visibleFloatingActionButton = (value==0) ? true : false;
-                  print(_visibleFloatingActionButton);
-                });
 
-              },),
               Expanded(
-                child: TabBarView(children: <Widget> [
+                child: TabBarView(controller: _tabController, children: <Widget> [
                   _pageGeneral(),
                   _pageDogList(),
                   _pageFinteh()
@@ -205,13 +217,14 @@ class _scrObjectsViewScreenState extends State<scrObjectsViewScreen> {
               ),
             ],
           ),
-          floatingActionButton: (Globals.anUserRoleId!=3) ? null : (_visibleFloatingActionButton==false) ? null : FloatingActionButton(
-            onPressed: () async {
-              await Navigator.push(context, MaterialPageRoute(builder: (context) => scrObjectEditScreen(objectId: widget.id, clientId: idClient, clientName: nameClient, clientEMail: emailClient, clientPhone: phoneClient, address: address, area: area),));
-              initState();
-            },
-            child: Icon(Icons.edit),
-          )
+          floatingActionButton: _bottomButtons(),
+          //(Globals.anUserRoleId!=3) ? null : (_visibleFloatingActionButton==false) ? null : FloatingActionButton(
+          //  onPressed: () async {
+          //    await Navigator.push(context, MaterialPageRoute(builder: (context) => scrObjectEditScreen(objectId: widget.id, clientId: idClient, clientName: nameClient, clientEMail: emailClient, clientPhone: phoneClient, address: address, area: area),));
+          //    initState();
+          //  },
+          //  child: Icon(Icons.edit),
+          //)
           //backgroundColor: Colors.grey[900]),
           ),
     );
@@ -482,6 +495,94 @@ class _scrObjectsViewScreenState extends State<scrObjectsViewScreen> {
     );
   }
 
+  Widget? _bottomButtons() {
+    switch (_tabController.index) {
+      case 0:
+        if (Globals.anUserRoleId!=3)
+          return null;
+        else
+          return (Globals.anUserRoleId!=3) ? null : (_visibleFloatingActionButton==false) ? null : FloatingActionButton(
+            onPressed: () async {
+              await Navigator.push(context, MaterialPageRoute(builder: (context) => scrObjectEditScreen(objectId: widget.id, clientId: idClient, clientName: nameClient, clientEMail: emailClient, clientPhone: phoneClient, address: address, area: area),));
+              ref();
+            },
+            child: Icon(Icons.edit),
+          );
+      case 1:
+        return FloatingActionButton(
+          onPressed: () async {
+            DateTimeRange dateRange = DateTimeRange(start: DateTime.now(), end: DateTime.now());
+            await Navigator.push(context, MaterialPageRoute(builder: (context) => scrDogovorCreateScreen(objectId: widget.id, objectName: name, clientId: idClient, clientName: nameClient, newDogovorId: '', managerId: idManager, managerName: nameManager, prorabId: idProrab, prorabName: nameProrab, nameDog: '', summa: 0, summaSeb: 0, dateRange: dateRange,),));
+            ref();
+          },
+          child: Icon(Icons.add),
+        );
+      case 2:
+        return FloatingActionButton(
+            onPressed: () {},
+            child: _AddMenuIcon());
+
+
+    }
+  }
+
+  _AddMenuIcon() {
+    return PopupMenuButton<Menu>(
+        icon: const Icon(Icons.add),
+        offset: const Offset(0, 40),
+        onSelected: (Menu item) async {
+          if (item.name=='check') //если покупка стройматериалов
+              {
+            Receipt recipientdata = Receipt('', '', DateTime.now(), true, false, false, '', '', widget.id, name, true, '', '', DateTime.now(), 0, 0, 0, false, '', '', '', 'Расход', 0, '7fa144f2-14ca-11ed-80dd-00155d753c19', 'Покупка стройматериалов', '', '', defaultkassaSotr(Globals.anUserId, true), defaultkassaSotr(Globals.anUserName, false), (defaultkassaSotr(Globals.anUserId, true)=='') ? 0 : 1, 'Покупка стройматериалов', 0, []);
+            await Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => scrReceiptEditScreen(receiptData: recipientdata,)));
+          }
+          else
+            await Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => scrPlatEditScreen(plat2: ListPlat('', 'Новый платеж', DateTime.now(), false, '', true, '', '', '', useDog(item.name), analyticId(item.name, true), analyticId(item.name, false), 0, 0, 0, widget.id, name, '', '', DateTime.now(), useDog(item.name), '', '', defaultkassaSotr(Globals.anUserId, true), defaultkassaSotr(Globals.anUserName, false), (defaultkassaSotr(Globals.anUserId, true)=='') ? 0 : 1, '', '', '', platType(item.name), type(item.name), '', '', '', '', 0, 0),)));
+          initState();
+        },
+        itemBuilder: (BuildContext context) => <PopupMenuEntry<Menu>>[
+          const PopupMenuItem<Menu>(
+            value: Menu.oplataDog,
+            child: Text('Оплата от клиента по договору'),
+          ),
+          const PopupMenuItem<Menu>(
+            value: Menu.oplataMaterials,
+            child: Text('Оплата от клиента за материалы'),
+          ),
+          const PopupMenuItem<Menu>(
+            value: Menu.platUp,
+            child: Text('Поступление денег'),
+          ),
+          const PopupMenuItem<Menu>(
+            value: Menu.platDown,
+            child: Text('Списание денег'),
+          ),
+          const PopupMenuItem<Menu>(
+            value: Menu.check,
+            child: Text('Покупка стройматериалов'),
+          ),
+          const PopupMenuItem<Menu>(
+            value: Menu.platMove,
+            child: Text('Перемещение денег'),
+          ),
+          const PopupMenuItem<Menu>(
+            value: Menu.platDownSotr,
+            child: Text('Выдача в подотчет'),
+          ),
+          const PopupMenuItem<Menu>(
+            value: Menu.platUpSotr,
+            child: Text('Возврат из подотчета'),
+          ),
+        ]);
+
+  }
+
 }
 
 
@@ -559,3 +660,5 @@ const _tabs = [
     //text: "Финансы",
     iconMargin: EdgeInsets.zero,),
 ];
+
+enum Menu { oplataDog, oplataMaterials, platUp, platDown, check, platDownSotr, platUpSotr , platMove}

@@ -11,10 +11,12 @@ import 'package:intl/intl.dart';
 
 import 'package:repairmodule/components/SingleSelections.dart';
 import 'package:repairmodule/models/Lists.dart';
+import 'package:repairmodule/screens/ReceiptEdit.dart';
 import 'package:repairmodule/screens/akt_view.dart';
 import 'package:repairmodule/screens/pdf.dart';
 import 'package:repairmodule/screens/pdf2.dart';
 import 'package:repairmodule/screens/pdf_viewer.dart';
+import 'package:repairmodule/screens/plat_edit.dart';
 import 'package:repairmodule/screens/profileMan.dart';
 import 'package:repairmodule/screens/settings/accessObjects.dart';
 import 'package:url_launcher/url_launcher_string.dart';
@@ -45,6 +47,7 @@ class _scrDogovorViewScreenState extends State<scrDogovorViewScreen> with Single
   String name = '';
   String number = '';
   String date = '';
+  DateTime dateDog = DateTime.now();
   String nameClient = '';
   String idClient = '';
   String nameManager = '';
@@ -82,7 +85,8 @@ class _scrDogovorViewScreenState extends State<scrDogovorViewScreen> with Single
         //id = data['id'] ?? 'no id';
         name = data['name'] ?? 'no name';
         number = data['number'] ?? '';
-        date = DateFormat('dd-MM-yyyy').format(DateTime.parse(data['date'] ?? DateTime.now().toString())) ;
+        date = DateFormat('dd.MM.yyyy').format(DateTime.parse(data['date'] ?? DateTime.now().toString())) ;
+        dateDog = DateTime.parse(data['date']);
         nameClient = data['nameClient'] ?? 'no nameClient';
         idClient = data['idClient'] ?? 'no idClient';
         nameManager = data['nameManager'] ?? 'no nameManager';
@@ -184,17 +188,18 @@ class _scrDogovorViewScreenState extends State<scrDogovorViewScreen> with Single
   void initState() {
     _tabController = TabController(length: 3, vsync: this, initialIndex: 0);
     _tabController.addListener(_handleTabIndex);
-
-    httpGetInfoObject().then((value) async {
-      await httpGetAnalyticListObject();
-
-      setState(() {
-      });
-    });
+    _ref();
     // TODO: implement initState
     super.initState();
   }
+_ref(){
+  httpGetInfoObject().then((value) async {
+    await httpGetAnalyticListObject();
 
+    setState(() {
+    });
+  });
+}
   @override
   void dispose() {
     _tabController.removeListener(_handleTabIndex);
@@ -250,7 +255,7 @@ class _scrDogovorViewScreenState extends State<scrDogovorViewScreen> with Single
             onPressed: () async {
               DateTimeRange dateRange = DateTimeRange(start: dtStart, end: dtStop);
               await Navigator.push(context, MaterialPageRoute(builder: (context) => scrDogovorCreateScreen(objectId: idObject, objectName: address, clientId: idClient, clientName: nameClient, newDogovorId: widget.id, managerId: idManager, managerName: nameManager, prorabId: idProrab, prorabName: nameProrab, nameDog: name, summa: summa, summaSeb: summaSeb, dateRange: dateRange,),));
-              initState();
+              _ref();
             },
             child: Icon(Icons.edit),
           );
@@ -266,27 +271,87 @@ class _scrDogovorViewScreenState extends State<scrDogovorViewScreen> with Single
           child: Icon(Icons.add),
         );
       case 2:
-        return null;
+        return FloatingActionButton(
+            onPressed: () {},
+            child: _AddMenuIcon());
     }
 
-    return _tabController.index == 0
-        ? FloatingActionButton(
-        shape: StadiumBorder(),
-        onPressed: null,
-        backgroundColor: Colors.redAccent,
-        child: Icon(
-          Icons.message,
-          size: 20.0,
-        ))
-        : FloatingActionButton(
-      shape: StadiumBorder(),
-      onPressed: null,
-      backgroundColor: Colors.redAccent,
-      child: Icon(
-        Icons.edit,
-        size: 20.0,
-      ),
-    );
+    // return _tabController.index == 0
+    //     ? FloatingActionButton(
+    //         shape: StadiumBorder(),
+    //         onPressed: null,
+    //         backgroundColor: Colors.redAccent,
+    //         child: Icon(
+    //           Icons.message,
+    //           size: 20.0,
+    //         ))
+    //         : FloatingActionButton(
+    //           shape: StadiumBorder(),
+    //           onPressed: null,
+    //           backgroundColor: Colors.redAccent,
+    //               child: Icon(
+    //                 Icons.edit,
+    //                 size: 20.0,
+    //   ),
+    // );
+  }
+
+  _AddMenuIcon() {
+    print('addres = $address');
+    return PopupMenuButton<Menu>(
+        icon: const Icon(Icons.add),
+        offset: const Offset(0, 40),
+        onSelected: (Menu item) async {
+          if (item.name=='check') //если покупка стройматериалов
+              {
+            Receipt recipientdata = Receipt('', '', DateTime.now(), true, false, false, idClient, nameClient, idObject, name, true, widget.id, name, DateTime.now(), 0, 0, 0, false, '', '', '', 'Расход', 0, '7fa144f2-14ca-11ed-80dd-00155d753c19', 'Покупка стройматериалов', '', '', defaultkassaSotr(Globals.anUserId, true), defaultkassaSotr(Globals.anUserName, false), (defaultkassaSotr(Globals.anUserId, true)=='') ? 0 : 1, 'Покупка стройматериалов', 0, []);
+            await Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => scrReceiptEditScreen(receiptData: recipientdata,)));
+          }
+          else
+            await Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => scrPlatEditScreen(plat2: ListPlat('', 'Новый платеж', DateTime.now(), false, '', true, '', idClient, nameClient, useDog(item.name), analyticId(item.name, true), analyticId(item.name, false), 0, 0, 0, idObject, address, widget.id, number, dateDog, useDog(item.name), '', '', defaultkassaSotr(Globals.anUserId, true), defaultkassaSotr(Globals.anUserName, false), (defaultkassaSotr(Globals.anUserId, true)=='') ? 0 : 1, '', '', '', platType(item.name), type(item.name), '', '', '', '', 0, 0),)));
+          _ref();
+        },
+        itemBuilder: (BuildContext context) => <PopupMenuEntry<Menu>>[
+          const PopupMenuItem<Menu>(
+            value: Menu.oplataDog,
+            child: Text('Оплата от клиента по договору'),
+          ),
+          const PopupMenuItem<Menu>(
+            value: Menu.oplataMaterials,
+            child: Text('Оплата от клиента за материалы'),
+          ),
+          const PopupMenuItem<Menu>(
+            value: Menu.platUp,
+            child: Text('Поступление денег'),
+          ),
+          const PopupMenuItem<Menu>(
+            value: Menu.platDown,
+            child: Text('Списание денег'),
+          ),
+          const PopupMenuItem<Menu>(
+            value: Menu.check,
+            child: Text('Покупка стройматериалов'),
+          ),
+          const PopupMenuItem<Menu>(
+            value: Menu.platMove,
+            child: Text('Перемещение денег'),
+          ),
+          const PopupMenuItem<Menu>(
+            value: Menu.platDownSotr,
+            child: Text('Выдача в подотчет'),
+          ),
+          const PopupMenuItem<Menu>(
+            value: Menu.platUpSotr,
+            child: Text('Возврат из подотчета'),
+          ),
+        ]);
+
   }
 
   _pageGeneral() {
@@ -636,3 +701,5 @@ const _tabs = [
     //text: "Финансы",
     iconMargin: EdgeInsets.zero,),
 ];
+
+enum Menu { oplataDog, oplataMaterials, platUp, platDown, check, platDownSotr, platUpSotr , platMove}

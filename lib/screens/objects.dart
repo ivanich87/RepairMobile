@@ -6,6 +6,7 @@ import 'package:repairmodule/models/Lists.dart';
 //import 'package:repairmodule/components/Cards.dart;
 import 'package:http/http.dart' as http;
 
+import '../models/httpRest.dart';
 import 'object_create.dart';
 import 'object_view.dart';
 
@@ -22,39 +23,39 @@ class scrObjectsScreen extends StatefulWidget {
 class _scrObjectsScreenState extends State<scrObjectsScreen> {
   var objectList = [];
 
-  Future httpGetListObject() async {
-    final _queryParameters = {'userId': Globals.anPhone};
-
-    var _url=Uri(path: '${Globals.anPath}obList/0/', host: Globals.anServer, scheme: 'https', queryParameters: _queryParameters);
-    print(_url.path);
-    print(Globals.anAuthorization);
-    var _headers = <String, String> {
-      'Accept': 'application/json',
-      'Authorization': Globals.anAuthorization
-    };
-    try {
-      var response = await http.get(_url, headers: _headers);
-      print(response.statusCode.toString());
-      if (response.statusCode == 200) {
-        print(response.body.toString());
-        var notesJson = json.decode(response.body);
-        for (var noteJson in notesJson) {
-          objectList.add(ListObject.fromJson(noteJson));
-        }
-      }
-      else
-        throw 'Код ответа: ${response.statusCode.toString()}. Ответ: ${response.body}';
-    } catch (error) {
-      print("Ошибка при формировании списка: $error");
-    }
-  }
+  // Future httpGetListObject() async {
+  //   final _queryParameters = {'userId': Globals.anPhone};
+  //
+  //   var _url=Uri(path: '${Globals.anPath}obList/0/', host: Globals.anServer, scheme: 'https', queryParameters: _queryParameters);
+  //   print(_url.path);
+  //   print(Globals.anAuthorization);
+  //   var _headers = <String, String> {
+  //     'Accept': 'application/json',
+  //     'Authorization': Globals.anAuthorization
+  //   };
+  //   try {
+  //     var response = await http.get(_url, headers: _headers);
+  //     print(response.statusCode.toString());
+  //     if (response.statusCode == 200) {
+  //       print(response.body.toString());
+  //       var notesJson = json.decode(response.body);
+  //       for (var noteJson in notesJson) {
+  //         objectList.add(ListObject.fromJson(noteJson));
+  //       }
+  //     }
+  //     else
+  //       throw 'Код ответа: ${response.statusCode.toString()}. Ответ: ${response.body}';
+  //   } catch (error) {
+  //     print("Ошибка при формировании списка: $error");
+  //   }
+  // }
 
   @override
   void initState() {
     print('initState');
     objectList.clear();
 
-    httpGetListObject().then((value) {
+    httpGetListObject(objectList).then((value) {
       setState(() {
       });
     });
