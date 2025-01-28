@@ -130,7 +130,7 @@ class _CardCashListState extends State<CardCashList> {
           widget.event.name,
           style: TextStyle(fontSize: 17),
         ),
-        trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(widget.event.summa), style: TextStyle(fontSize: 20, color: Colors.green)),
+        trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(widget.event.summa), style: TextStyle(fontSize: 20, fontStyle: FontStyle.italic, color: Colors.green)),
         leading: Icon(widget.event.tip == 1 ? Icons.credit_card: Icons.home_filled),
         onTap: () async {
           Navigator.push(
@@ -184,7 +184,7 @@ class _sprCardListState extends State<sprCardList> {
             onTap: () async {
               if (widget.onType=='push') {
                 Navigator.push(context, MaterialPageRoute(builder: (context) =>
-                            openSpr(widget.name, widget.event.id)
+                            openSpr(widget.name, widget.event)
                 ));
               }
               else {
@@ -205,12 +205,19 @@ class _sprCardListState extends State<sprCardList> {
   }
 }
 
-openSpr(sprName, id) {
-  if (sprName=='Сотрудники')
-    return scrProfileMan(id: id);
-  if (sprName=='КлиентыКонтрагенты')
-    return scrProfileMan(id: id);
-  return scrObjectsViewScreen(id: id);
+openSpr(sprName, object) {
+  if (sprName=='Сотрудники' || sprName=='Контрагенты' || sprName=='КонтрагентыДляФондов')
+    return scrProfileMan(id: object.id);
+  if (sprName=='Кассы')
+    return scrListCreateScreen(sprName: sprName, sprObject: object);
+  if (sprName=='Касса')
+    return scrListCreateScreen(sprName: sprName, sprObject: object);
+  if (sprName=='БанковскиеСчетаОрганизаций')
+    return scrListCreateScreen(sprName: sprName, sprObject: object);
+  if (sprName=='АналитикаДвиженийДСРасход' || sprName=='АналитикаДвиженийДСПриход')
+    return scrListCreateScreen(sprName: sprName, sprObject: object);
+
+  return scrObjectsViewScreen(id: object.id);
 }
 
 class CardObjectList extends StatefulWidget {

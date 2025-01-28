@@ -5,9 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'package:repairmodule/models/Lists.dart';
+import 'package:repairmodule/screens/ReceiptEdit.dart';
 import 'package:repairmodule/screens/ReceiptView.dart';
 import 'package:repairmodule/screens/cashList.dart';
 import 'package:repairmodule/screens/inputSaredFiles.dart';
+import 'package:repairmodule/screens/object_create.dart';
+import 'package:repairmodule/screens/object_view.dart';
+import 'package:repairmodule/screens/plat_edit.dart';
 import 'package:repairmodule/screens/plat_view.dart';
 import 'package:repairmodule/screens/settings.dart';
 import 'package:repairmodule/screens/task/taskList.dart';
@@ -30,19 +34,30 @@ class scrHomeScreen extends StatefulWidget {
   State<scrHomeScreen> createState() => _scrHomeScreenState();
 }
 
-class _scrHomeScreenState extends State<scrHomeScreen> with SingleTickerProviderStateMixin {
+class _scrHomeScreenState extends State<scrHomeScreen> with TickerProviderStateMixin {
 
   late TabController _taskTabController;
+  late TabController _platTabController;
+
 
   late StreamSubscription _intentSub;
   final _sharedFiles = <SharedMediaFile>[];
 
   var objectList = [];
   var platList = [];
-  var taskList = [];
+  var platListApproved = [];
+  var taskLists = [];
   var taskListAssignet = [];
   var taskListDone = [];
   var taskListClose = [];
+  var cashKassList = [];
+  var cashBankList = [];
+  List<accountableFounds> AccountableFounds = [];
+  List<accountableFounds> AccountableContractor = [];
+
+  num allSumma = 0;
+  num AccountableFoundsBalance=0;
+  num AccountableContractorBalance=0;
 
   int _selectedIndex = 0;
 
@@ -51,9 +66,8 @@ class _scrHomeScreenState extends State<scrHomeScreen> with SingleTickerProvider
   int ObjectKol = 0;
   int ApprovalKol=0;
 
-  DateTime dtStart = DateTime(2024);
-  DateTime dtEnd = DateTime.now();
-  DateTimeRange dateRange = DateTimeRange(start: DateTime(2024), end: DateTime.now());
+  DateTimeRange dateRange = DateTimeRange(start: DateTime.now().subtract(Duration(days: 30)), end: DateTime.now());
+  DateTimeRange dateRangeApproved = DateTimeRange(start: DateTime.now().subtract(Duration(days: 30)), end: DateTime.now());
 
   Future httpGetInfo() async {
     final _queryParameters = {'userId': Globals.anPhone};
@@ -142,33 +156,9 @@ class _scrHomeScreenState extends State<scrHomeScreen> with SingleTickerProvider
       }
 
     });
-
-    objectList.clear();
-
-    httpGetListObject(objectList).then((value) {
-      setState(() {
-      });
-    });
-
-    platList.clear();
-
-    httpGetListPlat(platList,  '', '', '', '', '', '0', false, dateRange).then((value) {
-      setState(() {
-      });
-    });
-
-    httpGetListTask(taskList, taskListAssignet, taskListDone, taskListClose).then((value) {
-      setState(() {
-      });
-    });
-
-    httpGetInfo().then((value) {
-      setState(() {
-      });
-    });
-
+  ref();
     _taskTabController = TabController(length: 4, vsync: this, initialIndex: 0);
-
+    _platTabController = TabController(length: 3, vsync: this);
     // TODO: implement initState
     //super.initState();
 
@@ -177,10 +167,40 @@ class _scrHomeScreenState extends State<scrHomeScreen> with SingleTickerProvider
   void dispose() {
     _intentSub.cancel();
     _taskTabController.dispose();
+    _platTabController.dispose();
 
     super.dispose();
   }
 
+  ref() async {
+    await httpGetListObject(objectList);
+    await httpGetListPlat(platList, '', '', '', '', '', '0', false, dateRange);
+    await httpGetListPlat(platListApproved, '', '', '', '', '', '0', true, dateRange);
+    await httpGetListTask(taskLists, taskListAssignet, taskListDone, taskListClose);
+    await httpGetInfo();
+    await httpGetListBalance(cashBankList, cashKassList, AccountableFounds, AccountableContractor);
+
+    AccountableFoundsBalance=0;
+    AccountableContractorBalance=0;
+    allSumma=0;
+    for (var ded in AccountableFounds) {
+      AccountableFoundsBalance = AccountableFoundsBalance + ded.summa;
+    }
+
+    for (var ded in cashKassList) {
+      allSumma = allSumma + ded.summa;
+    }
+    for (var ded in cashBankList) {
+      allSumma = allSumma + ded.summa;
+    }
+    for (var ded in AccountableContractor) {
+      AccountableContractorBalance = AccountableContractorBalance + ded.summa;
+    }
+
+    setState(() {
+    });
+
+  }
 
   Widget build(BuildContext context) {
     return Scaffold(
@@ -192,24 +212,11 @@ class _scrHomeScreenState extends State<scrHomeScreen> with SingleTickerProvider
           actions: [
             IconButton(onPressed: () async {
                 await Navigator.push(context, MaterialPageRoute(builder: (context) => scrSettingsScreen()));
-                initState();
+                ref();
               }, icon: Icon(Icons.settings))],
         ),
         body: _pageWidget(_selectedIndex),
-            floatingActionButton: FloatingActionButton(
-              onPressed: () async {
-                String _res ='';
-                // List<taskObservertList> taskObservers=[];
-                // _res = await Navigator.push(context, MaterialPageRoute(builder: (context) => scrTaskEditScreen(task: taskList(id: '', number: 0, name: '', content: '', directorId: Globals.anUserId, director: Globals.anUserName, executorId: '', executor: '', dateCreate: DateTime.now(), dateTo: DateTime.now(), statusId: '52139514-180a-4b78-a882-187cc6832af2', status: 'Ждет исполнителя', reportToEnd: true, resultText: '', objectId: '', objectName: '', generalTaskId: '', generalTaskName: '', generalTaskNumber: 0, generalTaskDateCreate: DateTime.now(), generalTaskExecutor: '', timeTracking: false, changeDeadline: false, resultControl: false, taskCloseAuto: false, deadlineFromSubtask: false, schemeTaxi: true), TaskObservertList: taskObservers))) ?? '';
-                // if (_res!='') {
-                //   final snackBar = SnackBar(content: Text(_res), backgroundColor: Colors.green,);
-                //   ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                // }
-                setState(() {
-
-                });
-              },
-              child: Icon(Icons.add),),
+            floatingActionButton: _bottomButtons(),
         bottomNavigationBar: SalomonBottomBar(
           currentIndex: _selectedIndex,
           selectedItemColor: const Color(0xff6200ee),
@@ -220,12 +227,37 @@ class _scrHomeScreenState extends State<scrHomeScreen> with SingleTickerProvider
             });
           },
           items: _navBarItems),
-        // floatingActionButton: FloatingActionButton(
-        //   onPressed: () {},
-        //   child: Text('+'),
-        // )
-        //backgroundColor: Colors.grey[900]),
         );
+  }
+
+  Widget? _bottomButtons() {
+    switch (_selectedIndex) {
+      case 0:
+        return (Globals.anCreateObject==false) ? null : FloatingActionButton(
+          onPressed: () async {
+            final newObjectId = await Navigator.push(context, MaterialPageRoute(builder: (context) => scrObjectCreateScreen(),)) ?? '';
+            if (newObjectId!='') {
+              Navigator.push(context, MaterialPageRoute( builder: (context) => scrObjectsViewScreen(id: newObjectId)));
+              ref();
+            }
+          },
+          child: Icon(Icons.add),);
+      case 1:
+        return FloatingActionButton(
+            onPressed: () {},
+            child: _AddMenuIcon());
+      case 2:
+        return FloatingActionButton(
+          onPressed: () async {
+              List<taskObservertList> taskObservers=[];
+              taskList newTask = taskList(id: '', number: 0, name: '', content: '', directorId: Globals.anUserId, director: Globals.anUserName, executorId: '', executor: '', dateCreate: DateTime.now(), dateTo: DateTime.now(), statusId: '52139514-180a-4b78-a882-187cc6832af2', status: 'Ждет исполнителя', reportToEnd: true, resultText: '', objectId: '', objectName: '', generalTaskId: '', generalTaskName: '', generalTaskNumber: 0, generalTaskDateCreate: DateTime.now(), generalTaskExecutor: '', timeTracking: false, changeDeadline: false, resultControl: false, taskCloseAuto: false, deadlineFromSubtask: false, schemeTaxi: true);
+              await Navigator.push(context, MaterialPageRoute(builder: (context) => scrTaskEditScreen(task: newTask, TaskObservertList: taskObservers))) ?? '';
+              ref();
+            },
+          child: Icon(Icons.add),);
+      case 3:
+        null;
+    }
   }
 
   _pageWidget(ind) {
@@ -255,22 +287,15 @@ class _scrHomeScreenState extends State<scrHomeScreen> with SingleTickerProvider
   _pagePlat() {
     return Column(
       children: [
-        ElevatedButton(onPressed: pickDateRange,
-            child: Text(DateFormat('dd.MM.yyyy').format(dtStart) + ' - ' + DateFormat('dd.MM.yyyy').format(dtEnd))),
+        TabBar(controller: _platTabController, tabs: _tabsPlat, isScrollable: true,),
         Expanded(
-          child: RefreshIndicator(
-            onRefresh: () async {
-              initState();
-              return Future<void>.delayed(const Duration(seconds: 2));
-            },
-            child: (platList.length==0) ? Center(child: Text('Нет платежей')) : ListView.builder(
-              padding: EdgeInsets.all(10),
-              physics: AlwaysScrollableScrollPhysics(),
-              reverse: false,
-              itemCount: platList.length,
-              itemBuilder: (_, index) =>
-                  _cardItem(platList[index]), //PlatObjectList
-            ),
+          child: TabBarView(
+            controller: _platTabController,
+            children: <Widget> [
+              _platOneScreen(),
+              _platTwoScreen(),
+              _platThreeScreen(),
+            ],
           ),
         ),
       ],
@@ -280,7 +305,7 @@ class _scrHomeScreenState extends State<scrHomeScreen> with SingleTickerProvider
   _pageTask() {
     return Column(
       children: [
-        TabBar(controller: _taskTabController, tabs: _tabs, isScrollable: true,),
+        TabBar(controller: _taskTabController, tabs: _tabsTask, isScrollable: true,),
         Expanded(
           child: TabBarView(
             controller: _taskTabController,
@@ -333,7 +358,7 @@ class _scrHomeScreenState extends State<scrHomeScreen> with SingleTickerProvider
                           ),
                           onTap: () async {
                             await Navigator.push(context, MaterialPageRoute(builder: (context) => scrObjectsScreen()));
-                            initState();
+                            ref();
                           },
                         ),
                       ),
@@ -351,7 +376,7 @@ class _scrHomeScreenState extends State<scrHomeScreen> with SingleTickerProvider
                             onTap: () async {
                               //Navigator.push(context, MaterialPageRoute(builder: (context) => scrInputSharedFilesScreen(_sharedFiles)));
                               await Navigator.push(context, MaterialPageRoute(builder: (context) => scrCashHomeScreen()));
-                              initState();
+                              ref();
                             },
                           ),
                         ),
@@ -367,7 +392,7 @@ class _scrHomeScreenState extends State<scrHomeScreen> with SingleTickerProvider
                           ),
                           onTap: () async {
                             await Navigator.push(context, MaterialPageRoute(builder: (context) => scrCashListScreen(idCash: '0', cashName: 'Все', analytic: '', analyticName: '', objectId: '', objectName: '', platType: '', dateRange: DateTimeRange(start: DateTime(2023), end: DateTime.now()), kassaSotrId: Globals.anUserId, kassaSortName: Globals.anUserName,  )));
-                            initState();
+                            ref();
                           },
                         ),
                       ),
@@ -384,7 +409,7 @@ class _scrHomeScreenState extends State<scrHomeScreen> with SingleTickerProvider
                             ),
                             onTap: () async {
                               await Navigator.push(context, MaterialPageRoute(builder: (context) => scrCashListScreen(idCash: '0', cashName: 'Все', analytic: '', analyticName: '', objectId: '', objectName: '', platType: '', dateRange: DateTimeRange(start: DateTime(2023), end: DateTime.now()), kassaSotrId: '', kassaSortName: '', approve: true, )));
-                              initState();
+                              ref();
                             },
                           ),
                         ),
@@ -414,7 +439,7 @@ class _scrHomeScreenState extends State<scrHomeScreen> with SingleTickerProvider
               padding: const EdgeInsets.all(8.0),
               child: Column(mainAxisAlignment: MainAxisAlignment.end, crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Text('Версия: 1.0.2', textAlign: TextAlign.right, style: TextStyle(fontSize: 14, fontWeight: FontWeight.normal, fontStyle: FontStyle.italic)),
+                  Text('Версия: 1.0.26', textAlign: TextAlign.right, style: TextStyle(fontSize: 14, fontWeight: FontWeight.normal, fontStyle: FontStyle.italic)),
                 ],
               ),
             ),
@@ -446,7 +471,7 @@ class _scrHomeScreenState extends State<scrHomeScreen> with SingleTickerProvider
             setState(() {
               if (event.del==true) {
                 print('Удаляем этот платеж');
-                //initState();
+                //ref();
               }
               print('Пересчет формы');
             });
@@ -463,7 +488,7 @@ class _scrHomeScreenState extends State<scrHomeScreen> with SingleTickerProvider
             setState(() {
               if (event.del==true) {
                 print('Удаляем этот платеж');
-                //initState();
+                //ref();
               }
               print('Пересчет формы');
             });
@@ -480,34 +505,211 @@ class _scrHomeScreenState extends State<scrHomeScreen> with SingleTickerProvider
     setState(() {
       dateRange = newDateRange;
     });
-    initState();
+    ref();
   }
+
+  Future pickDateRangeApproved() async {
+    DateTimeRange? newDateRange = await showDateRangePicker(locale: Locale("ru", "RU"),
+        context: context, firstDate: DateTime(2020), lastDate: DateTime(2050), initialDateRange: dateRangeApproved);
+    if (newDateRange ==null) return;
+
+    setState(() {
+      dateRangeApproved = newDateRange;
+    });
+    ref();
+  }
+
+  _platOneScreen() {
+    return Column(
+      children: [
+        //TabBar(tabs: _tabs, isScrollable: true,),
+        Row(crossAxisAlignment: CrossAxisAlignment.center, mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ElevatedButton(onPressed: pickDateRange,
+                child: Text(DateFormat('dd.MM.yyyy').format(dateRange.start) + ' - ' + DateFormat('dd.MM.yyyy').format(dateRange.end))),
+            IconButton(onPressed: (){}, icon: Icon(Icons.filter_alt_outlined), ),
+          ],
+        ),
+        Expanded(
+          child: RefreshIndicator(
+            onRefresh: () async {
+              ref();
+              return Future<void>.delayed(const Duration(seconds: 2));
+            },
+            child: (platList.length==0) ? Center(child: Text('Нет платежей')) : ListView.builder(
+              padding: EdgeInsets.all(10),
+              physics: AlwaysScrollableScrollPhysics(),
+              reverse: false,
+              itemCount: platList.length,
+              itemBuilder: (_, index) =>
+                  _cardItem(platList[index]), //PlatObjectList
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  _platTwoScreen() {
+    return RefreshIndicator(
+      onRefresh: () async {
+        ref();
+        return Future<void>.delayed(const Duration(seconds: 1));
+      },
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: ListView(
+          //mainAxisAlignment: MainAxisAlignment.start,
+          //crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            //Divider(),
+            //Expanded(child:
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Банк', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                ListView(
+                  shrinkWrap: true,
+                  padding: EdgeInsets.all(1),
+                  physics: BouncingScrollPhysics(),
+                  reverse: false,
+                  children: cashBankList.map((e) => CardCashList(event: e)).toList(),
+                ),
+                //Divider(),
+                Text('Касса', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                ListView(
+                  shrinkWrap: true,
+                  padding: EdgeInsets.all(1),
+                  physics: BouncingScrollPhysics(),
+                  reverse: false,
+                  //itemCount: notes.length,
+                  //itemBuilder: (_, index) => CardCashList(event: notes[index]),
+                  children: cashKassList.map((e) => CardCashList(event: e)).toList(),
+                ),
+                //Divider(),
+                SizedBox(height: 2,),
+                ListTile(
+                  title: Text.rich(TextSpan(children: [
+                    TextSpan(text: 'Всего денег: ', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                    TextSpan(text: NumberFormat.simpleCurrency(locale: 'ru-RU', decimalDigits: 2).format(allSumma), style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: textColors(allSumma))),
+                  ],
+                  )
+                  ),
+                ),
+                Divider(height: 5,),
+                SizedBox(height: 20,),
+                Text('Подотчетные средства', style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+                ListView.builder(
+                  shrinkWrap: true,
+                  padding: EdgeInsets.all(1),
+                  physics: BouncingScrollPhysics(),
+                  reverse: false,
+                  itemCount: AccountableFounds.length,
+                  itemBuilder: (_, index) {
+                    return ListTile(
+                        leading: Icon(Icons.man),
+                        title: Text(AccountableFounds[index].name, style: TextStyle(fontSize: 17),),
+                        trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(AccountableFounds[index].summa), style: TextStyle(fontSize: 20, fontStyle: FontStyle.italic, color: textColors(AccountableFounds[index].summa))),
+                        onLongPress: () {});
+                  } //CardCashList(event: notes[index])
+                ),
+                SizedBox(height: 2,),
+                ListTile(
+                  title: Text((AccountableFoundsBalance>=0) ? 'Задолженность сотрудников: ': 'Компания должна: ', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                  trailing: Text(NumberFormat.simpleCurrency(locale: 'ru-RU', decimalDigits: 2).format(AccountableFoundsBalance), style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: textColors(AccountableFoundsBalance))),
+                ),
+                Divider(height: 5,),
+                SizedBox(height: 20,),
+                Text('Контрагенты', style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+                ListView.builder(
+                    shrinkWrap: true,
+                    padding: EdgeInsets.all(1),
+                    physics: BouncingScrollPhysics(),
+                    reverse: false,
+                    itemCount: AccountableContractor.length,
+                    itemBuilder: (_, index) {
+                      return ListTile(
+                          leading: Icon(Icons.man),
+                          title: Text(AccountableContractor[index].name, style: TextStyle(fontSize: 17),),
+                          trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(AccountableContractor[index].summa), style: TextStyle(fontSize: 20, fontStyle: FontStyle.italic, color: textColors(AccountableContractor[index].summa))),
+                          onLongPress: () {});
+                    } //CardCashList(event: notes[index])
+                ),
+                SizedBox(height: 2,),
+                ListTile(
+                  title: Text((AccountableContractorBalance>=0) ? 'Задолженность контрагентов: ': 'Компания должна: ', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                  trailing: Text(NumberFormat.simpleCurrency(locale: 'ru-RU', decimalDigits: 2).format(AccountableContractorBalance), style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: textColors(AccountableContractorBalance))),
+                ),
+                Divider(height: 5,),
+                SizedBox(height: 30,),
+              ],
+            ),
+            //Divider(),
+            //),
+          ],
+        ),
+      ),
+    );
+  }
+
+  _platThreeScreen() {
+    return Column(
+      children: [
+        //TabBar(tabs: _tabs, isScrollable: true,),
+        Row(crossAxisAlignment: CrossAxisAlignment.center, mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ElevatedButton(onPressed: pickDateRangeApproved,
+                child: Text(DateFormat('dd.MM.yyyy').format(dateRangeApproved.start) + ' - ' + DateFormat('dd.MM.yyyy').format(dateRangeApproved.end))),
+            // IconButton(onPressed: (){}, icon: Icon(Icons.filter_alt_outlined), ),
+          ],
+        ),
+        Expanded(
+          child: RefreshIndicator(
+            onRefresh: () async {
+              ref();
+              return Future<void>.delayed(const Duration(seconds: 2));
+            },
+            child: (platListApproved.length==0) ? Center(child: Text('Нет платежей')) : ListView.builder(
+              padding: EdgeInsets.all(10),
+              physics: AlwaysScrollableScrollPhysics(),
+              reverse: false,
+              itemCount: platListApproved.length,
+              itemBuilder: (_, index) =>
+                  _cardItem(platListApproved[index]), //PlatObjectList
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+
 
   _taskOneScreen() {
     return RefreshIndicator(
       onRefresh: () async {
-        initState();
+        ref();
         return Future<void>.delayed(const Duration(seconds: 2));
       },
       child: ListView.builder(
           padding: EdgeInsets.all(10),
           physics: AlwaysScrollableScrollPhysics(),
           reverse: false,
-          itemCount: taskList.length,
+          itemCount: taskLists.length,
           itemBuilder: (_, index) => //=>CardObjectList(event: objectList[index], onType: 'push',)
           Card(
               child: ListTile(
-                  title: Text(taskList[index].name, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),),
+                  title: Text(taskLists[index].name, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),),
                   subtitle: Column(crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Задача №${objectList[index].number} от ${DateFormat('dd.MM.yyyy').format(taskList[index].dateCreate)}', style: TextStyle(fontStyle: FontStyle.italic)),
-                      Text(taskList[index].content),
+                      Text('Задача №${objectList[index].number} от ${DateFormat('dd.MM.yyyy').format(taskLists[index].dateCreate)}', style: TextStyle(fontStyle: FontStyle.italic)),
+                      Text(taskLists[index].content),
                     ],
                   ),
                   //trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 0).format(widget.event.summa), style: TextStyle(fontSize: 16, color: Colors.green)),
                   onTap: () async {
-                    await Navigator.push(context, MaterialPageRoute( builder: (context) => scrTaskViewScreen(task: taskList[index]..id)));
-                    initState();
+                    await Navigator.push(context, MaterialPageRoute( builder: (context) => scrTaskViewScreen(task: taskLists[index]..id)));
+                    ref();
                   },
                   onLongPress: () {})
           )
@@ -519,7 +721,7 @@ class _scrHomeScreenState extends State<scrHomeScreen> with SingleTickerProvider
   _taslTwoScreen() {
     return RefreshIndicator(
       onRefresh: () async {
-        initState();
+        ref();
         return Future<void>.delayed(const Duration(seconds: 1));
       },
       child: ListView.builder(
@@ -552,7 +754,7 @@ class _scrHomeScreenState extends State<scrHomeScreen> with SingleTickerProvider
   _taslThreeScreen() {
     return RefreshIndicator(
       onRefresh: () async {
-        initState();
+        ref();
         return Future<void>.delayed(const Duration(seconds: 1));
       },
       child: ListView.builder(
@@ -585,7 +787,7 @@ class _scrHomeScreenState extends State<scrHomeScreen> with SingleTickerProvider
   _taslFourScreen() {
     return RefreshIndicator(
       onRefresh: () async {
-        initState();
+        ref();
         return Future<void>.delayed(const Duration(seconds: 1));
       },
       child: ListView.builder(
@@ -615,8 +817,64 @@ class _scrHomeScreenState extends State<scrHomeScreen> with SingleTickerProvider
     );
   }
 
+  _AddMenuIcon() {
+    return PopupMenuButton<Menu>(
+        icon: const Icon(Icons.add),
+        offset: const Offset(0, 40),
+        onSelected: (Menu item) async {
+          if (item.name=='check') //если покупка стройматериалов
+              {
+            Receipt recipientdata = Receipt('', '', DateTime.now(), true, false, false, '', '', '', '', true, '', '', DateTime.now(), 0, 0, 0, false, '', '', '', 'Расход', 0, '7fa144f2-14ca-11ed-80dd-00155d753c19', 'Покупка стройматериалов', '', '', defaultkassaSotr(Globals.anUserId, true), defaultkassaSotr(Globals.anUserName, false), (defaultkassaSotr(Globals.anUserId, true)=='') ? 0 : 1, 'Покупка стройматериалов', 0, []);
+            await Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => scrReceiptEditScreen(receiptData: recipientdata,)));
+          }
+          else
+            await Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => scrPlatEditScreen(plat2: ListPlat('', 'Новый платеж', DateTime.now(), false, '', true, '', '', '', useDog(item.name), analyticId(item.name, true), analyticId(item.name, false), 0, 0, 0, '', '', '', '', DateTime.now(), useDog(item.name), '', '', defaultkassaSotr(Globals.anUserId, true), defaultkassaSotr(Globals.anUserName, false), (defaultkassaSotr(Globals.anUserId, true)=='') ? 0 : 1, '', '', '', platType(item.name), type(item.name), '', '', '', '', 0, 0),)));
+          ref();
+        },
+        itemBuilder: (BuildContext context) => <PopupMenuEntry<Menu>>[
+          const PopupMenuItem<Menu>(
+            value: Menu.oplataDog,
+            child: Text('Оплата от клиента по договору'),
+          ),
+          const PopupMenuItem<Menu>(
+            value: Menu.oplataMaterials,
+            child: Text('Оплата от клиента за материалы'),
+          ),
+          const PopupMenuItem<Menu>(
+            value: Menu.platUp,
+            child: Text('Поступление денег'),
+          ),
+          const PopupMenuItem<Menu>(
+            value: Menu.platDown,
+            child: Text('Списание денег'),
+          ),
+          const PopupMenuItem<Menu>(
+            value: Menu.check,
+            child: Text('Покупка стройматериалов'),
+          ),
+          const PopupMenuItem<Menu>(
+            value: Menu.platMove,
+            child: Text('Перемещение денег'),
+          ),
+          const PopupMenuItem<Menu>(
+            value: Menu.platDownSotr,
+            child: Text('Выдача в подотчет'),
+          ),
+          const PopupMenuItem<Menu>(
+            value: Menu.platUpSotr,
+            child: Text('Возврат из подотчета'),
+          ),
+        ]);
 
-  static const _tabs = [
+  }
+
+  static const _tabsTask = [
     Tab(icon: Icon(Icons.subdirectory_arrow_right_outlined),
         text: "Делаю"),
     Tab(icon: Icon(Icons.outbond_outlined),
@@ -627,7 +885,18 @@ class _scrHomeScreenState extends State<scrHomeScreen> with SingleTickerProvider
         text: "Закрытые")
   ];
 
+  static const _tabsPlat = [
+    Tab(icon: Icon(Icons.donut_large),
+        text: "Все платежи"),
+    Tab(icon: Icon(Icons.balance),
+        text: "Балансы"),
+    Tab(icon: Icon(Icons.warning_amber),
+        text: "Согласование"),
+  ];
+
 }
+
+enum Menu { oplataDog, oplataMaterials, platUp, platDown, check, platDownSotr, platUpSotr , platMove}
 
 final _navBarItems = [
   SalomonBottomBarItem(

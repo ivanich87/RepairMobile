@@ -197,6 +197,63 @@ class _scrSettingsScreenState extends State<scrSettingsScreen> {
                 },
               ),
             ),
+            Card(
+              child: ListTile(
+                title: Text(
+                  'Кассы',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
+                ),
+                subtitle: Text('Наличка, банковские карты'),
+                leading: Icon(Icons.list),
+                //trailing: Icon(Icons.edit),
+                onTap: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => scrListScreen(sprName: 'Касса', onType: 'push')));
+                },
+              ),
+            ),
+            Card(
+              child: ListTile(
+                title: Text(
+                  'Банковские счета',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
+                ),
+                subtitle: Text('Расчетные счета'),
+                leading: Icon(Icons.list),
+                //trailing: Icon(Icons.edit),
+                onTap: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => scrListScreen(sprName: 'БанковскиеСчетаОрганизаций', onType: 'push')));
+                },
+              ),
+            ),
+            Divider(),
+            Card(
+              child: ListTile(
+                title: Text(
+                  'Статьи расходов',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
+                ),
+                subtitle: Text('Аналитика расходов'),
+                leading: Icon(Icons.list),
+                //trailing: Icon(Icons.edit),
+                onTap: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => scrListScreen(sprName: 'АналитикаДвиженийДСРасход', onType: 'push')));
+                },
+              ),
+            ),
+            Card(
+              child: ListTile(
+                title: Text(
+                  'Статьи приходов',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
+                ),
+                subtitle: Text('Аналитика приходов'),
+                leading: Icon(Icons.list),
+                //trailing: Icon(Icons.edit),
+                onTap: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => scrListScreen(sprName: 'АналитикаДвиженийДСПриход', onType: 'push')));
+                },
+              ),
+            ),
             Divider(thickness: 2),
             SizedBox(height: 30,),
             Card(

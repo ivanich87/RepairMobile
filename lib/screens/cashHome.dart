@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:repairmodule/components/SingleSelections.dart';
 import 'package:repairmodule/models/Lists.dart';
+import 'package:repairmodule/models/httpRest.dart';
 import 'package:repairmodule/screens/cashCategories.dart';
 import 'package:repairmodule/components/Cards.dart';
 import 'package:repairmodule/screens/cashList.dart';
@@ -26,84 +27,30 @@ class _scrCashHomeScreenState extends State<scrCashHomeScreen> {
   num AccountableContractorBalance=0;
   num allSumma = 0 ;
 
-  Future httpGetListCash() async {
+  ref() async {
+    AccountableFoundsBalance=0;
+    AccountableContractorBalance=0;
     allSumma=0;
-    cashBankList.clear();
-    cashKassList.clear();
-    AccountableFounds.clear();
-    AccountableContractor.clear();
-
-    final _queryParameters = {'userId': Globals.anPhone};
-    var _url=Uri(path: '${Globals.anPath}cashList/', host: Globals.anServer, scheme: 'https', queryParameters: _queryParameters);
-    var _headers = <String, String> {
-      'Accept': 'application/json',
-      'Authorization': Globals.anAuthorization
-    };
-    try {
-      var response = await http.get(_url, headers: _headers);
-      print(response.statusCode.toString());
-      if (response.statusCode == 200) {
-        var notesJson = json.decode(response.body);
-        for (var noteJson in notesJson) {
-          allSumma = allSumma + noteJson['summa'];
-          if (ListCash.fromJson(noteJson).tip==1) {
-            cashKassList.add(ListCash.fromJson(noteJson));
-          };
-          if (ListCash.fromJson(noteJson).tip!=1) {
-            cashBankList.add(ListCash.fromJson(noteJson));
-          };
-        }
-      }
-    } catch (error) {
-      print("Ошибка при формировании списка счетов: $error");
+    await httpGetListBalance(cashBankList, cashKassList, AccountableFounds, AccountableContractor);
+    for (var ded in AccountableFounds) {
+      AccountableFoundsBalance = AccountableFoundsBalance + ded.summa;
     }
 
-    //запрос к подотчетным средствам сотрудников
-    _url=Uri(path: '${Globals.anPath}accountableFunds/', host: Globals.anServer, scheme: 'https', queryParameters: _queryParameters);
-    try {
-      AccountableFoundsBalance=0;
-      var response2 = await http.get(_url, headers: _headers);
-      if (response2.statusCode == 200) {
-        var notesJson = json.decode(response2.body);
-        for (var noteJson in notesJson) {
-          AccountableFounds.add(accountableFounds.fromJson(noteJson));
-          AccountableFoundsBalance = AccountableFoundsBalance + accountableFounds.fromJson(noteJson).summa;
-        }
-      }
-      else
-        throw 'Код ответа запроса подотчетных денег: ${response2.statusCode}';
-    } catch (error) {
-      print("Ошибка при формировании списка подотчета: $error");
+    for (var ded in cashKassList) {
+      allSumma = allSumma + ded.summa;
     }
-
-
-    //запрос к балансам контрагентов
-    _url=Uri(path: '${Globals.anPath}accountableContractors/', host: Globals.anServer, scheme: 'https', queryParameters: _queryParameters);
-    try {
-      AccountableContractorBalance=0;
-      var response3 = await http.get(_url, headers: _headers);
-      if (response3.statusCode == 200) {
-        var notesJson = json.decode(response3.body);
-        for (var noteJson in notesJson) {
-          AccountableContractor.add(accountableFounds.fromJson(noteJson));
-          AccountableContractorBalance = AccountableContractorBalance + accountableFounds.fromJson(noteJson).summa;
-        }
-      }
-      else
-        throw 'Код ответа запроса баланса контрагентов: ${response3.statusCode}';
-    } catch (error) {
-      print("Ошибка при формировании списка контрагентов: $error");
+    for (var ded in cashBankList) {
+      allSumma = allSumma + ded.summa;
     }
-
+    for (var ded in AccountableContractor) {
+      AccountableContractorBalance = AccountableContractorBalance + ded.summa;
+    }
+    setState(() {
+    });
   }
-
-
   @override
   void initState() {
-    httpGetListCash().then((value) {
-      setState(() {
-      });
-    });
+    ref();
     // TODO: implement initState
     //super.initState();
   }
@@ -164,8 +111,6 @@ class _scrCashHomeScreenState extends State<scrCashHomeScreen> {
                     padding: EdgeInsets.all(1),
                     physics: BouncingScrollPhysics(),
                     reverse: false,
-                    //itemCount: notes.length,
-                    //itemBuilder: (_, index) => CardCashList(event: notes[index]),
                     children: cashBankList.map((e) => CardCashList(event: e)).toList(),
                   ),
                 ),
@@ -198,7 +143,6 @@ class _scrCashHomeScreenState extends State<scrCashHomeScreen> {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                          //builder: (context) => scrCashCategoriesScreen(idCash: '0', cashName: 'Все',)));
                             builder: (context) => scrCashListScreen(idCash: '0', cashName: 'Все', analytic: '', analyticName: '', objectId: '',objectName: '', platType: '', dateRange: DateTimeRange(start: DateTime.now(), end: DateTime.now()), kassaSotrId: '', kassaSortName: '',)));
                   },
                 ),
@@ -229,14 +173,15 @@ class _scrCashHomeScreenState extends State<scrCashHomeScreen> {
                 reverse: false,
                 shrinkWrap: true,
                 itemCount: AccountableFounds.length,
-                itemBuilder: (_, index) =>
-                  Card(
+                itemBuilder: (_, index) {
+                  return Card(
                     child: ListTile(
                       title: Text(AccountableFounds[index].name, style: TextStyle(fontWeight: FontWeight.normal, fontSize: 18)),
                       trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(AccountableFounds[index].summa), style: TextStyle(fontSize: 16, color: textColors(AccountableFounds[index].summa))),
                       onTap: () {Navigator.push(context, MaterialPageRoute(builder: (context) => scrCashListScreen(idCash: '0', cashName: 'Все', analytic: '', analyticName: '', objectId: '', objectName: '', platType: '', dateRange: DateTimeRange(start: DateTime(2023), end: DateTime.now()), kassaSotrId: AccountableFounds[index].id, kassaSortName: AccountableFounds[index].name,  )));},
                     ),
-                  )
+                  );
+                }
               ),
             ),
             Expanded(
