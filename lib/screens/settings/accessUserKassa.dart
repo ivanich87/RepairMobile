@@ -37,7 +37,6 @@ class _scrAccessUserKassaSelectedScreenState extends State<scrAccessUserKassaSel
         appBar: AppBar(
           title: Text('Выбор касс и счетов'),
           centerTitle: true,
-          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
           actions: [
             IconButton(onPressed: () {}, icon: Icon(Icons.menu))
           ],

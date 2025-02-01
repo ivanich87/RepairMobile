@@ -99,7 +99,6 @@ class _scrObjectEditScreenState extends State<scrObjectEditScreen> {
         appBar: AppBar(
           title: Text('Редактирование объекта'),
           centerTitle: true,
-          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
           actions: [IconButton(onPressed: () {}, icon: Icon(Icons.menu))],
         ),
         body: Form(

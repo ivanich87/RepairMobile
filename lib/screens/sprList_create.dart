@@ -95,7 +95,6 @@ class _scrListCreateScreenState extends State<scrListCreateScreen> {
         appBar: AppBar(
           title: Text('Создание элемента'),
           centerTitle: true,
-          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
           actions: <Widget>[_menuAppBar()],
         ),
         body: Form(

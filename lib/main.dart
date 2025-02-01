@@ -167,10 +167,16 @@ class _MyAppState extends State<MyApp> {
           Locale('en', ''),  //code
           Locale('ru', ''), // arabic, no country code
         ],
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-          useMaterial3: true,
-        ),
+        theme: ThemeData.light().copyWith(appBarTheme: AppBarTheme(backgroundColor: Colors.black, foregroundColor: Colors.grey), floatingActionButtonTheme: FloatingActionButtonThemeData(backgroundColor: Colors.grey[600])),  //textTheme: Typography().black.apply(fontFamily: 'Montserrat')
+        darkTheme: ThemeData.dark().copyWith(appBarTheme: AppBarTheme(backgroundColor: Colors.grey[900]), floatingActionButtonTheme: FloatingActionButtonThemeData(backgroundColor: Colors.grey[600])),
+
+        // theme: ThemeData(),
+        // darkTheme: ThemeData.dark(), // standard dark theme
+        themeMode: ThemeMode.system, // device controls theme
+        // theme: ThemeData(
+        //   colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        //   useMaterial3: true,
+        // ),
         home: (logIn == true) ? scrHomeScreen() : (_load == true) ? scrLogonScreen() : scrLoadingScreen(),
         // initialRoute: '/',
         // routes: {

@@ -248,7 +248,6 @@ class _scrTaskViewScreenState extends State<scrTaskViewScreen> {
             title: Text('Карточка задачи'),
             //bottom: TabBar(tabs: _tabs),
             centerTitle: true,
-            backgroundColor: Theme.of(context).colorScheme.inversePrimary,
             actions: <Widget>[_menuAppBar()],
           ),
           body: Padding(

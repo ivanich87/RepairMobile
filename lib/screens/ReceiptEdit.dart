@@ -105,7 +105,6 @@ class _scrReceiptEditScreenState extends State<scrReceiptEditScreen> {
         appBar: AppBar(
           title: Text('Покупка стройматериалов'),
           centerTitle: true,
-          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         ),
         body: ListView(
           children: [

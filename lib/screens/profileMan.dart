@@ -1,6 +1,8 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:repairmodule/models/Lists.dart';
 import 'package:repairmodule/screens/profileMan_edit.dart';
@@ -79,7 +81,6 @@ class _scrProfileManState extends State<scrProfileMan> {
       appBar: AppBar(
         title: Text('Профиль'),
         centerTitle: true,
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         actions: (Globals.anUserRoleId!=3) ? null : <Widget>[_menuAppBar()],
       ),
       body: Column(
@@ -93,27 +94,51 @@ class _scrProfileManState extends State<scrProfileMan> {
                 children: [
                   Text(name, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, decoration: textDelete(del))),
                   const SizedBox(height: 16),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      FloatingActionButton.extended(
-                        onPressed: () => _makingPhoneCall(phone, 1),
-                        heroTag: 'call',
-                        elevation: 0,
-                        backgroundColor: Colors.green,
-                        label: const Text("Позвонить"),
-                        icon: const Icon(Icons.phone),
-                      ),
-                      const SizedBox(width: 16.0),
-                      FloatingActionButton.extended(
-                        onPressed: () => _makingPhoneCall(phone, 2),
-                        heroTag: 'mesage',
-                        elevation: 0,
-                        backgroundColor: Colors.blue,
-                        label: const Text("Написать"),
-                        icon: const Icon(Icons.message_rounded),
-                      ),
-                    ],
+                  Container(height: 50,
+                    child: ListView(scrollDirection: Axis.horizontal,
+                      //mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        FloatingActionButton.extended(
+                          onPressed: () => makingPhoneCall(phone, 1),
+                          heroTag: 'call',
+                          elevation: 0,
+                          backgroundColor: Colors.green,
+                          label: const Text("Позвонить"),
+                          icon: const Icon(Icons.phone),
+                        ),
+                        const SizedBox(width: 16.0),
+                        FloatingActionButton.extended(
+                          onPressed: () => makingPhoneCall(phone, 2),
+                          heroTag: 'mesage',
+                          elevation: 0,
+                          backgroundColor: Colors.grey,
+                          label: const Icon(Icons.message_rounded),
+                          //icon: const Icon(Icons.message_rounded),
+                        ),
+                        const SizedBox(width: 16.0),
+                        FloatingActionButton.extended(
+                          onPressed: () async {
+                            makingPhoneCall(phone, 4);
+                          },
+                          heroTag: 'mesage',
+                          elevation: 0,
+                          backgroundColor: Colors.green,
+                          label: const FaIcon(FontAwesomeIcons.whatsapp),
+                          // icon: const FaIcon(FontAwesomeIcons.whatsapp), //Icon(Icons.navigation),
+                        ),
+                        const SizedBox(width: 16.0),
+                        FloatingActionButton.extended(
+                          onPressed: () async {
+                            makingPhoneCall(phone, 5);
+                          },
+                          heroTag: 'mesage',
+                          elevation: 0,
+                          backgroundColor: Colors.blue,
+                          label: const FaIcon(FontAwesomeIcons.telegram),
+                          //icon: const Icon(Icons.telegram),
+                        ),
+                      ],
+                    ),
                   ),
                   const SizedBox(height: 16),
                   //const _ProfileInfoRow(),
@@ -121,7 +146,7 @@ class _scrProfileManState extends State<scrProfileMan> {
                   Divider(),
                   ListTile(
                     title: Text('Телефон: ' + phone, style: TextStyle(fontWeight: FontWeight.w500, fontSize: 18),),
-                    trailing: IconButton(onPressed: ()=>_makingPhoneCall(phone, 1), icon: Icon(Icons.phone_enabled)) , //Icon(Icons.phone_enabled)
+                    trailing: IconButton(onPressed: ()=>makingPhoneCall(phone, 1), icon: Icon(Icons.phone_enabled)) , //Icon(Icons.phone_enabled)
                     onTap: () {},
                     onLongPress: () async {
                       await Clipboard.setData(ClipboardData(text: phone));
@@ -131,7 +156,7 @@ class _scrProfileManState extends State<scrProfileMan> {
                   ListTile(
                     title: Text('E-mail: ' + mail, style: TextStyle(fontWeight: FontWeight.w500, fontSize: 18),),
                     trailing: Icon(Icons.email),
-                    onTap: () => _makingPhoneCall(mail, 3),
+                    onTap: () => makingPhoneCall(mail, 3),
                     onLongPress: () async {
                       await Clipboard.setData(ClipboardData(text: mail));
                     },
@@ -340,7 +365,7 @@ class _TopPortion extends StatelessWidget {
   }
 }
 
-_makingPhoneCall(phone, tip) async {
+makingPhoneCall(phone, tip) async {
   var url = Uri.parse("tel:$phone");
 
   if (tip==2) {
@@ -348,6 +373,15 @@ _makingPhoneCall(phone, tip) async {
   };
   if (tip==3) {
     url = Uri.parse("mailto:$phone?subject=News&body=New%20plugin");
+  };
+  if (tip==4) {
+    url = Uri.parse("whatsapp://send?phone=$phone");
+    if (Platform.isIOS) {
+      url = Uri.parse("https://wa.me/$phone");
+    }
+  };
+  if (tip==5) {
+    url = Uri.parse("https://t.me/$phone");
   };
   if (!await launchUrl(url)) {
     throw Exception('Could not launch $url');

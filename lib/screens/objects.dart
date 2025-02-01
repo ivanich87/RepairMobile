@@ -67,7 +67,6 @@ class _scrObjectsScreenState extends State<scrObjectsScreen> {
       appBar: AppBar(
         title: Text('Объекты в работе'),
         centerTitle: true,
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         actions: [
           IconButton(onPressed: () {}, icon: Icon(Icons.menu))
         ],

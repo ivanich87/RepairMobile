@@ -147,7 +147,6 @@ class _scrInputSharedFilesScreenState extends State<scrInputSharedFilesScreen> {
       appBar: AppBar(
         title: Text('Прикрепить фото'),
         centerTitle: true,
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
       ),
         body: (_isLoad) ? Center(child: CircularProgressIndicator()) :
         ListView(padding: EdgeInsets.all(8),

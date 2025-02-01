@@ -66,7 +66,6 @@ class _scrobjectsListSelectedDogState extends State<objectsListSelectedDog> {
       appBar: AppBar(
         title: Text('Выбор договора'),
         centerTitle: true,
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         actions: [
           IconButton(onPressed: () {}, icon: Icon(Icons.menu))
         ],

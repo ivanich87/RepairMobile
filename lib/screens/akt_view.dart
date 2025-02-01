@@ -90,7 +90,6 @@ class _scrAktViewScreenState extends State<scrAktViewScreen> {
             Tab(icon: Row(children:[Icon(Icons.format_list_bulleted), Text('Основное')]), iconMargin: EdgeInsets.zero),
           ], isScrollable: true,),
           centerTitle: true,
-          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
           actions: <Widget>[_menuAppBar()],
         ),
           body: TabBarView(children: <Widget> [

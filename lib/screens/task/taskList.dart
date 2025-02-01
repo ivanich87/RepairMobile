@@ -52,7 +52,6 @@ class _scrTaskListScreenState extends State<scrTaskListScreen> {
           title: Text('${Globals.anUserName}'),
           bottom: TabBar(tabs: _tabs),
           centerTitle: true,
-          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
           actions: <Widget>[_menuAppBar()],
         ),
           body: TabBarView(children: <Widget> [

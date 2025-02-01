@@ -122,7 +122,6 @@ class _scrDogovorCreateScreenState extends State<scrDogovorCreateScreen> {
         appBar: AppBar(
           title: Text('Создание нового договора'),
           centerTitle: true,
-          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
           actions: [IconButton(onPressed: () {}, icon: Icon(Icons.menu))],
         ),
         body: Form(

@@ -24,7 +24,6 @@ class _scrReceiptSostScreenState extends State<scrReceiptSostScreen> {
       appBar: AppBar(
         title: Text('Состав чека'),
         centerTitle: true,
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
       ),
         body: ListView.builder(
           padding: EdgeInsets.all(10),

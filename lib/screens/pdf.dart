@@ -28,7 +28,6 @@
 //         appBar: AppBar(
 //           title: Text('PDF'),
 //           centerTitle: true,
-//           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
 //         ),
 //         body: MyPDFView.url(pdfUrl: "https://css4.pub/2015/icelandic/dictionary.pdf")
 //     );

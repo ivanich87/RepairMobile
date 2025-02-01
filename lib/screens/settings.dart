@@ -88,9 +88,6 @@ class _scrSettingsScreenState extends State<scrSettingsScreen> {
         appBar: AppBar(
           title: Text('Настройки'),
           centerTitle: true,
-          //backgroundColor: Colors.grey[900],
-          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-          //actions: [IconButton(onPressed: () {}, icon: Icon(Icons.settings))],
         ),
         body: ListView(
           //mainAxisAlignment: MainAxisAlignment.start,

@@ -70,7 +70,6 @@ class _scrListScreenState extends State<scrListScreen> {
       appBar: AppBar(
         title: SearchBar(),
         centerTitle: true,
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         actions: [
           IconButton(onPressed: () {}, icon: Icon(Icons.menu))
         ],

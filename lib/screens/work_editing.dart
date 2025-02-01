@@ -33,7 +33,6 @@ class _scrWorkEditingScreenState extends State<scrWorkEditingScreen> {
       appBar: AppBar(
         title: Text('Работа'),
         centerTitle: true,
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         actions: [
           IconButton(onPressed: () {}, icon: Icon(Icons.menu))
         ],

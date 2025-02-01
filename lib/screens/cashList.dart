@@ -41,44 +41,6 @@ class _scrCashListScreenState extends State<scrCashListScreen> {
   //var objectList = [];
   List<ListPlat> objectList = [];
 
-  //DateTimeRange dateRange = DateTimeRange(start: DateTime.now(), end: DateTime.now());
-
-  // Future httpGetListPlat() async {
-  //   var queryParameters = <String, dynamic> {
-  //     'analyticId': widget.analytic,
-  //     'objectId': widget.objectId,
-  //     'platType': widget.platType,
-  //     'kassaSortId': widget.kassaSotrId,
-  //     'kassaContractorId': widget.kassaContractorId,
-  //     'userId': Globals.anPhone,
-  //     'approve': widget.approve.toString(),
-  //   };
-  //
-  //   print(jsonEncode(queryParameters));
-  //   var _url = Uri(path: '${Globals.anPath}platlist/${DateFormat('yyyyMMdd').format(widget.dateRange.start)}/${DateFormat('yyyyMMdd').format(widget.dateRange.end)}/${widget.idCash}',
-  //       queryParameters: queryParameters,
-  //       host: Globals.anServer,
-  //       scheme: 'https');
-  //   var _headers = <String, String>{
-  //     'Accept': 'application/json',
-  //     'Authorization': Globals.anAuthorization
-  //   };
-  //   try {
-  //     print(_url.path);
-  //     var response = await http.get(_url, headers: _headers);
-  //     if (response.statusCode == 200) {
-  //       objectList.clear();
-  //       var notesJson = json.decode(response.body);
-  //       for (var noteJson in notesJson) {
-  //         objectList.add(ListPlat.fromJson(noteJson));
-  //       }
-  //     }
-  //     else
-  //       throw response.body;
-  //   } catch (error) {
-  //     print("Ошибка при формировании списка платежей: $error");
-  //   }
-  // }
 
   @override
   void initState() {
@@ -98,10 +60,6 @@ class _scrCashListScreenState extends State<scrCashListScreen> {
         appBar: AppBar(
           title: Text('Платежи и переводы'),
           centerTitle: true,
-          backgroundColor: Theme
-              .of(context)
-              .colorScheme
-              .inversePrimary,
           actions: [
             IconButton(onPressed: () {}, icon: Icon(Icons.menu))
           ],

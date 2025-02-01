@@ -71,8 +71,6 @@ class _scrUserListScreenState extends State<scrUserListScreen> {
     return Scaffold(
       appBar: AppBar(
         title: SearchBar(),
-        //centerTitle: true,
-        //backgroundColor: Theme.of(context).colorScheme.inversePrimary,
       ),
       body: ListView.builder(
         padding: EdgeInsets.all(10),

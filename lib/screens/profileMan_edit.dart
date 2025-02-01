@@ -112,7 +112,6 @@ class _scrProfileManEditScreenState extends State<scrProfileManEditScreen> {
         appBar: AppBar(
           title: Text('Редактирование профиля'),
           centerTitle: true,
-          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
           actions: [IconButton(onPressed: () {}, icon: Icon(Icons.menu))],
         ),
         body: Form(

@@ -66,8 +66,6 @@ class _scrTaskCloseScreenState extends State<scrTaskCloseScreen> {
           title: Text('Закрытие задачи'),
           //bottom: TabBar(tabs: _tabs),
           centerTitle: true,
-          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-          //actions: [IconButton(onPressed: () {}, icon: Icon(Icons.menu))],
         ),
         body: ListView(
           children: [

@@ -69,7 +69,6 @@ class _scrCashCategoriesScreenState extends State<scrCashCategoriesScreen> {
       appBar: AppBar(
         title: Text(widget.cashName.toString()),
         centerTitle: true,
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         actions: [
           IconButton(onPressed: () {}, icon: Icon(Icons.menu))
         ],

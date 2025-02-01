@@ -131,7 +131,6 @@ class _scrTaskEditScreenState extends State<scrTaskEditScreen> {
           appBar: AppBar(
             title: Text('Редактирование задачи'),
             centerTitle: true,
-            backgroundColor: Theme.of(context).colorScheme.inversePrimary,
           ),
           body: Padding(
             padding: const EdgeInsets.all(8.0),

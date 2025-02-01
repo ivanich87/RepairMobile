@@ -219,7 +219,6 @@ _ref(){
             title: Text('Карточка договора'),
             bottom: TabBar(controller: _tabController, tabs: _tabs, isScrollable: true,),
             centerTitle: false,
-            backgroundColor: Theme.of(context).colorScheme.inversePrimary,
             actions: [IconButton(onPressed: () {}, icon: Icon(Icons.menu))],
           ),
           body: Column(

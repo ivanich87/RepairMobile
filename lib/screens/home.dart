@@ -156,9 +156,16 @@ class _scrHomeScreenState extends State<scrHomeScreen> with TickerProviderStateM
       }
 
     });
-  ref();
     _taskTabController = TabController(length: 4, vsync: this, initialIndex: 0);
-    _platTabController = TabController(length: 3, vsync: this);
+    _platTabController = TabController(length: (Globals.anApprovalPlat==true) ? 3: 2, vsync: this);
+
+    httpGetListObject(objectList).then((value) {
+      setState(() {
+      });
+    });
+
+
+    ref();
     // TODO: implement initState
     //super.initState();
 
@@ -173,12 +180,13 @@ class _scrHomeScreenState extends State<scrHomeScreen> with TickerProviderStateM
   }
 
   ref() async {
-    await httpGetListObject(objectList);
     await httpGetListPlat(platList, '', '', '', '', '', '0', false, dateRange);
     await httpGetListPlat(platListApproved, '', '', '', '', '', '0', true, dateRange);
     await httpGetListTask(taskLists, taskListAssignet, taskListDone, taskListClose);
     await httpGetInfo();
     await httpGetListBalance(cashBankList, cashKassList, AccountableFounds, AccountableContractor);
+
+    await httpGetListObject(objectList);
 
     AccountableFoundsBalance=0;
     AccountableContractorBalance=0;
@@ -207,8 +215,6 @@ class _scrHomeScreenState extends State<scrHomeScreen> with TickerProviderStateM
         appBar: AppBar(
           title: Text('РемонтКвартир'),
           centerTitle: true,
-          //backgroundColor: Colors.grey[900],
-          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
           actions: [
             IconButton(onPressed: () async {
                 await Navigator.push(context, MaterialPageRoute(builder: (context) => scrSettingsScreen()));
@@ -243,7 +249,7 @@ class _scrHomeScreenState extends State<scrHomeScreen> with TickerProviderStateM
           },
           child: Icon(Icons.add),);
       case 1:
-        return FloatingActionButton(
+        return (Globals.anCreatePlat==false) ? null : FloatingActionButton(
             onPressed: () {},
             child: _AddMenuIcon());
       case 2:
@@ -294,7 +300,8 @@ class _scrHomeScreenState extends State<scrHomeScreen> with TickerProviderStateM
             children: <Widget> [
               _platOneScreen(),
               _platTwoScreen(),
-              _platThreeScreen(),
+              if (Globals.anApprovalPlat==true)
+                _platThreeScreen(),
             ],
           ),
         ),
@@ -527,7 +534,12 @@ class _scrHomeScreenState extends State<scrHomeScreen> with TickerProviderStateM
           children: [
             ElevatedButton(onPressed: pickDateRange,
                 child: Text(DateFormat('dd.MM.yyyy').format(dateRange.start) + ' - ' + DateFormat('dd.MM.yyyy').format(dateRange.end))),
-            IconButton(onPressed: (){}, icon: Icon(Icons.filter_alt_outlined), ),
+            IconButton(onPressed: (){
+              final snackBar = SnackBar(
+                content: Text('Кнопка в разработке, скоро по ней вы сможете фильтровать платежи по разным параметрам'),
+              );
+              ScaffoldMessenger.of(context).showSnackBar(snackBar);
+            }, icon: Icon(Icons.filter_alt_outlined), ),
           ],
         ),
         Expanded(

@@ -90,7 +90,6 @@ class _scrPlatsViewScreenState extends State<scrPlatsViewScreen> {
         appBar: AppBar(
           title: Text('Платеж'),
           centerTitle: true,
-          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
           actions: (Globals.anCreatePlat==false || (Globals.anUserRoleId!=3 && widget.plat.accept==true)) ? null : <Widget>[_menuAppBar()],
         ),
         body: Stack(

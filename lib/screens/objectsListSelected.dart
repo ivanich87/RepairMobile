@@ -53,7 +53,6 @@ class _scrobjectsListSelectedState extends State<objectsListSelected> {
       appBar: AppBar(
         title: Text('Выбор объекта'),
         centerTitle: true,
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         actions: [
           IconButton(onPressed: () {}, icon: Icon(Icons.menu))
         ],

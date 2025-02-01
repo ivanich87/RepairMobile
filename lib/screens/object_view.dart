@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -15,6 +16,8 @@ import '../components/Cards.dart';
 import 'cashList.dart';
 import 'object_edit.dart';
 import 'objectsListSelectedDog.dart';
+
+import 'package:url_launcher/url_launcher.dart';
 
 class scrObjectsViewScreen extends StatefulWidget {
   final String id;
@@ -197,14 +200,16 @@ class _scrObjectsViewScreenState extends State<scrObjectsViewScreen> with Single
             //bottom: TabBar(tabs: _tabs),
             bottom: TabBar(controller: _tabController, tabs: _tabs, isScrollable: true,),
             centerTitle: true,
-            backgroundColor: Theme.of(context).colorScheme.inversePrimary,
             actions: [IconButton(onPressed: () {}, icon: Icon(Icons.menu))],
           ),
           body: Column(
             children: [
-              Text(
-                name,
-                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  name,
+                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                ),
               ),
               Divider(),
 
@@ -256,6 +261,44 @@ class _scrObjectsViewScreenState extends State<scrObjectsViewScreen> with Single
                       MaterialPageRoute(
                           builder: (context) => scrProfileMan(id: idClient,)));
                 },
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  FloatingActionButton.extended(
+                    onPressed: () {
+                      var url = Uri.parse("tel:$phoneClient");
+                      launchUrl(url);
+                    },
+                    heroTag: 'call',
+                    elevation: 0,
+                    backgroundColor: Colors.green,
+                    label: const Text("Позвонить"),
+                    icon: const Icon(Icons.phone),
+                  ),
+                  const SizedBox(width: 16.0),
+                  FloatingActionButton.extended(
+                    onPressed: () async {
+                      makingPhoneCall(phoneClient, 4);
+                    },
+                    heroTag: 'mesage',
+                    elevation: 0,
+                    backgroundColor: Colors.green,
+                    label: const FaIcon(FontAwesomeIcons.whatsapp),
+                    // icon: const FaIcon(FontAwesomeIcons.whatsapp), //Icon(Icons.navigation),
+                  ),
+                  const SizedBox(width: 16.0),
+                  FloatingActionButton.extended(
+                    onPressed: () async {
+                      makingPhoneCall(phoneClient, 5);
+                    },
+                    heroTag: 'mesage',
+                    elevation: 0,
+                    backgroundColor: Colors.blue,
+                    label: const FaIcon(FontAwesomeIcons.telegram),
+                    //icon: const Icon(Icons.telegram),
+                  ),
+                ],
               ),
               Divider(),
               SingleSection(

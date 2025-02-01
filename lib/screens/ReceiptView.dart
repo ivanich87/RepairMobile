@@ -141,7 +141,6 @@ class _scrReceiptViewScreenState extends State<scrReceiptViewScreen> {
         appBar: AppBar(
           title: Text('Покупка стройматериалов'),
           centerTitle: true,
-          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
           actions: (Globals.anCreatePlat==false || (Globals.anUserRoleId!=3 && recipientdata.accept==true)) ? null : <Widget>[_menuAppBar()],
         ),
         body: Stack(

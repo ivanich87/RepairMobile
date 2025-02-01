@@ -87,7 +87,6 @@ class _scrCompanyEditScreenState extends State<scrCompanyEditScreen> {
         appBar: AppBar(
           title: Text('Данные компании'),
           centerTitle: true,
-          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
           actions: [IconButton(onPressed: () {}, icon: Icon(Icons.menu))],
         ),
         body: Form(

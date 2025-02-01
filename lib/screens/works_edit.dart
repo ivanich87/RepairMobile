@@ -147,7 +147,6 @@ class _scrWorksEditScreenState extends State<scrWorksEditScreen> {
       appBar: AppBar(
         title: SearchBar(), //Text(titleName),
         centerTitle: true,
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         actions: <Widget>[_menuAppBar()], //(widget.additionalWork==true) ? null :
       ),
         body: (_isUpdating==true) ? Center(child: CircularProgressIndicator()) : Column(

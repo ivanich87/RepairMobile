@@ -129,7 +129,6 @@ class _scrAccessObjectsScreenState extends State<scrAccessObjectsScreen> {
       appBar: AppBar(
         title: Text('Настройки доступа'),
         centerTitle: true,
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
       ),
         body: Column(
           children: [

@@ -110,7 +110,6 @@ class _scrPlatEditScreenState extends State<scrPlatEditScreen> {
         appBar: AppBar(
           title: Text('Платеж'),
           centerTitle: true,
-          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
           actions: [IconButton(onPressed: () {}, icon: Icon(Icons.menu))],
         ),
         body: ListView(

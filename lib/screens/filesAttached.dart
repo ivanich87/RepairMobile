@@ -156,7 +156,6 @@ class _scrAttachedScreenState extends State<scrAttachedScreen> {
       appBar: AppBar(
         title: Text('Вложенные файлы'),
         centerTitle: true,
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
       ),
         body: (objectList.length==0) ? Center(child: Text('Нет фото')) :
 

@@ -182,7 +182,6 @@ class _scrAccessUserScreenState extends State<scrAccessUserScreen> {
       appBar: AppBar(
         title: Text('Настройки доступа'),
         centerTitle: true,
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
       ),
         body: ListView(
           children: [

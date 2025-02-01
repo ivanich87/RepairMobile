@@ -117,7 +117,6 @@ class _scrObjectCreateScreenState extends State<scrObjectCreateScreen> {
         appBar: AppBar(
           title: Text('Создание нового объекта'),
           centerTitle: true,
-          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
           actions: [IconButton(onPressed: () {}, icon: Icon(Icons.menu))],
         ),
         body: Form(

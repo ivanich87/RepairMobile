@@ -62,11 +62,6 @@ class _scrCashHomeScreenState extends State<scrCashHomeScreen> {
             bottom: TabBar(tabs: _tabs, isScrollable: true,),
             title: Text('Финансы'),
             centerTitle: true,
-            //backgroundColor: Colors.grey[900],
-            backgroundColor: Theme
-                .of(context)
-                .colorScheme
-                .inversePrimary,
             actions: [
               IconButton(onPressed: () {}, icon: Icon(Icons.menu))
             ],
