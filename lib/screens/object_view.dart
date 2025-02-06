@@ -226,7 +226,7 @@ class _scrObjectsViewScreenState extends State<scrObjectsViewScreen> with Single
           //(Globals.anUserRoleId!=3) ? null : (_visibleFloatingActionButton==false) ? null : FloatingActionButton(
           //  onPressed: () async {
           //    await Navigator.push(context, MaterialPageRoute(builder: (context) => scrObjectEditScreen(objectId: widget.id, clientId: idClient, clientName: nameClient, clientEMail: emailClient, clientPhone: phoneClient, address: address, area: area),));
-          //    initState();
+          //    ref();
           //  },
           //  child: Icon(Icons.edit),
           //)
@@ -238,7 +238,7 @@ class _scrObjectsViewScreenState extends State<scrObjectsViewScreen> with Single
   _pageGeneral() {
     return RefreshIndicator(
       onRefresh: () async {
-        initState();
+        ref();
         return Future<void>.delayed(const Duration(seconds: 2));
       },
       child: ListView(
@@ -281,7 +281,7 @@ class _scrObjectsViewScreenState extends State<scrObjectsViewScreen> with Single
                     onPressed: () async {
                       makingPhoneCall(phoneClient, 4);
                     },
-                    heroTag: 'mesage',
+                    heroTag: 'whatsapp',
                     elevation: 0,
                     backgroundColor: Colors.green,
                     label: const FaIcon(FontAwesomeIcons.whatsapp),
@@ -292,7 +292,7 @@ class _scrObjectsViewScreenState extends State<scrObjectsViewScreen> with Single
                     onPressed: () async {
                       makingPhoneCall(phoneClient, 5);
                     },
-                    heroTag: 'mesage',
+                    heroTag: 'telegram',
                     elevation: 0,
                     backgroundColor: Colors.blue,
                     label: const FaIcon(FontAwesomeIcons.telegram),
@@ -436,7 +436,7 @@ class _scrObjectsViewScreenState extends State<scrObjectsViewScreen> with Single
         Expanded(
             child: RefreshIndicator(
               onRefresh: () async {
-                initState();
+                ref();
                 return Future<void>.delayed(const Duration(seconds: 2));
               },
               child: ListView.builder(
@@ -522,7 +522,7 @@ class _scrObjectsViewScreenState extends State<scrObjectsViewScreen> with Single
             Expanded(
                 child: RefreshIndicator(
                   onRefresh: () async {
-                    initState();
+                    ref();
                     return Future<void>.delayed(const Duration(seconds: 2));
                   },
                   child: ListView.builder(
@@ -586,8 +586,8 @@ class _scrObjectsViewScreenState extends State<scrObjectsViewScreen> with Single
             await Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => scrPlatEditScreen(plat2: ListPlat('', 'Новый платеж', DateTime.now(), false, '', true, '', '', '', useDog(item.name), analyticId(item.name, true), analyticId(item.name, false), 0, 0, 0, widget.id, name, '', '', DateTime.now(), useDog(item.name), '', '', defaultkassaSotr(Globals.anUserId, true), defaultkassaSotr(Globals.anUserName, false), (defaultkassaSotr(Globals.anUserId, true)=='') ? 0 : 1, '', '', '', platType(item.name), type(item.name), '', '', '', '', 0, 0),)));
-          initState();
+                    builder: (context) => scrPlatEditScreen(plat2: ListPlat('', 'Новый платеж', DateTime.now(), false, '', true, '', '', '', useDog(item.name), analyticId(item.name, true), analyticId(item.name, false), 0, 0, 0, widget.id, name, '', '', DateTime.now(), useDog(item.name), '', '', defaultkassaSotr(Globals.anUserId, true), defaultkassaSotr(Globals.anUserName, false), (defaultkassaSotr(Globals.anUserId, true)=='') ? 0 : 1, '', '', '', platType(item.name), type(item.name), '', '', '', '', 0, 0, ''),)));
+          ref();
         },
         itemBuilder: (BuildContext context) => <PopupMenuEntry<Menu>>[
           const PopupMenuItem<Menu>(
@@ -696,7 +696,7 @@ const _tabs = [
     //text: "Основное"
     iconMargin: EdgeInsets.zero
   ),
-  Tab(icon: Row(children:[Icon(Icons.document_scanner), Text(' Договора')]),
+  Tab(icon: Row(children:[Icon(Icons.document_scanner), Text(' Договоры')]),
     //text: "Договора",
     iconMargin: EdgeInsets.zero,),
   Tab(icon: Row(children:[Icon(Icons.shopping_bag_rounded), Text(' Финансы')]),

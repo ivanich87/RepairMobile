@@ -99,7 +99,7 @@ class _scrInputSharedFilesScreenState extends State<scrInputSharedFilesScreen> {
   }
 
   createNewPlat(BuildContext context, Menu item) async {
-    ListPlat pl = ListPlat('', 'Новый платеж', DateTime.now(), false, '', true, '', '', '', useDog(item.name), analyticId(item.name, true), analyticId(item.name, false), 0, 0, 0, '', '', '', '', DateTime.now(), useDog(item.name), '', '', '', '', 0, '', '', '', platType(item.name), type(item.name), '', '', '', '', 0, 0);
+    ListPlat pl = ListPlat('', 'Новый платеж', DateTime.now(), false, '', true, '', '', '', useDog(item.name), analyticId(item.name, true), analyticId(item.name, false), 0, 0, 0, '', '', '', '', DateTime.now(), useDog(item.name), '', '', '', '', 0, '', '', '', platType(item.name), type(item.name), '', '', '', '', 0, 0, '');
     await Navigator.push(
         context,
         MaterialPageRoute(

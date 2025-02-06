@@ -128,6 +128,36 @@ class returnResult {
   });
 }
 
+class filtered {
+  String idCash;
+  String cashName;
+  String analytic;
+  String analyticName;
+  String objectId;
+  String objectName;
+  String platType;
+  String kassaSotrId;
+  String kassaSortName;
+  String kassaContractorId;
+  String kassaContractorName;
+
+  filtered({
+    required this.idCash,
+    required this.cashName,
+    required this.analytic,
+    required this.analyticName,
+    required this.objectId,
+    required this.objectName,
+    required this.platType,
+    required this.kassaSotrId,
+    required this.kassaSortName,
+    required this.kassaContractorId,
+    required this.kassaContractorName,
+  });
+}
+
+
+
 class UserInfo {
   String login;
   String password;
@@ -233,8 +263,9 @@ class ListCash {
   late int tip;
   late num summa;
   late String comment;
+  late String find;
 
-  ListCash(this.id, this.name, this.tip, this.summa, this.comment);
+  ListCash(this.id, this.name, this.tip, this.summa, this.comment, this.find);
 
   ListCash.fromJson(Map<String, dynamic> json) {
     id = json['id'] ?? '0';
@@ -242,6 +273,7 @@ class ListCash {
     tip = json['tip'] ?? 1;
     summa = json['summa'];
     comment = json['comment'];
+    find = name + comment + summa.toString() + tip.toString();
     // final s = double.parse(json['summa'].toString());
     // summa = s.toInt();
   }
@@ -532,8 +564,9 @@ class ListPlat {
   late String kassaSotrName2;
   late int kassaType2;
   late int attachedKol;
+  late String find;
 
-  ListPlat(this.id, this.name, this.date, this.del, this.number, this.accept, this.comment, this.contractorId, this.contractorName, this.contractorUse, this.analyticId, this.analyticName, this.summaUp, this.summaDown, this.summa, this.objectId, this.objectName, this.dogId, this.dogNumber, this.dogDate, this.dogUse, this.kassaId, this.kassaName, this.kassaSotrId, this.kassaSotrName, this.kassaType, this.kassa, this.companyId, this.companyName, this.platType, this.type, this.kassaId2, this.kassaName2, this.kassaSotrId2, this.kassaSotrName2, this.kassaType2, this.attachedKol);
+  ListPlat(this.id, this.name, this.date, this.del, this.number, this.accept, this.comment, this.contractorId, this.contractorName, this.contractorUse, this.analyticId, this.analyticName, this.summaUp, this.summaDown, this.summa, this.objectId, this.objectName, this.dogId, this.dogNumber, this.dogDate, this.dogUse, this.kassaId, this.kassaName, this.kassaSotrId, this.kassaSotrName, this.kassaType, this.kassa, this.companyId, this.companyName, this.platType, this.type, this.kassaId2, this.kassaName2, this.kassaSotrId2, this.kassaSotrName2, this.kassaType2, this.attachedKol, this.find);
 
   ListPlat copyWith({
     String? id,
@@ -572,7 +605,8 @@ class ListPlat {
     String? kassaSotrId2,
     String? kassaSotrName2,
     int? kassaType2,
-    int? attachedKol
+    int? attachedKol,
+    String? find,
   }) {
     return ListPlat(
         id = id ?? this.id,
@@ -611,7 +645,8 @@ class ListPlat {
         kassaSotrId2 = kassaSotrId2 ?? this.kassaSotrId2,
         kassaSotrName2 = kassaSotrName2 ?? this.kassaSotrName2,
         kassaType2 = kassaType2 ?? this.kassaType2,
-        attachedKol= attachedKol ?? this.attachedKol
+        attachedKol= attachedKol ?? this.attachedKol,
+        find = find ?? this.find
     );
   }
 
@@ -653,6 +688,7 @@ class ListPlat {
     kassaSotrName2 = json['kassaSotrName2'] ?? 'Пусто';
     kassaType2 = json['kassaType2'] ?? 0;
     attachedKol= json['attachedKol'] ?? 0;
+    find = name + number + comment + contractorName + analyticName + objectName + dogNumber + kassaName + kassaName2 + summa.toString() + kassaSotrName + kassaSotrName2 + type;
   }
 
   Map<String, dynamic> toJson() =>

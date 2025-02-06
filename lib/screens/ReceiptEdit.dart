@@ -262,7 +262,7 @@ class _scrReceiptEditScreenState extends State<scrReceiptEditScreen> {
       trailing: trailing,
       onTap: () async {
         if (idType=='summaEdit') {
-          _tripEditModalBottomSheet(context, _tripEditWidgets(plat));
+          tripEditModalBottomSheet(context, _tripEditWidgets(plat));
         }
         else {
           var res = await Navigator.push(
@@ -293,7 +293,7 @@ class _scrReceiptEditScreenState extends State<scrReceiptEditScreen> {
                       return scrListScreen(sprName: id, onType: 'pop');
                     };
                     if (idType == 'summaEdit') {
-                      _tripEditModalBottomSheet(
+                      tripEditModalBottomSheet(
                           context, _tripEditWidgets(plat));
                     };
                     return scrProfileMan(id: id,);
@@ -343,19 +343,6 @@ class _scrReceiptEditScreenState extends State<scrReceiptEditScreen> {
 
   }
 
-  void _tripEditModalBottomSheet(BuildContext context, Widget type) {
-    showModalBottomSheet(isScrollControlled: true, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)), context: context, builder: (BuildContext bc) {
-      return Container(
-        height: 600,
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: type,
-        ),
-      );
-
-    });
-  }
-
   Widget _tripEditWidgets(Receipt plat) {
     GlobalKey _formKey = new GlobalKey<FormState>();
     TextEditingController _summaClientController = TextEditingController(
@@ -367,10 +354,10 @@ class _scrReceiptEditScreenState extends State<scrReceiptEditScreen> {
 
 
     final _style = ButtonStyle(
-        backgroundColor: MaterialStateProperty.all(Colors.grey),
-        shape: MaterialStateProperty.all(
+        backgroundColor: WidgetStateProperty.all(Colors.grey),
+        shape: WidgetStateProperty.all(
             RoundedRectangleBorder(borderRadius: BorderRadius.circular(20))),
-        minimumSize: MaterialStateProperty.all(Size(250, 40))
+        minimumSize: WidgetStateProperty.all(Size(250, 40))
     );
 
     void _SaveSums() {
@@ -438,6 +425,20 @@ class _scrReceiptEditScreenState extends State<scrReceiptEditScreen> {
   }
 
 }
+
+void tripEditModalBottomSheet(BuildContext context, Widget type) {
+  showModalBottomSheet(isScrollControlled: true, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)), context: context, builder: (BuildContext bc) {
+    return Container(
+      height: 600,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: type,
+      ),
+    );
+
+  });
+}
+
 
 
 _EditSumma({required int typeSumma, required num summa}) {

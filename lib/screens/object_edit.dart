@@ -2,15 +2,9 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:repairmodule/components/SingleSelections.dart';
-import 'package:repairmodule/screens/profileMan.dart';
 import 'package:repairmodule/models/Lists.dart';
-import 'package:repairmodule/screens/object_view.dart';
-import 'package:repairmodule/screens/sprList.dart';
 
-import 'objects.dart';
-import 'objectsListSelected.dart';
 
 class scrObjectEditScreen extends StatefulWidget {
   final String objectId;

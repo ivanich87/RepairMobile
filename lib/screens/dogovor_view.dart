@@ -293,7 +293,7 @@ _ref(){
             await Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => scrPlatEditScreen(plat2: ListPlat('', 'Новый платеж', DateTime.now(), false, '', true, '', idClient, nameClient, useDog(item.name), analyticId(item.name, true), analyticId(item.name, false), 0, 0, 0, idObject, address, widget.id, number, dateDog, useDog(item.name), '', '', defaultkassaSotr(Globals.anUserId, true), defaultkassaSotr(Globals.anUserName, false), (defaultkassaSotr(Globals.anUserId, true)=='') ? 0 : 1, '', '', '', platType(item.name), type(item.name), '', '', '', '', 0, 0),)));
+                    builder: (context) => scrPlatEditScreen(plat2: ListPlat('', 'Новый платеж', DateTime.now(), false, '', true, '', idClient, nameClient, useDog(item.name), analyticId(item.name, true), analyticId(item.name, false), 0, 0, 0, idObject, address, widget.id, number, dateDog, useDog(item.name), '', '', defaultkassaSotr(Globals.anUserId, true), defaultkassaSotr(Globals.anUserName, false), (defaultkassaSotr(Globals.anUserId, true)=='') ? 0 : 1, '', '', '', platType(item.name), type(item.name), '', '', '', '', 0, 0, ''),)));
           _ref();
         },
         itemBuilder: (BuildContext context) => <PopupMenuEntry<Menu>>[

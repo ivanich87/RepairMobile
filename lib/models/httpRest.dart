@@ -19,7 +19,6 @@ Future httpGetListObject(objectList) async {
     print(response.statusCode.toString());
     if (response.statusCode == 200) {
       objectList.clear();
-      print(response.body.toString());
       var notesJson = json.decode(response.body);
       for (var noteJson in notesJson) {
         objectList.add(ListObject.fromJson(noteJson));
@@ -42,8 +41,6 @@ Future httpGetListPlat(objectList, analyticId, objectId, platType, kassaSotrId, 
     'userId': Globals.anPhone,
     'approve': approve.toString(),
   };
-
-  print(jsonEncode(queryParameters));
   var _url = Uri(path: '${Globals.anPath}platlist/${DateFormat('yyyyMMdd').format(dateRange.start)}/${DateFormat('yyyyMMdd').format(dateRange.end)}/${idCash}',
       queryParameters: queryParameters,
       host: Globals.anServer,
@@ -183,4 +180,42 @@ Future httpGetListBalance(cashBankList, cashKassList, AccountableFounds, Account
     print("Ошибка при формировании списка контрагентов: $error");
   }
 
+}
+
+Future<bool> httpAvatarSend(String userId, List<ListAttach> listAttachedNetwork) async {
+  bool _result=false;
+  final _queryParameters = {
+    'userId': Globals.anPhone
+  };
+  var _url=Uri(path: '${Globals.anPath}avatar/${userId}/', host: Globals.anServer, scheme: 'https', queryParameters: _queryParameters);
+  var _headers = <String, String> {
+    'Accept': 'application/json',
+    'Authorization': Globals.anAuthorization
+  };
+  print(_url.path);
+  try {
+    var _body = <String, dynamic> {
+      "userId": userId,
+      "attachList": listAttachedNetwork!.map((v) => v.toJson()).toList()
+    };
+    print(jsonEncode(_body));
+    var response = await http.post(_url, headers: _headers, body: jsonEncode(_body));
+    print('Код ответа: ${response.statusCode} Тело ответа: ${response.body}');
+    var data = json.decode(response.body);
+    _result = data['Успешно'] ?? '';
+    String _message = data['Сообщение'] ?? '';
+
+    if (response.statusCode != 200 || _result==false) {
+      print('Не удалось отправить avatar');
+      _result = false;
+      // final snackBar = SnackBar(content: Text('Не удалось отправить сообщение! $_message'), );
+      // ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    }
+  } catch (error) {
+    _result = false;
+    print("Ошибка при отправке avatara: $error");
+    // final snackBar = SnackBar(content: Text('$error'), );
+    // ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
+  return _result ?? false;
 }

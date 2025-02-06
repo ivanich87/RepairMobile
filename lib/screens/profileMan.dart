@@ -1,10 +1,15 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:avatar_brick/avatar_brick.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
+import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
+import 'package:repairmodule/components/GeneralFunctions.dart';
 import 'package:repairmodule/models/Lists.dart';
+import 'package:repairmodule/models/httpRest.dart';
 import 'package:repairmodule/screens/profileMan_edit.dart';
 import 'package:repairmodule/screens/settings/accessUser.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -20,12 +25,19 @@ class scrProfileMan extends StatefulWidget {
 }
 
 class _scrProfileManState extends State<scrProfileMan> {
+  late ImagePicker imagePicker;
+  List<ListAttach> listAttached = [];
+  List<ListAttach> listAttachedNetwork = [];
+  List<String> images = [];
+
   bool access = false;
   bool accessEnable = false;
   String name = '';
   String phone = '';
   String mail = '';
   String role = '';
+  String avatarPhoto = '';
+
   int type = 1;
   int kol = 0;
   bool del = false;
@@ -50,6 +62,7 @@ class _scrProfileManState extends State<scrProfileMan> {
         phone = data['phone'] ?? 'no phone';
         mail = data['mail'] ?? 'no mail';
         role = data['role'] ?? 'no role';
+        avatarPhoto = data['avatar'] ?? '';
         type = data['type'] ?? 1;
         del = data['del'] ?? false;
         access = data['access'] ?? false;
@@ -68,6 +81,7 @@ class _scrProfileManState extends State<scrProfileMan> {
       setState(() {
       });
     });
+    imagePicker = ImagePicker();
     // TODO: implement initState
     super.initState();
   }
@@ -85,7 +99,30 @@ class _scrProfileManState extends State<scrProfileMan> {
       ),
       body: Column(
         children: [
-          const Expanded(flex: 2, child: _TopPortion(enableUser: true)),
+          Expanded(flex: 2, child: _TopPortion(enableUser: true, avatar: avatarPhoto)),
+          if (Globals.anPhone==phone || Globals.anUserRoleId==3) ... [
+          SizedBox(height: 2,),
+          Container(height: 30,
+            child: FloatingActionButton.extended(
+              onPressed: () {
+                addImage();
+              },
+              heroTag: 'photo',
+              elevation: 1,
+              backgroundColor: Colors.grey,
+              label: const Text("Изменить фото"),
+              icon: const Icon(Icons.add_a_photo_outlined),
+            ),
+          ),
+          ],
+          // Row(mainAxisAlignment: MainAxisAlignment.center,crossAxisAlignment: CrossAxisAlignment.center,
+          //   children: [
+          //     Icon(Icons.add_a_photo_outlined),
+          //     SizedBox(width: 8,),
+          //     Text('Изменить фото', style: TextStyle(fontSize: 18),),
+          //   ],
+          // ),
+          SizedBox( height: 10,),
           Expanded(
             flex: 4,
             child: Padding(
@@ -120,7 +157,7 @@ class _scrProfileManState extends State<scrProfileMan> {
                           onPressed: () async {
                             makingPhoneCall(phone, 4);
                           },
-                          heroTag: 'mesage',
+                          heroTag: 'whatsapp',
                           elevation: 0,
                           backgroundColor: Colors.green,
                           label: const FaIcon(FontAwesomeIcons.whatsapp),
@@ -131,7 +168,7 @@ class _scrProfileManState extends State<scrProfileMan> {
                           onPressed: () async {
                             makingPhoneCall(phone, 5);
                           },
-                          heroTag: 'mesage',
+                          heroTag: 'telegram',
                           elevation: 0,
                           backgroundColor: Colors.blue,
                           label: const FaIcon(FontAwesomeIcons.telegram),
@@ -245,6 +282,36 @@ class _scrProfileManState extends State<scrProfileMan> {
         ].toList());
   }
 
+  addImage() async {
+    String _addStatus = '';
+    try {
+      XFile? selectedImage = await imagePicker.pickImage(source: ImageSource.camera, maxHeight: 800);
+      if (selectedImage!=null) {
+        String _namePhoto = '${DateFormat('ddMMyyyyHHmmss').format(DateTime.now())}';
+        print('_namePhoto = $_namePhoto');
+        listAttached.add(ListAttach(selectedImage.path, _namePhoto, selectedImage.path, 0));
+        setState(() {
+
+        });
+        returnResult res = await httpUploadImage(_namePhoto, File(selectedImage.path));
+        if (res.resultCode==0) {
+          listAttachedNetwork.add(ListAttach(selectedImage.path, _namePhoto, res.resultText, 0));
+          _addStatus = 'Файл ${_namePhoto} успешно загружен на сервер';
+          await httpAvatarSend(widget.id, listAttachedNetwork);
+          initState();
+        }
+        else {
+          throw res.resultText;
+        }
+
+      }
+    } catch (error) {
+      _addStatus = error.toString();
+    }
+    final snackBar = SnackBar(content: Text('$_addStatus'),);
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
+
 }
 
 enum Menu { itemEdit, itemDelete }
@@ -307,7 +374,8 @@ class ProfileInfoItem {
 
 class _TopPortion extends StatelessWidget {
   final bool enableUser;
-  const _TopPortion({Key? key, required this.enableUser}) : super(key: key);
+  final String avatar;
+  _TopPortion({Key? key, required this.enableUser, required this.avatar, }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -334,32 +402,54 @@ class _TopPortion extends StatelessWidget {
             child: Stack(
               fit: StackFit.expand,
               children: [
-                Container(
-                  decoration: const BoxDecoration(
-                    color: Colors.black,
-                    shape: BoxShape.circle,
-                    image: DecorationImage(
-                        fit: BoxFit.cover,
-                        image: NetworkImage('https://img.acewear.ru/CleverWearImg/ManProfile.png')), //https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80
-                  ),
-                ),
-                Positioned(
-                  bottom: 0,
-                  right: 0,
-                  child: CircleAvatar(
-                    radius: 20,
-                    backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-                    child: Container(
-                      margin: const EdgeInsets.all(8.0),
-                      decoration: const BoxDecoration(
-                          color: Colors.green, shape: BoxShape.circle),
+                if (avatar=='')
+                    AvatarBrick(
+                    backgroundColor: Colors.black26,
+                    icon: Icon(
+                      Icons.person_rounded,
+                      size: 48,
+                      color: Colors.white,
                     ),
-                  ),
+                  )
+                else
+                AvatarBrick(backgroundColor: Colors.black,
+                    image: Image.network(
+                      avatar,
+                      fit: BoxFit.cover,
+                      height: double.maxFinite,
+                      width: double.maxFinite,
+                    )
                 ),
+                // CircleAvatar(
+                //   backgroundColor: Colors.black,
+                //   backgroundImage: NetworkImage('https://img.acewear.ru/CleverWearImg/ManProfile.png'),
+                // ),
+                // Container(
+                //   decoration: const BoxDecoration(
+                //     color: Colors.black,
+                //     shape: BoxShape.circle,
+                //     image: DecorationImage(
+                //         fit: BoxFit.cover,
+                //         image: NetworkImage('https://img.acewear.ru/CleverWearImg/ManProfile.png')), //https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80
+                //   ),
+                // ),
+                // Positioned(
+                //   bottom: 0,
+                //   right: 0,
+                //   child: CircleAvatar(
+                //     radius: 20,
+                //     backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+                //     child: Container(
+                //       margin: const EdgeInsets.all(8.0),
+                //       decoration: const BoxDecoration(
+                //           color: Colors.green, shape: BoxShape.circle),
+                //     ),
+                //   ),
+                // ),
               ],
             ),
           ),
-        )
+        ),
       ],
     );
   }

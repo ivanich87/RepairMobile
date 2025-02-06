@@ -8,6 +8,7 @@ import 'package:repairmodule/models/Lists.dart';
 import 'package:repairmodule/screens/ReceiptEdit.dart';
 import 'package:repairmodule/screens/ReceiptView.dart';
 import 'package:repairmodule/screens/cashList.dart';
+import 'package:repairmodule/screens/cashListFind.dart';
 import 'package:repairmodule/screens/inputSaredFiles.dart';
 import 'package:repairmodule/screens/object_create.dart';
 import 'package:repairmodule/screens/object_view.dart';
@@ -39,13 +40,15 @@ class _scrHomeScreenState extends State<scrHomeScreen> with TickerProviderStateM
   late TabController _taskTabController;
   late TabController _platTabController;
 
+  TextEditingController _textFindController = TextEditingController(text: '');
 
   late StreamSubscription _intentSub;
   final _sharedFiles = <SharedMediaFile>[];
 
   var objectList = [];
-  var platList = [];
-  var platListApproved = [];
+  List <ListPlat> platList = [];
+  List <ListPlat>  platListFiltered = [];
+  List <ListPlat>  platListApproved = [];
   var taskLists = [];
   var taskListAssignet = [];
   var taskListDone = [];
@@ -66,8 +69,12 @@ class _scrHomeScreenState extends State<scrHomeScreen> with TickerProviderStateM
   int ObjectKol = 0;
   int ApprovalKol=0;
 
+  bool _isSearch = false;
+
   DateTimeRange dateRange = DateTimeRange(start: DateTime.now().subtract(Duration(days: 30)), end: DateTime.now());
   DateTimeRange dateRangeApproved = DateTimeRange(start: DateTime.now().subtract(Duration(days: 30)), end: DateTime.now());
+
+  filtered _filter = filtered(idCash: '0', cashName: 'Выберите кассу или банк', analytic: '', analyticName: 'Выберите аналитику', objectId: '', objectName: 'Выберите объект', platType: '', kassaSotrId: '', kassaSortName: 'Выберите подотчетное лицо', kassaContractorId: '', kassaContractorName: 'Выберите контрагента');
 
   Future httpGetInfo() async {
     final _queryParameters = {'userId': Globals.anPhone};
@@ -101,6 +108,7 @@ class _scrHomeScreenState extends State<scrHomeScreen> with TickerProviderStateM
         Globals.setCreateObject(notesJson['createObject']);
         Globals.setCreatePlat(notesJson['createPlat']);
         Globals.setApprovalPlat(notesJson['approvalPlat']);
+        print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!approvalPlat = ${notesJson['approvalPlat']}');
         Globals.setFinTech(notesJson['finTech']);
       }
       else
@@ -108,6 +116,7 @@ class _scrHomeScreenState extends State<scrHomeScreen> with TickerProviderStateM
     } catch (error) {
       print("Ошибка при формировании списка: $error");
     }
+
   }
 
 
@@ -156,16 +165,22 @@ class _scrHomeScreenState extends State<scrHomeScreen> with TickerProviderStateM
       }
 
     });
+
     _taskTabController = TabController(length: 4, vsync: this, initialIndex: 0);
-    _platTabController = TabController(length: (Globals.anApprovalPlat==true) ? 3: 2, vsync: this);
+     httpGetInfo().then((value) {
+       setState(() {
+         _platTabController = TabController(length: (Globals.anApprovalPlat==true) ? 3: 2, vsync: this);
+       });
+     });
+
 
     httpGetListObject(objectList).then((value) {
-      setState(() {
-      });
+       setState(() {
+       });
     });
 
-
     ref();
+
     // TODO: implement initState
     //super.initState();
 
@@ -180,8 +195,9 @@ class _scrHomeScreenState extends State<scrHomeScreen> with TickerProviderStateM
   }
 
   ref() async {
-    await httpGetListPlat(platList, '', '', '', '', '', '0', false, dateRange);
-    await httpGetListPlat(platListApproved, '', '', '', '', '', '0', true, dateRange);
+    await httpGetListPlat(platList, _filter.analytic, _filter.objectId, _filter.platType, _filter.kassaSotrId, _filter.kassaContractorId, _filter.idCash, false, dateRange);
+    platListFiltered = platList;
+    await httpGetListPlat(platListApproved, _filter.analytic, _filter.objectId, _filter.platType, _filter.kassaSotrId, _filter.kassaContractorId, _filter.idCash, true, dateRangeApproved);
     await httpGetListTask(taskLists, taskListAssignet, taskListDone, taskListClose);
     await httpGetInfo();
     await httpGetListBalance(cashBankList, cashKassList, AccountableFounds, AccountableContractor);
@@ -318,9 +334,9 @@ class _scrHomeScreenState extends State<scrHomeScreen> with TickerProviderStateM
             controller: _taskTabController,
               children: <Widget> [
                       _taskOneScreen(),
-                      _taslTwoScreen(),
-                      _taslThreeScreen(),
-                      _taslFourScreen()
+                      _taskTwoScreen(),
+                      _taskThreeScreen(),
+                      _taskFourScreen()
                    ],
           ),
         ),
@@ -530,31 +546,61 @@ class _scrHomeScreenState extends State<scrHomeScreen> with TickerProviderStateM
     return Column(
       children: [
         //TabBar(tabs: _tabs, isScrollable: true,),
-        Row(crossAxisAlignment: CrossAxisAlignment.center, mainAxisAlignment: MainAxisAlignment.center,
+        Row(mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            ElevatedButton(onPressed: pickDateRange,
-                child: Text(DateFormat('dd.MM.yyyy').format(dateRange.start) + ' - ' + DateFormat('dd.MM.yyyy').format(dateRange.end))),
-            IconButton(onPressed: (){
-              final snackBar = SnackBar(
-                content: Text('Кнопка в разработке, скоро по ней вы сможете фильтровать платежи по разным параметрам'),
-              );
-              ScaffoldMessenger.of(context).showSnackBar(snackBar);
-            }, icon: Icon(Icons.filter_alt_outlined), ),
+            ElevatedButton(onPressed: pickDateRange, child: Text(DateFormat('dd.MM.yyyy').format(dateRange.start) + ' - ' + DateFormat('dd.MM.yyyy').format(dateRange.end))),
+            IconButton(
+                onPressed: () async {
+                  setState(() {
+                    _isSearch = !_isSearch;
+                  });
+                },
+                icon: const Icon(Icons.search)),
+            IconButton(
+                onPressed: () async {
+                  await Navigator.push(context, MaterialPageRoute(builder: (context) => scrCashListFindScreen(filter: _filter)));
+                  await httpGetListPlat(platList, _filter.analytic, _filter.objectId, _filter.platType, _filter.kassaSotrId, _filter.kassaContractorId, _filter.idCash, false, dateRange);
+                  setState(() {
+                  });
+                },
+                icon: const Icon(Icons.tune))
+
           ],
         ),
+        if (_filter.idCash!='0' || _filter.analytic!='' || _filter.kassaSotrId!='' || _filter.objectId!='' || _filter.platType!='')
+        Container(
+          height: 30,
+          child: ListView(shrinkWrap: true, scrollDirection: Axis.horizontal,
+            children: [
+              if (_filter.idCash!='0') ElevatedButton(onPressed: null, child: Row(children: [Text(_filter.cashName), IconButton(onPressed: () async {_filter.idCash='0'; _filter.cashName='Выберите кассу или банк'; await httpGetListPlat(platList, _filter.analytic, _filter.objectId, _filter.platType, _filter.kassaSotrId, _filter.kassaContractorId, _filter.idCash, false, dateRange); setState(() {});}, icon: Icon(Icons.close,), padding: EdgeInsets.zero,)],), style: ElevatedButton.styleFrom(padding: EdgeInsets.only(left: 10, bottom: 0, top: 0, right: 0))),
+              if (_filter.analytic!='') ElevatedButton(onPressed: null, child: Row(children: [Text(_filter.analyticName), IconButton(onPressed: () async {_filter.analytic=''; _filter.analyticName='Выберите аналитику'; await httpGetListPlat(platList, _filter.analytic, _filter.objectId, _filter.platType, _filter.kassaSotrId, _filter.kassaContractorId, _filter.idCash, false, dateRange); setState(() {});}, icon: Icon(Icons.close,), padding: EdgeInsets.zero,)],), style: ElevatedButton.styleFrom(padding: EdgeInsets.only(left: 10, bottom: 0, top: 0, right: 0))),
+              if (_filter.kassaSotrId!='') ElevatedButton(onPressed: null, child: Row(children: [Text(_filter.kassaSortName), IconButton(onPressed: () async {_filter.kassaSotrId=''; _filter.kassaSortName='Выберите подотчетное лицо'; await httpGetListPlat(platList, _filter.analytic, _filter.objectId, _filter.platType, _filter.kassaSotrId, _filter.kassaContractorId, _filter.idCash, false, dateRange); setState(() {});}, icon: Icon(Icons.close,), padding: EdgeInsets.zero,)],), style: ElevatedButton.styleFrom(padding: EdgeInsets.only(left: 10, bottom: 0, top: 0, right: 0))),
+              if (_filter.objectId!='') ElevatedButton(onPressed: null, child: Row(children: [Text(_filter.objectName), IconButton(onPressed: () async {_filter.objectId=''; _filter.objectName='Выберите объект'; await httpGetListPlat(platList, _filter.analytic, _filter.objectId, _filter.platType, _filter.kassaSotrId, _filter.kassaContractorId, _filter.idCash, false, dateRange); setState(() {});}, icon: Icon(Icons.close,), padding: EdgeInsets.zero,)],), style: ElevatedButton.styleFrom(padding: EdgeInsets.only(left: 10, bottom: 0, top: 0, right: 0))),
+              if (_filter.platType!='') ElevatedButton(onPressed: null, child: Row(children: [Text(_filter.platType), IconButton(onPressed: () async {_filter.platType=''; await httpGetListPlat(platList, _filter.analytic, _filter.objectId, _filter.platType, _filter.kassaSotrId, _filter.kassaContractorId, _filter.idCash, false, dateRange); setState(() {});}, icon: Icon(Icons.close,), padding: EdgeInsets.zero,)],), style: ElevatedButton.styleFrom(padding: EdgeInsets.only(left: 10, bottom: 0, top: 0, right: 0))),
+            ],
+
+          ),
+        ),
+        if (_isSearch) ...[
+        Container(
+          height: 35,
+          child: SearchBar(),
+        ),
+        SizedBox(height: 8,),
+        ],
         Expanded(
           child: RefreshIndicator(
             onRefresh: () async {
               ref();
               return Future<void>.delayed(const Duration(seconds: 2));
             },
-            child: (platList.length==0) ? Center(child: Text('Нет платежей')) : ListView.builder(
+            child: (platListFiltered.length==0) ? Center(child: Text('Нет платежей')) : ListView.builder(
               padding: EdgeInsets.all(10),
               physics: AlwaysScrollableScrollPhysics(),
               reverse: false,
-              itemCount: platList.length,
+              itemCount: platListFiltered.length,
               itemBuilder: (_, index) =>
-                  _cardItem(platList[index]), //PlatObjectList
+                  _cardItem(platListFiltered[index]), //PlatObjectList
             ),
           ),
         ),
@@ -714,7 +760,7 @@ class _scrHomeScreenState extends State<scrHomeScreen> with TickerProviderStateM
                   title: Text(taskLists[index].name, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),),
                   subtitle: Column(crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Задача №${objectList[index].number} от ${DateFormat('dd.MM.yyyy').format(taskLists[index].dateCreate)}', style: TextStyle(fontStyle: FontStyle.italic)),
+                      Text('Задача №${taskLists[index].number} от ${DateFormat('dd.MM.yyyy').format(taskLists[index].dateCreate)}', style: TextStyle(fontStyle: FontStyle.italic)),
                       Text(taskLists[index].content),
                     ],
                   ),
@@ -730,7 +776,7 @@ class _scrHomeScreenState extends State<scrHomeScreen> with TickerProviderStateM
     );
   }
 
-  _taslTwoScreen() {
+  _taskTwoScreen() {
     return RefreshIndicator(
       onRefresh: () async {
         ref();
@@ -763,7 +809,7 @@ class _scrHomeScreenState extends State<scrHomeScreen> with TickerProviderStateM
     );
   }
 
-  _taslThreeScreen() {
+  _taskThreeScreen() {
     return RefreshIndicator(
       onRefresh: () async {
         ref();
@@ -796,7 +842,7 @@ class _scrHomeScreenState extends State<scrHomeScreen> with TickerProviderStateM
     );
   }
 
-  _taslFourScreen() {
+  _taskFourScreen() {
     return RefreshIndicator(
       onRefresh: () async {
         ref();
@@ -846,7 +892,7 @@ class _scrHomeScreenState extends State<scrHomeScreen> with TickerProviderStateM
             await Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => scrPlatEditScreen(plat2: ListPlat('', 'Новый платеж', DateTime.now(), false, '', true, '', '', '', useDog(item.name), analyticId(item.name, true), analyticId(item.name, false), 0, 0, 0, '', '', '', '', DateTime.now(), useDog(item.name), '', '', defaultkassaSotr(Globals.anUserId, true), defaultkassaSotr(Globals.anUserName, false), (defaultkassaSotr(Globals.anUserId, true)=='') ? 0 : 1, '', '', '', platType(item.name), type(item.name), '', '', '', '', 0, 0),)));
+                    builder: (context) => scrPlatEditScreen(plat2: ListPlat('', 'Новый платеж', DateTime.now(), false, '', true, '', '', '', useDog(item.name), analyticId(item.name, true), analyticId(item.name, false), 0, 0, 0, '', '', '', '', DateTime.now(), useDog(item.name), '', '', defaultkassaSotr(Globals.anUserId, true), defaultkassaSotr(Globals.anUserName, false), (defaultkassaSotr(Globals.anUserId, true)=='') ? 0 : 1, '', '', '', platType(item.name), type(item.name), '', '', '', '', 0, 0, ''),)));
           ref();
         },
         itemBuilder: (BuildContext context) => <PopupMenuEntry<Menu>>[
@@ -884,6 +930,57 @@ class _scrHomeScreenState extends State<scrHomeScreen> with TickerProviderStateM
           ),
         ]);
 
+  }
+
+  SearchBar() {
+    return Row(
+      children: [
+        Expanded(
+          child: Align(
+            alignment: Alignment.centerRight,
+            child: Container(
+              width: double.infinity,
+              height: 40,
+              decoration: BoxDecoration(
+                  color: Colors.white30,
+                  borderRadius: BorderRadius.circular(4.0)),
+              child: TextField(controller: _textFindController,
+                decoration: InputDecoration(
+                    hintText: 'Введите строку для поиска',
+                    prefixIcon: const Icon(Icons.search),
+                    suffixIcon: Container(width: 40,
+                      child: Row(
+                        children: [
+                          IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  _isSearch = false;
+                                  _textFindController.text='';
+                                  platListFiltered = platList;
+                                  FocusManager.instance.primaryFocus?.unfocus();
+                                  print('Сбросили фильтр');
+
+                                });
+                              },
+                              icon: const Icon(Icons.close)),
+                        ],
+                      ),
+                    )),
+                onChanged: (value) {
+                  _findList(value);
+                },
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  void _findList(value) {
+    setState(() {
+      platListFiltered = platList.where((element) => element.find.toLowerCase().contains(value.toLowerCase())).toList();
+    });
   }
 
   static const _tabsTask = [

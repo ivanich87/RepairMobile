@@ -25,6 +25,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.11.0"
+  avatar_brick:
+    dependency: "direct main"
+    description:
+      name: avatar_brick
+      sha256: "1e0242857adef2f91ddf1ca342d0ca1227176c5389945d6f259c01f8e9290bc0"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.2.0"
   boolean_selector:
     dependency: transitive
     description:
