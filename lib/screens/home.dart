@@ -109,6 +109,9 @@ class _scrHomeScreenState extends State<scrHomeScreen> with TickerProviderStateM
         Globals.setCreatePlat(notesJson['createPlat']);
         Globals.setApprovalPlat(notesJson['approvalPlat']);
         print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!approvalPlat = ${notesJson['approvalPlat']}');
+        print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!UserId = ${notesJson['userId']}');
+        print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!userName = ${notesJson['userName']}');
+        print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!userRoleId = ${notesJson['userRoleId']}');
         Globals.setFinTech(notesJson['finTech']);
       }
       else
@@ -195,11 +198,16 @@ class _scrHomeScreenState extends State<scrHomeScreen> with TickerProviderStateM
   }
 
   ref() async {
+    await httpGetInfo();
+    if (Globals.anUserRoleId!=3) {
+      _filter.kassaSotrId = Globals.anUserId;
+      _filter.kassaSortName = Globals.anUserName;
+    }
     await httpGetListPlat(platList, _filter.analytic, _filter.objectId, _filter.platType, _filter.kassaSotrId, _filter.kassaContractorId, _filter.idCash, false, dateRange);
     platListFiltered = platList;
     await httpGetListPlat(platListApproved, _filter.analytic, _filter.objectId, _filter.platType, _filter.kassaSotrId, _filter.kassaContractorId, _filter.idCash, true, dateRangeApproved);
     await httpGetListTask(taskLists, taskListAssignet, taskListDone, taskListClose);
-    await httpGetInfo();
+
     await httpGetListBalance(cashBankList, cashKassList, AccountableFounds, AccountableContractor);
 
     await httpGetListObject(objectList);
@@ -574,7 +582,7 @@ class _scrHomeScreenState extends State<scrHomeScreen> with TickerProviderStateM
             children: [
               if (_filter.idCash!='0') ElevatedButton(onPressed: null, child: Row(children: [Text(_filter.cashName), IconButton(onPressed: () async {_filter.idCash='0'; _filter.cashName='Выберите кассу или банк'; await httpGetListPlat(platList, _filter.analytic, _filter.objectId, _filter.platType, _filter.kassaSotrId, _filter.kassaContractorId, _filter.idCash, false, dateRange); setState(() {});}, icon: Icon(Icons.close,), padding: EdgeInsets.zero,)],), style: ElevatedButton.styleFrom(padding: EdgeInsets.only(left: 10, bottom: 0, top: 0, right: 0))),
               if (_filter.analytic!='') ElevatedButton(onPressed: null, child: Row(children: [Text(_filter.analyticName), IconButton(onPressed: () async {_filter.analytic=''; _filter.analyticName='Выберите аналитику'; await httpGetListPlat(platList, _filter.analytic, _filter.objectId, _filter.platType, _filter.kassaSotrId, _filter.kassaContractorId, _filter.idCash, false, dateRange); setState(() {});}, icon: Icon(Icons.close,), padding: EdgeInsets.zero,)],), style: ElevatedButton.styleFrom(padding: EdgeInsets.only(left: 10, bottom: 0, top: 0, right: 0))),
-              if (_filter.kassaSotrId!='') ElevatedButton(onPressed: null, child: Row(children: [Text(_filter.kassaSortName), IconButton(onPressed: () async {_filter.kassaSotrId=''; _filter.kassaSortName='Выберите подотчетное лицо'; await httpGetListPlat(platList, _filter.analytic, _filter.objectId, _filter.platType, _filter.kassaSotrId, _filter.kassaContractorId, _filter.idCash, false, dateRange); setState(() {});}, icon: Icon(Icons.close,), padding: EdgeInsets.zero,)],), style: ElevatedButton.styleFrom(padding: EdgeInsets.only(left: 10, bottom: 0, top: 0, right: 0))),
+              if (_filter.kassaSotrId!='' && Globals.anUserRoleId==3) ElevatedButton(onPressed: null, child: Row(children: [Text(_filter.kassaSortName), IconButton(onPressed: () async {_filter.kassaSotrId=''; _filter.kassaSortName='Выберите подотчетное лицо'; await httpGetListPlat(platList, _filter.analytic, _filter.objectId, _filter.platType, _filter.kassaSotrId, _filter.kassaContractorId, _filter.idCash, false, dateRange); setState(() {});}, icon: Icon(Icons.close,), padding: EdgeInsets.zero,)],), style: ElevatedButton.styleFrom(padding: EdgeInsets.only(left: 10, bottom: 0, top: 0, right: 0))),
               if (_filter.objectId!='') ElevatedButton(onPressed: null, child: Row(children: [Text(_filter.objectName), IconButton(onPressed: () async {_filter.objectId=''; _filter.objectName='Выберите объект'; await httpGetListPlat(platList, _filter.analytic, _filter.objectId, _filter.platType, _filter.kassaSotrId, _filter.kassaContractorId, _filter.idCash, false, dateRange); setState(() {});}, icon: Icon(Icons.close,), padding: EdgeInsets.zero,)],), style: ElevatedButton.styleFrom(padding: EdgeInsets.only(left: 10, bottom: 0, top: 0, right: 0))),
               if (_filter.platType!='') ElevatedButton(onPressed: null, child: Row(children: [Text(_filter.platType), IconButton(onPressed: () async {_filter.platType=''; await httpGetListPlat(platList, _filter.analytic, _filter.objectId, _filter.platType, _filter.kassaSotrId, _filter.kassaContractorId, _filter.idCash, false, dateRange); setState(() {});}, icon: Icon(Icons.close,), padding: EdgeInsets.zero,)],), style: ElevatedButton.styleFrom(padding: EdgeInsets.only(left: 10, bottom: 0, top: 0, right: 0))),
             ],

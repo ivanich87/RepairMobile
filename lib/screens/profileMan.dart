@@ -102,18 +102,19 @@ class _scrProfileManState extends State<scrProfileMan> {
           Expanded(flex: 2, child: _TopPortion(enableUser: true, avatar: avatarPhoto)),
           if (Globals.anPhone==phone || Globals.anUserRoleId==3) ... [
           SizedBox(height: 2,),
-          Container(height: 30,
-            child: FloatingActionButton.extended(
-              onPressed: () {
-                addImage();
-              },
-              heroTag: 'photo',
-              elevation: 1,
-              backgroundColor: Colors.grey,
-              label: const Text("Изменить фото"),
-              icon: const Icon(Icons.add_a_photo_outlined),
-            ),
-          ),
+          _AddMenuIcon(),
+          // Container(height: 30,
+          //   child: FloatingActionButton.extended(
+          //     onPressed: () {
+          //       //addImage(1);
+          //     },
+          //     heroTag: 'photo',
+          //     elevation: 1,
+          //     backgroundColor: Colors.grey,
+          //     label: const Text("Изменить фото"),
+          //     icon: const Icon(Icons.add_a_photo_outlined),
+          //   ),
+          // ),
           ],
           // Row(mainAxisAlignment: MainAxisAlignment.center,crossAxisAlignment: CrossAxisAlignment.center,
           //   children: [
@@ -282,10 +283,46 @@ class _scrProfileManState extends State<scrProfileMan> {
         ].toList());
   }
 
-  addImage() async {
+  _AddMenuIcon() {
+    return PopupMenuButton<MenuItemPhotoFile>(
+        icon:
+        Row(crossAxisAlignment: CrossAxisAlignment.center, mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+          Icon(Icons.add_a_photo_outlined),
+          SizedBox(width: 4,),
+          Text('Изменить фото',  style: TextStyle(fontSize: 15),)
+        ],),//const Icon(Icons.attach_file),
+        //offset: const Offset(40, 0),
+        offset: Offset(20, 10),
+        onSelected: (MenuItemPhotoFile item) async {
+          print(item.name);
+          if (item.name=='file') {
+            print('Прикрепляем файл с устройства');
+            addImage(2);
+          }
+          else {
+            print('Делаем фото');
+            addImage(1);
+          }
+        },
+        itemBuilder: (BuildContext context) => <PopupMenuEntry<MenuItemPhotoFile>>[
+          const PopupMenuItem<MenuItemPhotoFile>(
+            value: MenuItemPhotoFile.photo,
+            child: Text('Сделать фото'),
+          ),
+          const PopupMenuItem<MenuItemPhotoFile>(
+            value: MenuItemPhotoFile.file,
+            child: Text('Вложить файл'),
+          ),
+        ]);
+
+  }
+
+
+  addImage(int source) async {
     String _addStatus = '';
     try {
-      XFile? selectedImage = await imagePicker.pickImage(source: ImageSource.camera, maxHeight: 800);
+      XFile? selectedImage = await imagePicker.pickImage(source: (source==1) ? ImageSource.camera : ImageSource.gallery, maxHeight: 800);
       if (selectedImage!=null) {
         String _namePhoto = '${DateFormat('ddMMyyyyHHmmss').format(DateTime.now())}';
         print('_namePhoto = $_namePhoto');
@@ -477,3 +514,5 @@ makingPhoneCall(phone, tip) async {
     throw Exception('Could not launch $url');
   };
 }
+
+enum MenuItemPhotoFile {photo, file}

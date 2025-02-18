@@ -47,9 +47,12 @@ class _scrCashListFindScreenState extends State<scrCashListFindScreen> {
               title: Text(widget.filter.kassaSortName),
               trailing: Icon(Icons.navigate_next),
               onTap: () async {
-                idType = 'sprSotrListSelected';
-                id = 'КассыСотрудники';
-                _selectFiltered(id, idType);
+                print(Globals.anUserRoleId);
+                if (Globals.anUserRoleId==3) {
+                  idType = 'sprSotrListSelected';
+                  id = 'КассыСотрудники';
+                  _selectFiltered(id, idType);
+                }
               },
             ),
             ListTile(
@@ -102,8 +105,6 @@ class _scrCashListFindScreenState extends State<scrCashListFindScreen> {
                     label: const Text("Сбросить", style: TextStyle(color: Colors.black, fontSize: 14)),
                     onPressed: () async {
                       widget.filter.platType='';
-                      widget.filter.kassaSortName='Выберите подотчетное лицо';
-                      widget.filter.kassaSotrId='';
                       widget.filter.kassaContractorId='';
                       widget.filter.kassaContractorName='Выберите контрагента';
                       widget.filter.objectName='Выберите объект';
@@ -112,6 +113,10 @@ class _scrCashListFindScreenState extends State<scrCashListFindScreen> {
                       widget.filter.analytic='';
                       widget.filter.idCash='0';
                       widget.filter.cashName='Выберите кассу или банк';
+                      if (Globals.anUserRoleId==3) {
+                        widget.filter.kassaSortName='Выберите подотчетное лицо';
+                        widget.filter.kassaSotrId='';
+                      }
                       Navigator.pop(context);
                     },
                     style: ElevatedButton.styleFrom(backgroundColor: Colors.grey,

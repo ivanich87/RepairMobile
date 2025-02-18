@@ -572,10 +572,11 @@ class _scrTaskViewScreenState extends State<scrTaskViewScreen> {
           print(item.name);
           if (item.name=='file') {
             print('Прикрепляем файл с устройства');
+            addImage(2);
           }
           else {
             print('Делаем фото');
-            addImage();
+            addImage(1);
           }
         },
         itemBuilder: (BuildContext context) => <PopupMenuEntry<MenuItemPhotoFile>>[
@@ -730,10 +731,10 @@ class _scrTaskViewScreenState extends State<scrTaskViewScreen> {
     return _name;
   }
 
-  addImage() async {
+  addImage(int source) async {
     String _addStatus = '';
     try {
-      XFile? selectedImage = await imagePicker.pickImage(source: ImageSource.camera, maxHeight: 800);
+      XFile? selectedImage = await imagePicker.pickImage(source: (source==1) ? ImageSource.camera : ImageSource.gallery, maxHeight: 800);
       if (selectedImage!=null) {
         String _namePhoto = '${DateFormat('ddMMyyyyHHmmss').format(DateTime.now())}';
         print('_namePhoto = $_namePhoto');

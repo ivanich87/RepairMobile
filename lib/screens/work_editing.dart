@@ -67,7 +67,7 @@ class _scrWorkEditingScreenState extends State<scrWorkEditingScreen> {
               Divider(),
               ListTile(
                 title: Text('Количество по акту:', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900),),
-                trailing: Text(widget.rabota.kol.toString(), style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: (widget.rabota.kol!>widget.rabota.kolRemains!) ? Colors.red : Colors.black)),
+                trailing: Text(widget.rabota.kol.toString(), style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: (widget.rabota.kol!>widget.rabota.kolRemains!) ? Colors.red : Colors.grey)),
                 subtitle: (widget.rabota.kol!>widget.rabota.kolRemains!) ? Text('В том числе доп. работы: ${widget.rabota.kol!-widget.rabota.kolRemains!}', style: TextStyle(fontStyle: FontStyle.italic, color: Colors.red),) : null,
                 onTap: () {
                   _tripEditKol(_tripEditWidgets());
@@ -136,7 +136,7 @@ class _scrWorkEditingScreenState extends State<scrWorkEditingScreen> {
               child: ElevatedButton(onPressed: () {
                 if (_formKey.currentState?.validate() ?? false) {
                   setState(() {
-                    widget.rabota.kol=num.tryParse(_kolController.text) ?? 0;
+                    widget.rabota.kol=num.tryParse(_kolController.text.replaceAll(',', '.')) ?? 0;
                     widget.rabota.summa = widget.rabota.kol!*widget.rabota.price!;
                     widget.rabota.summaSub = widget.rabota.kol!*widget.rabota.priceSub!;
                   });

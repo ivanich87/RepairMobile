@@ -130,7 +130,7 @@ class _CardCashListState extends State<CardCashList> {
           widget.event.name,
           style: TextStyle(fontSize: 17),
         ),
-        trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(widget.event.summa), style: TextStyle(fontSize: 20, fontStyle: FontStyle.italic, color: Colors.green)),
+        trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(widget.event.summa), style: TextStyle(fontSize: 20, fontStyle: FontStyle.italic, color: (widget.event.summa<0) ? Colors.red : Colors.green)),
         leading: Icon(widget.event.tip == 1 ? Icons.credit_card: Icons.home_filled),
         onTap: () async {
           Navigator.push(

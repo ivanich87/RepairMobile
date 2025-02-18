@@ -343,12 +343,13 @@ class _scrWorksEditScreenState extends State<scrWorksEditScreen> {
   }
 
   _colors(kol) {
+
     if (kol==0)
-      return Colors.black;
+      return Colors.blueGrey;
     if (widget.priceDefault==1)
-      return Colors.green;
+      return Colors.green.shade800;
     else
-      return Colors.red;
+      return Colors.red.shade800;
   }
 
   _ref(var str, summaDifference) {
