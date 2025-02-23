@@ -77,7 +77,7 @@ class _scrAktViewScreenState extends State<scrAktViewScreen> {
       });
     });
     // TODO: implement initState
-    super.initState();
+    //super.initState();
   }
   Widget build(BuildContext context) {
     return DefaultTabController(

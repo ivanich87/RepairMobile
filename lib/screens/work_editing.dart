@@ -63,6 +63,10 @@ class _scrWorkEditingScreenState extends State<scrWorkEditingScreen> {
               ListTile(
                 title: Text('Цена мастеров'),
                 trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(widget.rabota.priceSub), style: TextStyle(fontSize: 16)),
+                onTap: () {
+                  //if (widget.additionalWork)
+                    _tripEditKol(_tripPriceSubEditWidgets());
+                },
               ),
               Divider(),
               ListTile(
@@ -70,7 +74,7 @@ class _scrWorkEditingScreenState extends State<scrWorkEditingScreen> {
                 trailing: Text(widget.rabota.kol.toString(), style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: (widget.rabota.kol!>widget.rabota.kolRemains!) ? Colors.red : Colors.grey)),
                 subtitle: (widget.rabota.kol!>widget.rabota.kolRemains!) ? Text('В том числе доп. работы: ${widget.rabota.kol!-widget.rabota.kolRemains!}', style: TextStyle(fontStyle: FontStyle.italic, color: Colors.red),) : null,
                 onTap: () {
-                  _tripEditKol(_tripEditWidgets());
+                  _tripEditKol(_tripKolEditWidgets());
                 },
               ),
               Divider(),
@@ -94,7 +98,7 @@ class _scrWorkEditingScreenState extends State<scrWorkEditingScreen> {
     });
   }
 
-  Widget _tripEditWidgets() {
+  Widget _tripKolEditWidgets() {
     final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
     TextEditingController _kolController = TextEditingController(text: widget.rabota.kol.toString());
@@ -151,6 +155,58 @@ class _scrWorkEditingScreenState extends State<scrWorkEditingScreen> {
     );
   }
 
+  Widget _tripPriceSubEditWidgets() {
+    final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+    TextEditingController _kolController = TextEditingController(text: widget.rabota.priceSub.toString());
+
+
+    final _style = ButtonStyle(
+        backgroundColor: WidgetStateProperty.all(Colors.grey),
+        shape: WidgetStateProperty.all(
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(20))),
+        minimumSize: WidgetStateProperty.all(Size(250, 40))
+    );
+
+    return Form(
+      key: _formKey,
+      //autovalidateMode: true,
+      child: Column(
+        mainAxisSize: MainAxisSize.max,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          TextFormField(
+            keyboardType: TextInputType.numberWithOptions(decimal: true),
+            autofocus: true,
+            textInputAction: TextInputAction.done,
+            controller: _kolController,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Введите цену мастеров';
+              }
+              return null;
+            },
+            decoration: InputDecoration(border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10)), labelText: 'Цена мастеров'),
+          ),
+          SizedBox(height: 20),
+          Container(alignment: Alignment.center,
+              child: ElevatedButton(onPressed: () {
+                if (_formKey.currentState?.validate() ?? false) {
+                  setState(() {
+                    widget.rabota.priceSub=num.tryParse(_kolController.text.replaceAll(',', '.')) ?? 0;
+                    widget.rabota.summaSub = widget.rabota.kol!*widget.rabota.priceSub!;
+                  });
+                  Navigator.pop(context);
+                }
+
+              },
+                child: Text('Сохранить'),
+                style: _style,)),
+        ],
+      ),
+    );
+  }
 
 }
 
