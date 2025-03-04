@@ -248,9 +248,20 @@ class _scrWorksEditScreenState extends State<scrWorksEditScreen> {
         onSelected: (MenuEditWorks item) async {
           if (item == MenuEditWorks.itemWorkAdd) {
             var _res = await Navigator.push(context, MaterialPageRoute(builder: (context) =>
-                scrWorksEditScreen(widget.id, 3, widget.dogId, false, widget.priceDefault)));
+                scrWorksEditScreen(widget.id, 3, widget.dogId, true, widget.priceDefault)));
             if (_res!=null) {
+              print('Закрыли подбор доп работ');
+              print(_res.workName);
+              var _filt = ListWorks.where((element) => element.workId!.toLowerCase()==(_res.parentId.toLowerCase())).toList();
+              if (_filt.length==0) {
+                print('Нов');
+                print('workId ${_res.parentId}');
+                print('parentId ${ListWorksTitle[0].roomId}');
+                ListWorks.add(Works(workId: _res.parentId, parentId: ListWorksTitle[0].roomId, workName: 'Доп работы', isFolder: true, summa: 100, roomId: ListWorksTitle[0].roomId, price: 100, kol: 0, kolRemains: 0,kolSmeta: 0,kolUsed: 0,priceSub: 0,summaSub: 0));
+                filteredListWorks.add(Works(workId: _res.parentId, parentId: ListWorksTitle[0].roomId, workName: 'Доп работы', isFolder: true, summa: 100, roomId: ListWorksTitle[0].roomId, price: 100, kol: 0, kolRemains: 0,kolSmeta: 0,kolUsed: 0,priceSub: 0,summaSub: 0));
+              }
               ListWorks.add(_res);
+              filteredListWorks.add(_res);
               setState(() {
 
               });
@@ -323,6 +334,8 @@ class _scrWorksEditScreenState extends State<scrWorksEditScreen> {
                   //_ref2(str, summaDifference);
                 });
                 if (widget.type==3) {
+                  print('Закрываем окно подбора доп работа');
+                  print(str.workName);
                   Navigator.pop(context, str);
                 }
               },
