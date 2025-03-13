@@ -167,8 +167,9 @@ class _MyAppState extends State<MyApp> {
           Locale('en', ''),  //code
           Locale('ru', ''), // arabic, no country code
         ],
-        theme: ThemeData.light().copyWith(appBarTheme: AppBarTheme(backgroundColor: Colors.black, foregroundColor: Colors.grey), floatingActionButtonTheme: FloatingActionButtonThemeData(backgroundColor: Colors.grey[600])),  //textTheme: Typography().black.apply(fontFamily: 'Montserrat')
-        darkTheme: ThemeData.dark().copyWith(appBarTheme: AppBarTheme(backgroundColor: Colors.grey[900]), floatingActionButtonTheme: FloatingActionButtonThemeData(backgroundColor: Colors.grey[600])),
+
+        theme: ThemeData.light().copyWith(scaffoldBackgroundColor: Colors.grey[300], dividerTheme: DividerThemeData(color: Colors.black), appBarTheme: AppBarTheme(backgroundColor: Colors.black, foregroundColor: Colors.grey), floatingActionButtonTheme: FloatingActionButtonThemeData(backgroundColor: Colors.grey[600])),  //textTheme: Typography().black.apply(fontFamily: 'Montserrat')
+        darkTheme: ThemeData.dark().copyWith(scaffoldBackgroundColor: Colors.white10, dividerTheme: DividerThemeData(color: Colors.grey), cardTheme: CardTheme(color: Colors.white12), appBarTheme: AppBarTheme(backgroundColor: Colors.grey[900]), floatingActionButtonTheme: FloatingActionButtonThemeData(backgroundColor: Colors.grey[600])),
 
         // theme: ThemeData(),
         // darkTheme: ThemeData.dark(), // standard dark theme

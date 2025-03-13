@@ -316,7 +316,7 @@ class _scrHomeScreenState extends State<scrHomeScreen> with TickerProviderStateM
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text('РемонтКвартир'),
+          title: Image.asset('assets/images/title.png', height: 40,),//Text('СметаНа'),
           centerTitle: true,
           actions: [
             IconButton(onPressed: () async {
@@ -378,7 +378,7 @@ class _scrHomeScreenState extends State<scrHomeScreen> with TickerProviderStateM
       case 2:
         return _pageTask();
       case 3:
-        return _pageProfile();
+        return (Globals.anUserRoleId!=3) ? _pageProfile_backup() :  _pageProfile();
     }
   }
 
@@ -450,7 +450,8 @@ class _scrHomeScreenState extends State<scrHomeScreen> with TickerProviderStateM
                           children: [
                             Image.asset('assets/icons/repair.png', height: 100,),
                             SizedBox(height: 8,),
-                            Text('РемонтКвартир', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 24, fontStyle: FontStyle.italic),)
+                            Image.asset('assets/images/title.png', height: 30,),
+                            //Text('СметаНа', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 24, fontStyle: FontStyle.italic),)
                           ],
                         ),
                       ),
@@ -549,7 +550,7 @@ class _scrHomeScreenState extends State<scrHomeScreen> with TickerProviderStateM
               padding: const EdgeInsets.all(8.0),
               child: Column(mainAxisAlignment: MainAxisAlignment.end, crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Text('Версия: 1.0.26', textAlign: TextAlign.right, style: TextStyle(fontSize: 14, fontWeight: FontWeight.normal, fontStyle: FontStyle.italic)),
+                  Text('Версия: 1.0.30', textAlign: TextAlign.right, style: TextStyle(fontSize: 14, fontWeight: FontWeight.normal, fontStyle: FontStyle.italic)),
                 ],
               ),
             ),
@@ -560,263 +561,266 @@ class _scrHomeScreenState extends State<scrHomeScreen> with TickerProviderStateM
 
   _pageProfile() {
     return SafeArea(
-      child: Column(
-        children: [
-          Container(
-            height: 110,
-            child: Row(
-              children: [
-                Expanded(
-                  child: Container(padding: EdgeInsets.all(8),
-                    child: Column(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('Строительная компания:', style: TextStyle(fontWeight: FontWeight.bold),),
-                        SizedBox(height: 4,),
-                        DecoratedBox(
-                          decoration: BoxDecoration(color: Colors.green[400],
-                              borderRadius: BorderRadius.circular(8)
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(4),
-                            child: Text('${Globals.anCompanyName}', style: TextStyle(fontWeight: FontWeight.bold)),
-                          ),
-                        ),
-                        
-                      ],
-                    ),
-                  ),
-                ),
-                Container(width: 80,
-                  child: Column(mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Image.asset('assets/icons/repair.png', height: 100,),
-                      //SizedBox(height: 8,),
-                      //Text('РемонтКвартир', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 24, fontStyle: FontStyle.italic),)
-                    ],
-                  ),
-                ),
-                Expanded(
-                  child: Container(padding: EdgeInsets.all(8),
-                    child: Column(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Text('${Globals.anUserName}', textAlign: TextAlign.right, style: TextStyle(fontWeight: FontWeight.bold), ),
-                        SizedBox(height: 4,),
-                        DecoratedBox(
-                          decoration: BoxDecoration(color: Colors.green[400],
-                              borderRadius: BorderRadius.circular(8)
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(4),
-                            child: Text('${Globals.anUserRole}', style: TextStyle(fontWeight: FontWeight.bold)),
-                          ),
-                        ),
-
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-            child: Divider(height: 2,),
-          ),
-          Expanded(
-            child: ListView(shrinkWrap: true,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      ListTile(title: Text('ДЕНЬГИ БИЗНЕСА', style: TextStyle(fontSize: 18),), leading: Icon(Icons.currency_ruble), ),
-                      Row(
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            Container(
+              height: 110,
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Container(padding: EdgeInsets.all(8),
+                      child: Column(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Expanded(
-                            child: Card(margin: EdgeInsets.zero,
-                              child: ListTile(title: Text('Баланс', style: TextStyle(fontSize: 16)), trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(balance), style: TextStyle(fontSize: 14, color: Colors.green),),contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 0),),
+                          Text('Строительная компания:', style: TextStyle(fontWeight: FontWeight.bold),),
+                          SizedBox(height: 4,),
+                          DecoratedBox(
+                            decoration: BoxDecoration(color: Colors.green[400],
+                                borderRadius: BorderRadius.circular(8)
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(4),
+                              child: Text('${Globals.anCompanyName}', style: TextStyle(fontWeight: FontWeight.bold)),
                             ),
                           ),
-                          SizedBox(width: 10,),
-                          Expanded(
-                            child: Card(margin: EdgeInsets.zero,
-                              child: ListTile(title: Text('Подотчет', style: TextStyle(fontSize: 16)), trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(balancePO), style: TextStyle(fontSize: 14, color: Colors.red),),contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 0),),
-                            ),
-                          )
+
                         ],
-                     ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 0),
-                        child: Divider(height: 2,),
                       ),
-                      ListTile(title: Text('ПЛАТЕЖИ ЗА МЕСЯЦ', style: TextStyle(fontSize: 18),), leading: Icon(Icons.wallet_outlined), ),
-                      Card(child: 
-                        ListTile(
-                          title: Text('Выручка', style: TextStyle(fontSize: 18)),
-                          subtitle: Text('Сумма всех поступлений', style: TextStyle(fontSize: 12)),
-                          trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(moneyIn), style: TextStyle(fontSize: 16, color: Colors.green, fontWeight: FontWeight.bold),),
-                        )
-                      ),
-                      Card(child:
-                        ListTile(
-                          title: Text('Расходы', style: TextStyle(fontSize: 18)),
-                          subtitle: Text('Сумма всех расходов', style: TextStyle(fontSize: 12)),
-                          trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(moneyOut), style: TextStyle(fontSize: 16, color: Colors.red, fontWeight: FontWeight.bold),),
-                        )
-                      ),
-                      Card(child:
-                        ListTile(
-                          title: Text('Прибыль', style: TextStyle(fontSize: 18)),
-                          subtitle: Text('Выручка - расходы', style: TextStyle(fontSize: 12)),
-                          trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(moneyBalance), style: TextStyle(fontSize: 16, color: Colors.red, fontWeight: FontWeight.bold),),
-                        )
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 0),
-                        child: Divider(height: 2,),
-                      ),
-                      ListTile(title: Text('ВЫПОЛНЕНИЕ', style: TextStyle(fontSize: 18),), leading: Icon(Icons.equalizer), ),
-                      Card(child:
-                        ListTile(
-                          title: Text('Количество объектов в работе', style: TextStyle(fontSize: 18)),
-                          trailing: Text('$kolObject шт', style: TextStyle(fontSize: 16, color: Colors.green, fontWeight: FontWeight.bold),),
-                        )
-                      ),
-                      Card(child:
-                        ListTile(
-                          title: Text('Количество смет в работе', style: TextStyle(fontSize: 18)),
-                          trailing: Text('$kolSmeta шт', style: TextStyle(fontSize: 16, color: Colors.green, fontWeight: FontWeight.bold),),
-                        )
-                      ),Card(child:
-                        ListTile(
-                          title: Text('Количество подписанных актов', style: TextStyle(fontSize: 18)),
-                          trailing: Text('$kolAkt шт', style: TextStyle(fontSize: 16, color: Colors.green, fontWeight: FontWeight.bold),),
-                        )
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 0),
-                        child: Divider(height: 2,),
-                      ),
-                      ListTile(title: Text('ПРИБЫЛЬ ПО ПОДПИСАННЫМ АКТАМ', style: TextStyle(fontSize: 18),), leading: Icon(Icons.trending_up), ),
-                      Card(child:
-                        ListTile(
-                          title: Text('Сумма', style: TextStyle(fontSize: 18)),
-                          trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(aktSumma), style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),),
-                        )
-                      ),
-                      Card(child:
-                        ListTile(
-                          title: Text('Себестоимость', style: TextStyle(fontSize: 18)),
-                          trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(aktSeb), style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),),
-                        )
-                      ),Card(child:
-                        ListTile(
-                          title: Text('Прибыль', style: TextStyle(fontSize: 18)),
-                          trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(aktBalance), style: TextStyle(fontSize: 16, color: Colors.green, fontWeight: FontWeight.bold),),
-                        )
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 0),
-                        child: Divider(height: 2,),
-                      ),
-                      ListTile(title: Text('УСРЕДНЕННЫЕ ПОКАЗАТЕЛИ', style: TextStyle(fontSize: 18),), leading: Icon(Icons.percent), ),
-                      Card(child:
-                        ListTile(
-                          title: Text('Маржа (средняя)', style: TextStyle(fontSize: 18)),
-                          trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(margin), style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),),
-                        )
-                      ),
-                      Card(child:
-                        ListTile(
-                          title: Text('Прибыль за акт (средняя)', style: TextStyle(fontSize: 18)),
-                          trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(aktBalanceAve), style: TextStyle(fontSize: 16, color: Colors.green, fontWeight: FontWeight.bold),),
-                        )
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 0),
-                        child: Divider(height: 2,),
-                      ),
-                      ListTile(title: Text('ПРОЧИЕ РАСХОДЫ И ПРИБЫЛЬ', style: TextStyle(fontSize: 18),), leading: Icon(Icons.money), ),
-                      Card(child:
-                        ListTile(
-                          title: Text('Прочие расходы', style: TextStyle(fontSize: 18)),
-                          trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(otherOut), style: TextStyle(fontSize: 16, color: Colors.red, fontWeight: FontWeight.bold),),
-                        )
-                      ),
-                      Card(child:
-                        ListTile(
-                          title: Text('Прочие приходы', style: TextStyle(fontSize: 18)),
-                          trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(otherIn), style: TextStyle(fontSize: 16, color: Colors.green, fontWeight: FontWeight.bold),),
-                        )
-                      ),
-                      Card(child:
-                        ListTile(
-                          title: Text('Прибыль компании', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                          subtitle: Text('Прибыль по актам + прочие приходы - прочие расходы', style: TextStyle(fontSize: 12)),
-                          trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(profit), style: TextStyle(fontSize: 16, color: Colors.green, fontWeight: FontWeight.bold),),
-                        )
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 0),
-                        child: Divider(height: 2,),
-                      ),
-                      ListTile(title: Text('СРЕДНИЕ ЦЕНЫ ЗА М2', style: TextStyle(fontSize: 18),), leading: Icon(Icons.calculate), ),
-                      Card(child:
-                        ListTile(
-                          title: Text('Цена за м2', style: TextStyle(fontSize: 18)),
-                          subtitle: Text('Работы и материалы', style: TextStyle(fontSize: 12)),
-                          trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(mAvePrice), style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),),
-                        )
-                      ),
-                      Card(child:
-                        ListTile(
-                          title: Text('Цена за м2', style: TextStyle(fontSize: 18)),
-                          subtitle: Text('Работы', style: TextStyle(fontSize: 12)),
-                          trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(mAvePriceR), style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),),
-                        )
-                      ),
-                      Card(child:
-                        ListTile(
-                          title: Text('Цена за м2', style: TextStyle(fontSize: 18)),
-                          subtitle: Text('Материалы', style: TextStyle(fontSize: 12)),
-                          trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(mAvePriceM), style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),),
-                        )
-                      ),
-                      Card(child:
-                        ListTile(
-                          title: Text('Себестоимость за м2', style: TextStyle(fontSize: 18)),
-                          subtitle: Text('Работы и материалы', style: TextStyle(fontSize: 12)),
-                          trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(mAveSeb), style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),),
-                        )
-                      ),
-                      Card(child:
-                        ListTile(
-                          title: Text('Себестоимость за м2', style: TextStyle(fontSize: 18)),
-                          subtitle: Text('Работы', style: TextStyle(fontSize: 12)),
-                          trailing: Text('$mAveSebR', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),),
-                        )
-                      ),
-                      Card(child:
-                        ListTile(
-                          title: Text('Себестоимость за м2', style: TextStyle(fontSize: 18)),
-                          subtitle: Text('Материалы', style: TextStyle(fontSize: 12)),
-                          trailing: Text('$mAveSebM', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),),
-                        )
-                      ),
-
-                      //Text('${Globals.anCompanyName}', textAlign: TextAlign.right, style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, fontStyle: FontStyle.italic)),
-                      //Text('${Globals.anUserName}', textAlign: TextAlign.right, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, fontStyle: FontStyle.italic)),
-                      //Text('${Globals.anUserRole}', textAlign: TextAlign.right, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, fontStyle: FontStyle.italic)),
-
-
-                      SizedBox(height: 30,)
-                    ],
+                    ),
                   ),
-                ),
-              ],
+                  Container(width: 80,
+                    child: Stack(
+                        children: [
+                          Image.asset('assets/icons/repair.png', height: 100,),
+                          //Align(child: Text('Изменить аватар', style: TextStyle(fontSize: 10),), alignment: Alignment.bottomCenter,)
+                          //Align(child: CircleAvatar(radius: 20, backgroundColor: Colors.grey, child: IconButton(onPressed: () {}, icon: Icon(Icons.camera_alt_outlined), color: Colors.black)), alignment: Alignment.bottomRight,)
+                        ]
+                    ),
+                  ),
+                  Expanded(
+                    child: Container(padding: EdgeInsets.all(8),
+                      child: Column(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Text('${Globals.anUserName}', textAlign: TextAlign.right, style: TextStyle(fontWeight: FontWeight.bold), ),
+                          SizedBox(height: 4,),
+                          DecoratedBox(
+                            decoration: BoxDecoration(color: Colors.green[400],
+                                borderRadius: BorderRadius.circular(8)
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(4),
+                              child: Text('${Globals.anUserRole}', style: TextStyle(fontWeight: FontWeight.bold)),
+                            ),
+                          ),
+
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+              child: Divider(height: 3),
+            ),
+            Expanded(
+              child: ListView(shrinkWrap: true,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        ListTile(title: Text('ДЕНЬГИ БИЗНЕСА', style: TextStyle(fontSize: 18),), leading: Icon(Icons.currency_ruble), ),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Card(margin: EdgeInsets.zero,
+                                child: ListTile(title: Text('Баланс', style: TextStyle(fontSize: 15)), trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(balance), style: TextStyle(fontSize: 14, color: Colors.green),),contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 0),),
+                              ),
+                            ),
+                            SizedBox(width: 10,),
+                            Expanded(
+                              child: Card(margin: EdgeInsets.zero,
+                                child: ListTile(title: Text('Подотчет', style: TextStyle(fontSize: 15)), trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(balancePO), style: TextStyle(fontSize: 14, color: Colors.red),),contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 0),),
+                              ),
+                            )
+                          ],
+                       ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 0),
+                          child: Divider(height: 3),
+                        ),
+                        ListTile(title: Text('ПЛАТЕЖИ ЗА МЕСЯЦ', style: TextStyle(fontSize: 18),), leading: Icon(Icons.wallet_outlined), ),
+                        Card(child:
+                          ListTile(
+                            title: Text('Выручка', style: TextStyle(fontSize: 18)),
+                            subtitle: Text('Сумма всех поступлений', style: TextStyle(fontSize: 12)),
+                            trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(moneyIn), style: TextStyle(fontSize: 16, color: Colors.green, fontWeight: FontWeight.bold),),
+                          )
+                        ),
+                        Card(child:
+                          ListTile(
+                            title: Text('Расходы', style: TextStyle(fontSize: 18)),
+                            subtitle: Text('Сумма всех расходов', style: TextStyle(fontSize: 12)),
+                            trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(moneyOut), style: TextStyle(fontSize: 16, color: Colors.red, fontWeight: FontWeight.bold),),
+                          )
+                        ),
+                        Card(child:
+                          ListTile(
+                            title: Text('Прибыль', style: TextStyle(fontSize: 18)),
+                            subtitle: Text('Выручка - расходы', style: TextStyle(fontSize: 12)),
+                            trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(moneyBalance), style: TextStyle(fontSize: 16, color: Colors.red, fontWeight: FontWeight.bold),),
+                          )
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 0),
+                          child: Divider(height: 3),
+                        ),
+                        ListTile(title: Text('ВЫПОЛНЕНИЕ', style: TextStyle(fontSize: 18),), leading: Icon(Icons.equalizer), ),
+                        Card(child:
+                          ListTile(
+                            title: Text('Количество объектов в работе', style: TextStyle(fontSize: 18)),
+                            trailing: Text('$kolObject шт', style: TextStyle(fontSize: 16, color: Colors.green, fontWeight: FontWeight.bold),),
+                          )
+                        ),
+                        Card(child:
+                          ListTile(
+                            title: Text('Количество смет в работе', style: TextStyle(fontSize: 18)),
+                            trailing: Text('$kolSmeta шт', style: TextStyle(fontSize: 16, color: Colors.green, fontWeight: FontWeight.bold),),
+                          )
+                        ),Card(child:
+                          ListTile(
+                            title: Text('Количество подписанных актов', style: TextStyle(fontSize: 18)),
+                            trailing: Text('$kolAkt шт', style: TextStyle(fontSize: 16, color: Colors.green, fontWeight: FontWeight.bold),),
+                          )
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 0),
+                          child: Divider(height: 3),
+                        ),
+                        ListTile(title: Text('ПРИБЫЛЬ ПО ПОДПИСАННЫМ АКТАМ', style: TextStyle(fontSize: 18),), leading: Icon(Icons.trending_up), ),
+                        Card(child:
+                          ListTile(
+                            title: Text('Сумма', style: TextStyle(fontSize: 18)),
+                            trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(aktSumma), style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),),
+                          )
+                        ),
+                        Card(child:
+                          ListTile(
+                            title: Text('Себестоимость', style: TextStyle(fontSize: 18)),
+                            trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(aktSeb), style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),),
+                          )
+                        ),Card(child:
+                          ListTile(
+                            title: Text('Прибыль', style: TextStyle(fontSize: 18)),
+                            trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(aktBalance), style: TextStyle(fontSize: 16, color: Colors.green, fontWeight: FontWeight.bold),),
+                          )
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 0),
+                          child: Divider(height: 3),
+                        ),
+                        ListTile(title: Text('УСРЕДНЕННЫЕ ПОКАЗАТЕЛИ', style: TextStyle(fontSize: 18),), leading: Icon(Icons.percent), ),
+                        Card(child:
+                          ListTile(
+                            title: Text('Маржа (средняя)', style: TextStyle(fontSize: 18)),
+                            trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(margin), style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),),
+                          )
+                        ),
+                        Card(child:
+                          ListTile(
+                            title: Text('Прибыль за акт (средняя)', style: TextStyle(fontSize: 18)),
+                            trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(aktBalanceAve), style: TextStyle(fontSize: 16, color: Colors.green, fontWeight: FontWeight.bold),),
+                          )
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 0),
+                          child: Divider(height: 3),
+                        ),
+                        ListTile(title: Text('ПРОЧИЕ РАСХОДЫ И ПРИБЫЛЬ', style: TextStyle(fontSize: 18),), leading: Icon(Icons.money), ),
+                        Card(child:
+                          ListTile(
+                            title: Text('Прочие расходы', style: TextStyle(fontSize: 18)),
+                            trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(otherOut), style: TextStyle(fontSize: 16, color: Colors.red, fontWeight: FontWeight.bold),),
+                          )
+                        ),
+                        Card(child:
+                          ListTile(
+                            title: Text('Прочие приходы', style: TextStyle(fontSize: 18)),
+                            trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(otherIn), style: TextStyle(fontSize: 16, color: Colors.green, fontWeight: FontWeight.bold),),
+                          )
+                        ),
+                        Card(child:
+                          ListTile(
+                            title: Text('Прибыль компании', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                            subtitle: Text('Прибыль по актам + прочие приходы - прочие расходы', style: TextStyle(fontSize: 12)),
+                            trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(profit), style: TextStyle(fontSize: 16, color: Colors.green, fontWeight: FontWeight.bold),),
+                          )
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 0),
+                          child: Divider(height: 3),
+                        ),
+                        ListTile(title: Text('СРЕДНИЕ ЦЕНЫ ЗА М2', style: TextStyle(fontSize: 18),), leading: Icon(Icons.calculate), ),
+                        Card(child:
+                          ListTile(
+                            title: Text('Цена за м2', style: TextStyle(fontSize: 18)),
+                            subtitle: Text('Работы и материалы', style: TextStyle(fontSize: 12)),
+                            trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(mAvePrice), style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),),
+                          )
+                        ),
+                        Card(child:
+                          ListTile(
+                            title: Text('Цена за м2', style: TextStyle(fontSize: 18)),
+                            subtitle: Text('Работы', style: TextStyle(fontSize: 12)),
+                            trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(mAvePriceR), style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),),
+                          )
+                        ),
+                        Card(child:
+                          ListTile(
+                            title: Text('Цена за м2', style: TextStyle(fontSize: 18)),
+                            subtitle: Text('Материалы', style: TextStyle(fontSize: 12)),
+                            trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(mAvePriceM), style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),),
+                          )
+                        ),
+                        Card(child:
+                          ListTile(
+                            title: Text('Себестоимость за м2', style: TextStyle(fontSize: 18)),
+                            subtitle: Text('Работы и материалы', style: TextStyle(fontSize: 12)),
+                            trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(mAveSeb), style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),),
+                          )
+                        ),
+                        Card(child:
+                          ListTile(
+                            title: Text('Себестоимость за м2', style: TextStyle(fontSize: 18)),
+                            subtitle: Text('Работы', style: TextStyle(fontSize: 12)),
+                            trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(mAveSebR), style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),),
+                          )
+                        ),
+                        Card(child:
+                          ListTile(
+                            title: Text('Себестоимость за м2', style: TextStyle(fontSize: 18)),
+                            subtitle: Text('Материалы', style: TextStyle(fontSize: 12)),
+                            trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(mAveSebM), style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),),
+                          )
+                        ),
+
+                        //Text('${Globals.anCompanyName}', textAlign: TextAlign.right, style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, fontStyle: FontStyle.italic)),
+                        //Text('${Globals.anUserName}', textAlign: TextAlign.right, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, fontStyle: FontStyle.italic)),
+                        //Text('${Globals.anUserRole}', textAlign: TextAlign.right, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, fontStyle: FontStyle.italic)),
+
+
+                        SizedBox(height: 30,)
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
