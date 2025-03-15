@@ -55,7 +55,7 @@ class _scrLoadingScreenState extends State<scrLoadingScreen> {
           if (isOnline!=true)
              Text('Ошибка 404. Проверьте интернет на устройстве и перезапустите приложение', style: TextStyle(fontSize: 24, color: Colors.white, decorationThickness: 0), )
           else
-             Image.asset('assets/icons/repair.png', width: 250, ),
+             Image.asset('assets/images/logo_white.png', width: 250, ),
           //Text('Загрузка данных'),
         ],
       ),

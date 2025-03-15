@@ -4,6 +4,48 @@ import 'package:intl/intl.dart';
 import 'package:repairmodule/models/Lists.dart';
 import 'package:repairmodule/screens/task/taskLists.dart';
 
+Future httpGetInfo(CashSummaAll, CashSummaPO, ObjectKol, ApprovalKol) async {
+  final _queryParameters = {'userId': Globals.anPhone};
+  var _url=Uri(path: '${Globals.anPath}info/', host: Globals.anServer, scheme: 'https', queryParameters: _queryParameters);
+  var _headers = <String, String> {
+    'Accept': 'application/json',
+    'Authorization': Globals.anAuthorization
+  };
+  print(_url.path);
+  print('${_queryParameters}');
+  try {
+    var response = await http.get(_url, headers: _headers);
+    if (response.statusCode == 200) {
+      var notesJson = json.decode(response.body);
+      print(notesJson['summa']);
+      print(notesJson['objectKol']);
+      CashSummaAll = notesJson['summa'];
+      CashSummaPO = notesJson['summaPO'];
+      ObjectKol = notesJson['objectKol'];
+      ApprovalKol=notesJson['approvalKol'];
+      Globals.setOwnerId(notesJson['ownerId']);
+      Globals.setOwnerName(notesJson['ownerName']);
+      Globals.setUserId(notesJson['userId']);
+      Globals.setUserName(notesJson['userName']);
+      Globals.setUserRole(notesJson['userRole']);
+      Globals.setUserRoleId(notesJson['userRoleId']);
+      Globals.setCompanyId(notesJson['companyId']);
+      Globals.setCompanyName(notesJson['companyName']);
+      Globals.setCompanyComment(notesJson['companyComment']);
+      Globals.setCompanyAvatar(notesJson['companyAvatar']);
+
+      Globals.setCreateObject(notesJson['createObject']);
+      Globals.setCreatePlat(notesJson['createPlat']);
+      Globals.setApprovalPlat(notesJson['approvalPlat']);
+      Globals.setFinTech(notesJson['finTech']);
+    }
+    else
+      throw 'Ответ от процедуры /info: ${response.statusCode}; ${response.body}';
+  } catch (error) {
+    print("Ошибка при формировании списка: $error");
+  }
+}
+
 Future httpGetListObject(objectList) async {
   final _queryParameters = {'userId': Globals.anPhone};
 

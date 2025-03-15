@@ -11,6 +11,7 @@ class Globals {
   static var anCompanyId = '';
   static var anCompanyName = '';
   static var anCompanyComment = '';
+  static var anCompanyAvatar = '';
   static var anOwnerId = '';
   static var anOwnerName = '';
   static var anUserId = '';
@@ -43,6 +44,10 @@ class Globals {
   }
   static setCompanyComment(String a) {
     anCompanyComment = a;
+  }
+
+  static setCompanyAvatar(String a) {
+    anCompanyAvatar = a;
   }
 
   static setOwnerId(String a) {

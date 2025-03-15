@@ -1,16 +1,16 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:repairmodule/components/GeneralFunctions.dart';
 import 'package:repairmodule/components/SingleSelections.dart';
-import 'package:repairmodule/screens/profileMan.dart';
 import 'package:repairmodule/models/Lists.dart';
-import 'package:repairmodule/screens/object_view.dart';
-import 'package:repairmodule/screens/sprList.dart';
+import 'package:repairmodule/models/httpRest.dart';
+import 'package:repairmodule/screens/profileMan.dart';
 
-import 'objects.dart';
-import 'objectsListSelected.dart';
 
 class scrCompanyEditScreen extends StatefulWidget {
 
@@ -23,6 +23,10 @@ class scrCompanyEditScreen extends StatefulWidget {
 class _scrCompanyEditScreenState extends State<scrCompanyEditScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
+  late ImagePicker imagePicker;
+  List<ListAttach> listAttached = [];
+  List<ListAttach> listAttachedNetwork = [];
+  List<String> images = [];
 
   bool userDataEdit = false;
 
@@ -74,6 +78,13 @@ class _scrCompanyEditScreenState extends State<scrCompanyEditScreen> {
   }
 
   @override
+  void initState() {
+    imagePicker = ImagePicker();
+    // TODO: implement initState
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     if (userDataEdit==false) {
       _companyName.text = Globals.anCompanyName;
@@ -93,6 +104,11 @@ class _scrCompanyEditScreenState extends State<scrCompanyEditScreen> {
           key: _formKey,
           child: ListView(
             children: [
+              Container(height: 200, child: TopPortion(enableUser: true, avatar: Globals.anCompanyAvatar)),
+              if (Globals.anUserRoleId==3) ... [
+                SizedBox(height: 2,),
+                _AddMenuIcon(),
+              ],
               Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -155,6 +171,80 @@ class _scrCompanyEditScreenState extends State<scrCompanyEditScreen> {
         )
       //backgroundColor: Colors.grey[900]),
     );
+  }
+
+  _AddMenuIcon() {
+    return PopupMenuButton<MenuItemPhotoFile>(
+        icon:
+        Row(crossAxisAlignment: CrossAxisAlignment.center, mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.add_a_photo_outlined),
+            SizedBox(width: 4,),
+            Text('Изменить фото',  style: TextStyle(fontSize: 15),)
+          ],),//const Icon(Icons.attach_file),
+        //offset: const Offset(40, 0),
+        offset: Offset(20, 10),
+        onSelected: (MenuItemPhotoFile item) async {
+          print(item.name);
+          if (item.name=='file') {
+            print('Прикрепляем файл с устройства');
+            _addImage(2);
+          }
+          else {
+            print('Делаем фото');
+            _addImage(1);
+          }
+        },
+        itemBuilder: (BuildContext context) => <PopupMenuEntry<MenuItemPhotoFile>>[
+          const PopupMenuItem<MenuItemPhotoFile>(
+            value: MenuItemPhotoFile.photo,
+            child: Text('Сделать фото'),
+          ),
+          const PopupMenuItem<MenuItemPhotoFile>(
+            value: MenuItemPhotoFile.file,
+            child: Text('Вложить файл'),
+          ),
+        ]);
+
+  }
+
+
+  _addImage(int source) async {
+    String _addStatus = '';
+    try {
+      XFile? selectedImage = await imagePicker.pickImage(source: (source==1) ? ImageSource.camera : ImageSource.gallery, maxHeight: 800);
+      if (selectedImage!=null) {
+        String _namePhoto = '${DateFormat('ddMMyyyyHHmmss').format(DateTime.now())}';
+        print('_namePhoto = $_namePhoto');
+        listAttached.add(ListAttach(selectedImage.path, _namePhoto, selectedImage.path, 0));
+        setState(() {
+
+        });
+        returnResult res = await httpUploadImage(_namePhoto, File(selectedImage.path));
+        if (res.resultCode==0) {
+          listAttachedNetwork.add(ListAttach(selectedImage.path, _namePhoto, res.resultText, 0));
+          _addStatus = 'Файл ${_namePhoto} успешно загружен на сервер';
+          await httpAvatarSend(Globals.anCompanyId, listAttachedNetwork);
+          initState();
+        }
+        else {
+          throw res.resultText;
+        }
+
+      }
+    } catch (error) {
+      _addStatus = error.toString();
+    }
+    final snackBar = SnackBar(content: Text('$_addStatus'),);
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    num CashSummaAll=0;
+    num CashSummaPO=0;
+    num ObjectKol=0;
+    num ApprovalKol=0;
+    await httpGetInfo(CashSummaAll, CashSummaPO, ObjectKol, ApprovalKol);
+    setState(() {
+
+    });
   }
 }
 

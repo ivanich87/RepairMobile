@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:flutter/scheduler.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -100,13 +101,15 @@ class _scrHomeScreenState extends State<scrHomeScreen> with TickerProviderStateM
 
 
   bool _isSearch = false;
+  bool _isLoad = false;
+  bool isDarkMode = false;
 
   DateTimeRange dateRange = DateTimeRange(start: DateTime.now().subtract(Duration(days: 30)), end: DateTime.now());
   DateTimeRange dateRangeApproved = DateTimeRange(start: DateTime.now().subtract(Duration(days: 30)), end: DateTime.now());
 
   filtered _filter = filtered(idCash: '0', cashName: 'Выберите кассу или банк', analytic: '', analyticName: 'Выберите аналитику', objectId: '', objectName: 'Выберите объект', platType: '', kassaSotrId: '', kassaSortName: 'Выберите подотчетное лицо', kassaContractorId: '', kassaContractorName: 'Выберите контрагента');
 
-  Future httpGetInfo() async {
+  Future _httpGetInfo() async {
     final _queryParameters = {'userId': Globals.anPhone};
     var _url=Uri(path: '${Globals.anPath}info/', host: Globals.anServer, scheme: 'https', queryParameters: _queryParameters);
     var _headers = <String, String> {
@@ -134,6 +137,7 @@ class _scrHomeScreenState extends State<scrHomeScreen> with TickerProviderStateM
         Globals.setCompanyId(notesJson['companyId']);
         Globals.setCompanyName(notesJson['companyName']);
         Globals.setCompanyComment(notesJson['companyComment']);
+        Globals.setCompanyAvatar(notesJson['companyAvatar']);
 
         Globals.setCreateObject(notesJson['createObject']);
         Globals.setCreatePlat(notesJson['createPlat']);
@@ -203,6 +207,9 @@ class _scrHomeScreenState extends State<scrHomeScreen> with TickerProviderStateM
 
   @override
   void initState() {
+    var brightness = SchedulerBinding.instance.platformDispatcher.platformBrightness;
+    isDarkMode = brightness == Brightness.dark;
+
     print('Запукаем проверку входящих файлов');
 
     // Listen to media sharing coming from outside the app while the app is in the memory.
@@ -248,7 +255,7 @@ class _scrHomeScreenState extends State<scrHomeScreen> with TickerProviderStateM
     });
 
     _taskTabController = TabController(length: 4, vsync: this, initialIndex: 0);
-     httpGetInfo().then((value) {
+     httpGetInfo(CashSummaAll, CashSummaPO, ObjectKol, ApprovalKol).then((value) {
        setState(() {
          _platTabController = TabController(length: (Globals.anApprovalPlat==true) ? 3: 2, vsync: this);
        });
@@ -257,6 +264,7 @@ class _scrHomeScreenState extends State<scrHomeScreen> with TickerProviderStateM
 
     httpGetListObject(objectList).then((value) {
        setState(() {
+         _isLoad = true;
        });
     });
 
@@ -276,7 +284,7 @@ class _scrHomeScreenState extends State<scrHomeScreen> with TickerProviderStateM
   }
 
   ref() async {
-    await httpGetInfo();
+    await httpGetInfo(CashSummaAll, CashSummaPO, ObjectKol, ApprovalKol);
     if (Globals.anUserRoleId!=3) {
       _filter.kassaSotrId = Globals.anUserId;
       _filter.kassaSortName = Globals.anUserName;
@@ -372,7 +380,15 @@ class _scrHomeScreenState extends State<scrHomeScreen> with TickerProviderStateM
   _pageWidget(ind) {
     switch (ind) {
       case 0:
-        return _pageObjects();
+        if (_isLoad==false)
+          return Center(child: Column(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              (isDarkMode) ? Image.asset('assets/images/logo_white.png') : Image.asset('assets/images/logo_black.png'),
+              CircularProgressIndicator(),
+            ],
+          ));
+        else
+          return _pageObjects();
       case 1:
         return _pagePlat();
       case 2:
@@ -560,6 +576,8 @@ class _scrHomeScreenState extends State<scrHomeScreen> with TickerProviderStateM
   }
 
   _pageProfile() {
+    String _logoPath = Globals.anCompanyAvatar;
+
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -590,13 +608,8 @@ class _scrHomeScreenState extends State<scrHomeScreen> with TickerProviderStateM
                     ),
                   ),
                   Container(width: 80,
-                    child: Stack(
-                        children: [
-                          Image.asset('assets/icons/repair.png', height: 100,),
-                          //Align(child: Text('Изменить аватар', style: TextStyle(fontSize: 10),), alignment: Alignment.bottomCenter,)
-                          //Align(child: CircleAvatar(radius: 20, backgroundColor: Colors.grey, child: IconButton(onPressed: () {}, icon: Icon(Icons.camera_alt_outlined), color: Colors.black)), alignment: Alignment.bottomRight,)
-                        ]
-                    ),
+                    child:
+                      (_logoPath=='') ? Image.asset('assets/icons/repair.png', height: 100,) : Image.network(_logoPath),
                   ),
                   Expanded(
                     child: Container(padding: EdgeInsets.all(8),
@@ -637,7 +650,7 @@ class _scrHomeScreenState extends State<scrHomeScreen> with TickerProviderStateM
                           children: [
                             Expanded(
                               child: Card(margin: EdgeInsets.zero,
-                                child: ListTile(title: Text('Баланс', style: TextStyle(fontSize: 15)), trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(balance), style: TextStyle(fontSize: 14, color: Colors.green),),contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 0),),
+                                child: ListTile(title: Text('Баланс', style: TextStyle(fontSize: 15)), trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(balance), style: TextStyle(fontSize: 14, color: Colors.green),),contentPadding: EdgeInsets.symmetric(horizontal: (balance>=1000000) ? 8 : 10, vertical: 0),),
                               ),
                             ),
                             SizedBox(width: 10,),

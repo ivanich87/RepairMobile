@@ -99,30 +99,11 @@ class _scrProfileManState extends State<scrProfileMan> {
       ),
       body: Column(
         children: [
-          Expanded(flex: 2, child: _TopPortion(enableUser: true, avatar: avatarPhoto)),
+          Expanded(flex: 2, child: TopPortion(enableUser: true, avatar: avatarPhoto)),
           if (Globals.anPhone==phone || Globals.anUserRoleId==3) ... [
           SizedBox(height: 2,),
           _AddMenuIcon(),
-          // Container(height: 30,
-          //   child: FloatingActionButton.extended(
-          //     onPressed: () {
-          //       //addImage(1);
-          //     },
-          //     heroTag: 'photo',
-          //     elevation: 1,
-          //     backgroundColor: Colors.grey,
-          //     label: const Text("Изменить фото"),
-          //     icon: const Icon(Icons.add_a_photo_outlined),
-          //   ),
-          // ),
           ],
-          // Row(mainAxisAlignment: MainAxisAlignment.center,crossAxisAlignment: CrossAxisAlignment.center,
-          //   children: [
-          //     Icon(Icons.add_a_photo_outlined),
-          //     SizedBox(width: 8,),
-          //     Text('Изменить фото', style: TextStyle(fontSize: 18),),
-          //   ],
-          // ),
           SizedBox( height: 10,),
           Expanded(
             flex: 4,
@@ -298,11 +279,11 @@ class _scrProfileManState extends State<scrProfileMan> {
           print(item.name);
           if (item.name=='file') {
             print('Прикрепляем файл с устройства');
-            addImage(2);
+            _addImage(2);
           }
           else {
             print('Делаем фото');
-            addImage(1);
+            _addImage(1);
           }
         },
         itemBuilder: (BuildContext context) => <PopupMenuEntry<MenuItemPhotoFile>>[
@@ -319,7 +300,7 @@ class _scrProfileManState extends State<scrProfileMan> {
   }
 
 
-  addImage(int source) async {
+  _addImage(int source) async {
     String _addStatus = '';
     try {
       XFile? selectedImage = await imagePicker.pickImage(source: (source==1) ? ImageSource.camera : ImageSource.gallery, maxHeight: 800);
@@ -409,10 +390,10 @@ class ProfileInfoItem {
   const ProfileInfoItem(this.title, this.value);
 }
 
-class _TopPortion extends StatelessWidget {
+class TopPortion extends StatelessWidget {
   final bool enableUser;
   final String avatar;
-  _TopPortion({Key? key, required this.enableUser, required this.avatar, }) : super(key: key);
+  TopPortion({Key? key, required this.enableUser, required this.avatar, }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

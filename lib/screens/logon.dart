@@ -53,14 +53,16 @@ class _Logo extends StatelessWidget {
     //const String logoPath = 'https://beletag.com/upload/CMax/35c/tw0i3dku7v12n29mwofzdnj5b90k9kn7/logo_aspro.png';
     const String logoPath = 'https://img.acewear.ru/CleverWearImg/repo/logo.png';
 
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        //FlutterLogo(size: isSmallScreen ? 100 : 200),
-        Image(image: NetworkImage(logoPath)),
-        Padding(
-          padding: const EdgeInsets.all(10.0),
-          child: Text(
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          //FlutterLogo(size: isSmallScreen ? 100 : 200),
+          Image.asset('assets/images/logo_multicolor.png', width: 250,),
+          //Image(image: NetworkImage(logoPath)),
+          SizedBox(height: 40,),
+          Text(
             "Авторизация по номеру телефона",
             textAlign: TextAlign.center,
             style: isSmallScreen
@@ -70,8 +72,8 @@ class _Logo extends StatelessWidget {
                 .headlineLarge
                 ?.copyWith(color: Colors.black),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
