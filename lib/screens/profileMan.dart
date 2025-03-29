@@ -433,37 +433,11 @@ class TopPortion extends StatelessWidget {
                 AvatarBrick(backgroundColor: Colors.black,
                     image: Image.network(
                       avatar,
-                      fit: BoxFit.cover,
-                      height: double.maxFinite,
-                      width: double.maxFinite,
+                      // fit: BoxFit.cover,
+                      // height: double.maxFinite,
+                      // width: double.maxFinite,
                     )
                 ),
-                // CircleAvatar(
-                //   backgroundColor: Colors.black,
-                //   backgroundImage: NetworkImage('https://img.acewear.ru/CleverWearImg/ManProfile.png'),
-                // ),
-                // Container(
-                //   decoration: const BoxDecoration(
-                //     color: Colors.black,
-                //     shape: BoxShape.circle,
-                //     image: DecorationImage(
-                //         fit: BoxFit.cover,
-                //         image: NetworkImage('https://img.acewear.ru/CleverWearImg/ManProfile.png')), //https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80
-                //   ),
-                // ),
-                // Positioned(
-                //   bottom: 0,
-                //   right: 0,
-                //   child: CircleAvatar(
-                //     radius: 20,
-                //     backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-                //     child: Container(
-                //       margin: const EdgeInsets.all(8.0),
-                //       decoration: const BoxDecoration(
-                //           color: Colors.green, shape: BoxShape.circle),
-                //     ),
-                //   ),
-                // ),
               ],
             ),
           ),

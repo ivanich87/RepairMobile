@@ -390,6 +390,64 @@ class ListObject {
 
 }
 
+class ListSmeta {
+  late String id;
+  late String number;
+  late DateTime date;
+  late String name;
+  late String addres;
+  late num summa;
+  late num seb;
+  late String comment;
+
+  ListSmeta(this.id, this.number, this.date, this.name, this.addres, this.summa, this.seb, this.comment);
+
+  ListSmeta.fromJson(Map<String, dynamic> json) {
+    id = json['id'] ?? '0';
+    number = json['number'] ?? '0';
+    date = DateTime.tryParse(json['date'])!;
+    name = json['name'] ?? 'Пусто';
+    addres = json['addres'] ?? 'Адрес не указан';
+    summa = json['summa'];
+    seb = json['seb'];
+    comment = json['comment'];
+  }
+
+}
+
+class ListSmetaRoom {
+  late String id;
+  late String name;
+  late num summa;
+  late num seb;
+
+  ListSmetaRoom(this.id, this.name, this.summa, this.seb);
+
+  ListSmetaRoom.fromJson(Map<String, dynamic> json) {
+    id = json['id'] ?? '0';
+    name = json['name'] ?? '0';
+    summa = json['summa'] ?? 0;
+    seb = json['seb'] ?? 0;
+  }
+}
+
+
+class ListSmetaParam {
+  late String room_id;
+  late String param_id;
+  late String param_name;
+  late num value;
+
+  ListSmetaParam(this.room_id, this.param_id, this.param_name, this.value);
+
+  ListSmetaParam.fromJson(Map<String, dynamic> json) {
+    room_id = json['room_id'] ?? '';
+    param_id = json['param_id'] ?? '';
+    param_name = json['param_name'] ?? '';
+    value = json['value'] ?? '';
+  }
+}
+
 class SelectedDogovor{
   late String objectName;
   late String objectId;

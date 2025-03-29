@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:repairmodule/models/ListWorks.dart';
 import 'package:repairmodule/models/Lists.dart';
 import 'package:repairmodule/screens/task/taskLists.dart';
 
@@ -70,6 +71,127 @@ Future httpGetListObject(objectList) async {
       throw 'Код ответа: ${response.statusCode.toString()}. Ответ: ${response.body}';
   } catch (error) {
     print("Ошибка при формировании списка: $error");
+  }
+}
+
+Future httpGetListSmeta(objectList) async {
+  final _queryParameters = {'userId': Globals.anPhone};
+
+  var _url=Uri(path: '${Globals.anPath}smetaList/', host: Globals.anServer, scheme: 'https', queryParameters: _queryParameters);
+  print(_url.path);
+  print(Globals.anAuthorization);
+  var _headers = <String, String> {
+    'Accept': 'application/json',
+    'Authorization': Globals.anAuthorization
+  };
+  try {
+    var response = await http.get(_url, headers: _headers);
+    print(response.statusCode.toString());
+    if (response.statusCode == 200) {
+      objectList.clear();
+      var notesJson = json.decode(response.body);
+      for (var noteJson in notesJson) {
+        objectList.add(ListSmeta.fromJson(noteJson));
+      }
+    }
+    else
+      throw 'Код ответа: ${response.statusCode.toString()}. Ответ: ${response.body}';
+  } catch (error) {
+    print("Ошибка при формировании списка смет: $error");
+  }
+}
+
+Future httpGetSmetaInfo(id, roomList, paramList, workList) async {
+  final _queryParameters = {'userId': Globals.anPhone};
+
+  var _url=Uri(path: '${Globals.anPath}smetainfo/$id/', host: Globals.anServer, scheme: 'https', queryParameters: _queryParameters);
+  print(_url.path);
+  print(Globals.anAuthorization);
+  var _headers = <String, String> {
+    'Accept': 'application/json',
+    'Authorization': Globals.anAuthorization
+  };
+  try {
+    var response = await http.get(_url, headers: _headers);
+    print(response.statusCode.toString());
+    if (response.statusCode == 200) {
+      roomList.clear();
+      paramList.clear();
+
+      var notesJson = json.decode(response.body);
+      for (var noteJson1 in notesJson['rooms']) {
+        roomList.add(ListSmetaRoom.fromJson(noteJson1));
+      }
+      for (var noteJson2 in notesJson['params']) {
+        paramList.add(ListSmetaParam.fromJson(noteJson2));
+      }
+      for (var noteJson3 in notesJson['works']) {
+        workList.add(Works.fromJson(noteJson3));
+      }
+    }
+    else
+      throw 'Код ответа: ${response.statusCode.toString()}. Ответ: ${response.body}';
+  } catch (error) {
+    print("Ошибка импорта данных сметы: $error");
+  }
+}
+
+Future httpGetSmetaRoomWorks(smetaid, roomid, workList) async {
+  final _queryParameters = {'userId': Globals.anPhone};
+
+  var _url=Uri(path: '${Globals.anPath}smetaroomworks/$smetaid/$roomid/', host: Globals.anServer, scheme: 'https', queryParameters: _queryParameters);
+  print(_url.path);
+  print(Globals.anAuthorization);
+  var _headers = <String, String> {
+    'Accept': 'application/json',
+    'Authorization': Globals.anAuthorization
+  };
+  try {
+    var response = await http.get(_url, headers: _headers);
+    print(response.statusCode.toString());
+    if (response.statusCode == 200) {
+      workList.clear();
+
+      var notesJson = json.decode(response.body);
+      for (var noteJson3 in notesJson['works']) {
+        workList.add(Works.fromJson(noteJson3));
+      }
+    }
+    else
+      throw 'Код ответа: ${response.statusCode.toString()}. Ответ: ${response.body}';
+  } catch (error) {
+    print("Ошибка импорта данных сметы: $error");
+  }
+}
+
+Future httpGetSmetaWorkRoom(smeta_id, room_id) async {
+  final _queryParameters = {'userId': Globals.anPhone};
+
+  var _url=Uri(path: '${Globals.anPath}smetaworkroom/$smeta_id/$room_id/', host: Globals.anServer, scheme: 'https', queryParameters: _queryParameters);
+  print(_url.path);
+  var _headers = <String, String> {
+    'Accept': 'application/json',
+    'Authorization': Globals.anAuthorization
+  };
+  try {
+    var response = await http.get(_url, headers: _headers);
+    print(response.statusCode.toString());
+    if (response.statusCode == 200) {
+      // roomList.clear();
+      // paramList.clear();
+
+      var notesJson = json.decode(response.body);
+      // for (var noteJson1 in notesJson['rooms']) {
+      //   roomList.add(ListSmetaRoom.fromJson(noteJson1));
+      // }
+      // for (var noteJson2 in notesJson['params']) {
+      //   paramList.add(ListSmetaParam.fromJson(noteJson2));
+      // }
+    }
+    else
+      throw 'Код ответа: ${response.statusCode.toString()}. Ответ: ${response.body}';
+  } catch (error) {
+    print("Ошибка импорта работ сметы по помещению: $error");
   }
 }
 

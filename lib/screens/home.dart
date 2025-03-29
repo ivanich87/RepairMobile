@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:avatar_brick/avatar_brick.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
@@ -11,11 +12,13 @@ import 'package:repairmodule/screens/ReceiptView.dart';
 import 'package:repairmodule/screens/cashList.dart';
 import 'package:repairmodule/screens/cashListFind.dart';
 import 'package:repairmodule/screens/inputSaredFiles.dart';
+import 'package:repairmodule/screens/loading.dart';
 import 'package:repairmodule/screens/object_create.dart';
 import 'package:repairmodule/screens/object_view.dart';
 import 'package:repairmodule/screens/plat_edit.dart';
 import 'package:repairmodule/screens/plat_view.dart';
 import 'package:repairmodule/screens/settings.dart';
+import 'package:repairmodule/screens/smeta/smeta_view.dart';
 import 'package:repairmodule/screens/task/taskList.dart';
 import 'package:repairmodule/screens/task/taskLists.dart';
 import 'package:repairmodule/screens/task/task_edit.dart';
@@ -47,6 +50,7 @@ class _scrHomeScreenState extends State<scrHomeScreen> with TickerProviderStateM
   final _sharedFiles = <SharedMediaFile>[];
 
   var objectList = [];
+  List <ListSmeta> smetaList = [];
   List <ListPlat> platList = [];
   List <ListPlat>  platListFiltered = [];
   List <ListPlat>  platListApproved = [];
@@ -297,6 +301,7 @@ class _scrHomeScreenState extends State<scrHomeScreen> with TickerProviderStateM
     await httpGetListBalance(cashBankList, cashKassList, AccountableFounds, AccountableContractor);
 
     await httpGetListObject(objectList);
+    await httpGetListSmeta(smetaList);
 
     AccountableFoundsBalance=0;
     AccountableContractorBalance=0;
@@ -322,9 +327,12 @@ class _scrHomeScreenState extends State<scrHomeScreen> with TickerProviderStateM
   }
 
   Widget build(BuildContext context) {
+    if (_isLoad==false)
+      return scrLoadingScreen();
+    else
     return Scaffold(
         appBar: AppBar(
-          title: Image.asset('assets/images/title.png', height: 40,),//Text('СметаНа'),
+          title: Image.asset('assets/images/title_white.png', height: 40,),  //Text('СметаНа'),
           centerTitle: true,
           actions: [
             IconButton(onPressed: () async {
@@ -373,6 +381,15 @@ class _scrHomeScreenState extends State<scrHomeScreen> with TickerProviderStateM
             },
           child: Icon(Icons.add),);
       case 3:
+        return FloatingActionButton(
+          onPressed: () async {
+            // List<taskObservertList> taskObservers=[];
+            // taskList newTask = taskList(id: '', number: 0, name: '', content: '', directorId: Globals.anUserId, director: Globals.anUserName, executorId: '', executor: '', dateCreate: DateTime.now(), dateTo: DateTime.now(), statusId: '52139514-180a-4b78-a882-187cc6832af2', status: 'Ждет исполнителя', reportToEnd: true, resultText: '', objectId: '', objectName: '', generalTaskId: '', generalTaskName: '', generalTaskNumber: 0, generalTaskDateCreate: DateTime.now(), generalTaskExecutor: '', timeTracking: false, changeDeadline: false, resultControl: false, taskCloseAuto: false, deadlineFromSubtask: false, schemeTaxi: true);
+            // await Navigator.push(context, MaterialPageRoute(builder: (context) => scrTaskEditScreen(task: newTask, TaskObservertList: taskObservers))) ?? '';
+            // ref();
+          },
+          child: Icon(Icons.add),);
+      case 4:
         null;
     }
   }
@@ -394,6 +411,8 @@ class _scrHomeScreenState extends State<scrHomeScreen> with TickerProviderStateM
       case 2:
         return _pageTask();
       case 3:
+        return _pageSmeta();
+      case 4:
         return (Globals.anUserRoleId!=3) ? _pageProfile_backup() :  _pageProfile();
     }
   }
@@ -407,6 +426,36 @@ class _scrHomeScreenState extends State<scrHomeScreen> with TickerProviderStateM
         itemCount: objectList.length,
         itemBuilder: (_, index) => CardObjectList(event: objectList[index], onType: 'push',),
       );
+  }
+
+  _pageSmeta() {
+    return (smetaList.length==0) ? Center(child: Text('У вас еще нет смет. Добавьте смету по кнопке справа внизу')) :
+    RefreshIndicator(
+        onRefresh: () async {
+          await httpGetListSmeta(smetaList);
+          return Future<void>.delayed(const Duration(seconds: 2));
+        },
+        child: ListView.builder(
+          padding: EdgeInsets.all(10),
+          physics: BouncingScrollPhysics(),
+          reverse: false,
+          itemCount: smetaList.length,
+          itemBuilder: (_, index) {
+            return Card(
+              child: ListTile(
+                title: Text(smetaList[index].name, style: TextStyle(fontWeight: FontWeight.normal, fontSize: 18)),
+                subtitle: Text(smetaList[index].addres),
+                trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(smetaList[index].summa), style: TextStyle(fontSize: 16)),
+                onTap: () async {
+                  await Navigator.push(context, MaterialPageRoute(builder: (context) => scrSmetaViewScreen(smetaList[index])));
+                  ref();
+                },
+              ),
+            );
+
+          },
+        ),
+    );
   }
 
   _pagePlat() {
@@ -609,7 +658,9 @@ class _scrHomeScreenState extends State<scrHomeScreen> with TickerProviderStateM
                   ),
                   Container(width: 80,
                     child:
-                      (_logoPath=='') ? Image.asset('assets/icons/repair.png', height: 100,) : Image.network(_logoPath),
+                    AvatarBrick(backgroundColor: Colors.black,
+                        image: (_logoPath=='') ? Image.asset('assets/icons/repair.png', height: 100,) : Image.network(_logoPath, fit: BoxFit.scaleDown,)
+                    )
                   ),
                   Expanded(
                     child: Container(padding: EdgeInsets.all(8),
@@ -1389,6 +1440,11 @@ final _navBarItems = [
     icon: const Icon(Icons.event_note_outlined),
     title: const Text("Задачи"),
     selectedColor: Colors.orange,
+  ),
+  SalomonBottomBarItem(
+    icon: const Icon(Icons.event_available),
+    title: const Text("Сметы"),
+    selectedColor: Colors.brown,
   ),
   SalomonBottomBarItem(
     icon: const Icon(Icons.person),

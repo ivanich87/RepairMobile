@@ -62,3 +62,10 @@ class Works {
     return data;
   }
 }
+
+class SmetaAllWork{
+  late bool allPrice;
+
+  SmetaAllWork(this.allPrice);
+
+}

@@ -46,6 +46,11 @@ class _scrLoadingScreenState extends State<scrLoadingScreen> {
     print(connectivityResult == ConnectivityResult.wifi);
 
     return Container(
+      decoration: const BoxDecoration(
+          gradient: LinearGradient(transform: GradientRotation(BorderSide.strokeAlignCenter),
+              begin: Alignment.topLeft,
+              end: Alignment.bottomCenter,
+              colors: <Color>[Color(0xFF1B5E20), Colors.black, Colors.black, Colors.black, Colors.black, Colors.black, Colors.black])),
       padding: EdgeInsets.all(8),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
