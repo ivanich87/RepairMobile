@@ -8,6 +8,7 @@ import 'package:repairmodule/models/Lists.dart';
 import 'package:http/http.dart' as http;
 import 'package:repairmodule/models/httpRest.dart';
 import 'package:repairmodule/screens/smeta/smetaPrice_view.dart';
+import 'package:repairmodule/screens/smeta/smetaRoom_view.dart';
 
 
 
@@ -24,6 +25,7 @@ class _scrSmetaViewScreenState extends State<scrSmetaViewScreen> {
   List <ListSmetaRoom> roomList = [];
   List <ListSmetaParam> paramList = [];
   List <Works> workList = [];
+  bool isLoad = true;
 
   @override
   void initState() {
@@ -31,18 +33,15 @@ class _scrSmetaViewScreenState extends State<scrSmetaViewScreen> {
 
     httpGetSmetaInfo(widget.smeta.id, roomList, paramList, workList).then((value) {
       setState(() {
-        workList.clear();
+        //workList.clear();
       });
     });
     // TODO: implement initState
     super.initState();
   }
 
-  _getWorkRoom(smetaid, roomid, workList) {
-    httpGetSmetaRoomWorks(smetaid, roomid, workList);
-  }
-
   Widget build(BuildContext context) {
+    print('Кол-во параметров ${paramList.length}');
     return Scaffold(
       appBar: AppBar(
         title: Text('Смета № ${widget.smeta.number}'),
@@ -51,7 +50,7 @@ class _scrSmetaViewScreenState extends State<scrSmetaViewScreen> {
           IconButton(onPressed: () {}, icon: Icon(Icons.menu))
         ],
       ),
-        body: Column(
+        body: (isLoad==false) ? Center(child: CircularProgressIndicator()) : Column(
           children: [
             Text('Сумма сметы: ${NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(widget.smeta.summa)}'),
             Text('Сумма субподрядчика: ${NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(widget.smeta.seb)}'),
@@ -71,8 +70,16 @@ class _scrSmetaViewScreenState extends State<scrSmetaViewScreen> {
                         title: Text(roomList[index].name, style: TextStyle(fontWeight: FontWeight.normal, fontSize: 18)),
                         trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(roomList[index].summa), style: TextStyle(fontSize: 16)),
                         onTap: () async {
-                          await httpGetSmetaRoomWorks(widget.smeta.id, roomList[index].id, workList);
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => scrSmetaPriceViewScreen(workList, '00000000-0000-0000-0000-000000000000', roomList[index].name, SmetaAllWork(false))));
+                          // setState(() {
+                          //   isLoad = false;
+                          // });
+
+                          // await httpGetSmetaRoomWorks(widget.smeta.id, roomList[index].id, workList);
+                          // setState(() {
+                          //   isLoad = true;
+                          // });
+                          //Navigator.push(context, MaterialPageRoute(builder: (context) => scrSmetaPriceViewScreen(workList, '00000000-0000-0000-0000-000000000000', roomList[index].name, SmetaAllWork(false))));
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => scrSmetaRoomViewScreen(widget.smeta.id, roomList[index].id, roomList[index].name, paramList)));
                         },
                       ),
                     );

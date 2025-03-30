@@ -7,19 +7,19 @@ import 'package:repairmodule/models/Lists.dart';
 
 
 
-class scrSmetaPriceViewScreen extends StatefulWidget {
+class scrSmetaPriceViewCopyScreen extends StatefulWidget {
   final List <Works> works;
   final String parentId;
   final String parentName;
   SmetaAllWork smetaAllWork;
 
-  scrSmetaPriceViewScreen(this.works, this.parentId, this.parentName, this.smetaAllWork);
+  scrSmetaPriceViewCopyScreen(this.works, this.parentId, this.parentName, this.smetaAllWork);
 
   @override
-  State<scrSmetaPriceViewScreen> createState() => _scrSmetaPriceViewScreenState();
+  State<scrSmetaPriceViewCopyScreen> createState() => _scrSmetaPriceViewCopyScreenState();
 }
 
-class _scrSmetaPriceViewScreenState extends State<scrSmetaPriceViewScreen> {
+class _scrSmetaPriceViewCopyScreenState extends State<scrSmetaPriceViewCopyScreen> {
   List <Works> filtered_works = [];
 
   @override
@@ -52,7 +52,7 @@ class _scrSmetaPriceViewScreenState extends State<scrSmetaPriceViewScreen> {
                         trailing: (filtered_works[index].isFolder!) ? Icon(Icons.navigate_next) : Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(filtered_works[index].summa), style: TextStyle(fontSize: 16)),
                         onTap: () async {
                           if (filtered_works[index].isFolder!) {
-                            await Navigator.push(context, MaterialPageRoute(builder: (context) => scrSmetaPriceViewScreen(widget.works, filtered_works[index].workId!, filtered_works[index].workName!, widget.smetaAllWork)));
+                            await Navigator.push(context, MaterialPageRoute(builder: (context) => scrSmetaPriceViewCopyScreen(widget.works, filtered_works[index].workId!, filtered_works[index].workName!, widget.smetaAllWork)));
                             _findList(widget.parentId);
                           }
                         },
