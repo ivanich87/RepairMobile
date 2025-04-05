@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:repairmodule/models/ListCalculationParam.dart';
 import 'package:repairmodule/models/ListWorks.dart';
 import 'package:repairmodule/models/Lists.dart';
 import 'package:repairmodule/screens/task/taskLists.dart';
@@ -164,10 +165,10 @@ Future httpGetSmetaRoomWorks(smetaid, roomid, workList) async {
   }
 }
 
-Future httpGetSmetaWorkRoom(smeta_id, room_id) async {
+Future httpGetSmetaParamCalculation(smetaid, roomid, floor, perimeter, openings, slopeDoor, slopeWindow, slopeWall, slopeConst, hConst) async {
   final _queryParameters = {'userId': Globals.anPhone};
 
-  var _url=Uri(path: '${Globals.anPath}smetaworkroom/$smeta_id/$room_id/', host: Globals.anServer, scheme: 'https', queryParameters: _queryParameters);
+  var _url=Uri(path: '${Globals.anPath}smetacalculationparam/$smetaid/$roomid/', host: Globals.anServer, scheme: 'https', queryParameters: _queryParameters);
   print(_url.path);
   var _headers = <String, String> {
     'Accept': 'application/json',
@@ -181,12 +182,28 @@ Future httpGetSmetaWorkRoom(smeta_id, room_id) async {
       // paramList.clear();
 
       var notesJson = json.decode(response.body);
-      // for (var noteJson1 in notesJson['rooms']) {
-      //   roomList.add(ListSmetaRoom.fromJson(noteJson1));
-      // }
-      // for (var noteJson2 in notesJson['params']) {
-      //   paramList.add(ListSmetaParam.fromJson(noteJson2));
-      // }
+      slopeConst = notesJson['slopeConst'];
+      hConst = notesJson['hConst'];
+
+      for (var noteJson1 in notesJson['floor']) {
+        floor.add(ListFloor.fromJson(noteJson1));
+      }
+      for (var noteJson2 in notesJson['perimeter']) {
+        perimeter.add(ListPerimeter.fromJson(noteJson2));
+      }
+      for (var noteJson3 in notesJson['openings']) {
+        openings.add(ListOpenings.fromJson(noteJson3));
+      }
+      for (var noteJson4 in notesJson['slopeDoor']) {
+        slopeDoor.add(ListSlopeDoor.fromJson(noteJson4));
+      }
+      for (var noteJson5 in notesJson['slopeWindow']) {
+        slopeWindow.add(ListSlopeWindow.fromJson(noteJson5));
+      }
+      for (var noteJson6 in notesJson['slopeWall']) {
+        slopeWall.add(ListSlopeWall.fromJson(noteJson6));
+      }
+
     }
     else
       throw 'Код ответа: ${response.statusCode.toString()}. Ответ: ${response.body}';

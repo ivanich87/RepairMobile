@@ -7,6 +7,7 @@ import 'package:repairmodule/models/ListWorks.dart';
 import 'package:repairmodule/models/Lists.dart';
 import 'package:http/http.dart' as http;
 import 'package:repairmodule/models/httpRest.dart';
+import 'package:repairmodule/screens/smeta/smetaParamCalculation.dart';
 import 'package:repairmodule/screens/smeta/smetaPrice_view.dart';
 
 
@@ -69,7 +70,7 @@ class _scrSmetaRoomViewScreenState extends State<scrSmetaRoomViewScreen> {
                   icon: Icon(Icons.abc, color: Colors.black),
                   label: Text('Помощник расчета параметров', style: TextStyle(color: Colors.black, fontSize: 15)),
                   onPressed: () {
-
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => scrSmetaParamCalculationScreen(widget.smeta_id, widget.room_id, widget.room_name, widget.param)));
                   },
                   style: ElevatedButton.styleFrom(backgroundColor: Colors.green,
                     shape: RoundedRectangleBorder(
