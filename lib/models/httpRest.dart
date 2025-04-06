@@ -102,7 +102,7 @@ Future httpGetListSmeta(objectList) async {
   }
 }
 
-Future httpGetSmetaInfo(id, roomList, paramList, workList) async {
+Future httpGetSmetaInfo(id, roomList) async { //, paramList, workList
   final _queryParameters = {'userId': Globals.anPhone};
 
   var _url=Uri(path: '${Globals.anPath}smetainfo/$id/', host: Globals.anServer, scheme: 'https', queryParameters: _queryParameters);
@@ -117,18 +117,18 @@ Future httpGetSmetaInfo(id, roomList, paramList, workList) async {
     print(response.statusCode.toString());
     if (response.statusCode == 200) {
       roomList.clear();
-      paramList.clear();
+      //paramList.clear();
 
       var notesJson = json.decode(response.body);
       for (var noteJson1 in notesJson['rooms']) {
         roomList.add(ListSmetaRoom.fromJson(noteJson1));
       }
-      for (var noteJson2 in notesJson['params']) {
-        paramList.add(ListSmetaParam.fromJson(noteJson2));
-      }
-      for (var noteJson3 in notesJson['works']) {
-        workList.add(Works.fromJson(noteJson3));
-      }
+      // for (var noteJson2 in notesJson['params']) {
+      //   paramList.add(ListSmetaParam.fromJson(noteJson2));
+      // }
+      // for (var noteJson3 in notesJson['works']) {
+      //   workList.add(Works.fromJson(noteJson3));
+      // }
     }
     else
       throw 'Код ответа: ${response.statusCode.toString()}. Ответ: ${response.body}';

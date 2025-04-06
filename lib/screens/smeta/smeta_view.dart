@@ -23,15 +23,15 @@ class scrSmetaViewScreen extends StatefulWidget {
 
 class _scrSmetaViewScreenState extends State<scrSmetaViewScreen> {
   List <ListSmetaRoom> roomList = [];
-  List <ListSmetaParam> paramList = [];
-  List <Works> workList = [];
+  // List <ListSmetaParam> paramList = [];
+  // List <Works> workList = [];
   bool isLoad = true;
 
   @override
   void initState() {
     print('initState');
 
-    httpGetSmetaInfo(widget.smeta.id, roomList, paramList, workList).then((value) {
+    httpGetSmetaInfo(widget.smeta.id, roomList).then((value) {
       setState(() {
         //workList.clear();
       });
@@ -41,7 +41,6 @@ class _scrSmetaViewScreenState extends State<scrSmetaViewScreen> {
   }
 
   Widget build(BuildContext context) {
-    print('Кол-во параметров ${paramList.length}');
     return Scaffold(
       appBar: AppBar(
         title: Text('Смета № ${widget.smeta.number}'),

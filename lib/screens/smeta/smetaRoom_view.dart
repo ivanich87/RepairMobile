@@ -29,7 +29,7 @@ class _scrSmetaRoomViewScreenState extends State<scrSmetaRoomViewScreen> {
   List <Works> workList = [];
   num summa = 0;
   num seb = 0;
-  String avatar = '';
+  String avatar = 'https://akfengroup.ru/800/600/https/remontprestizh.ru/wp-content/uploads/2016/03/1-3d.jpg';
 
   @override
   void initState() {
