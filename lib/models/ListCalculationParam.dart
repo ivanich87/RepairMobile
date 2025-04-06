@@ -13,6 +13,13 @@ class ListFloor {
         a = json['a'],
         b = json['b'],
         typeid = json['typeid'];
+
+  Map<String, dynamic> toJson() =>
+      {
+        'a': a,
+        'b': b,
+        'typeid': typeid
+      };
 }
 
 class ListPerimeter {
@@ -24,6 +31,11 @@ class ListPerimeter {
 
   ListPerimeter.fromJson(Map<String, dynamic> json) :
         a = json['a'];
+
+  Map<String, dynamic> toJson() =>
+      {
+        'a': a
+      };
 }
 
 class ListOpenings {
@@ -41,6 +53,13 @@ class ListOpenings {
         a = json['a'],
         b = json['b'],
         isDoor = json['isDoor'];
+
+  Map<String, dynamic> toJson() =>
+      {
+        'a': a,
+        'b': b,
+        'isDoor': isDoor
+      };
 }
 
 class ListSlopeDoor {
@@ -58,6 +77,13 @@ class ListSlopeDoor {
         a = json['a'],
         b = json['b'],
         c = json['c'];
+
+  Map<String, dynamic> toJson() =>
+      {
+        'a': a,
+        'b': b,
+        'c': c
+      };
 }
 
 class ListSlopeWindow {
@@ -75,6 +101,13 @@ class ListSlopeWindow {
         a = json['a'],
         b = json['b'],
         c = json['c'];
+
+  Map<String, dynamic> toJson() =>
+      {
+        'a': a,
+        'b': b,
+        'c': c
+      };
 }
 
 class ListSlopeWall {
@@ -92,22 +125,13 @@ class ListSlopeWall {
         a = json['a'],
         b = json['b'],
         isWall = json['isWall'];
+
+  Map<String, dynamic> toJson() =>
+      {
+        'a': a,
+        'b': b,
+        'isWall': isWall
+      };
 }
 
 
-class ListDataParam {
-  num a;
-  num b;
-  num c;
-  bool isBool;
-  String typeid;
-
-  ListDataParam({
-    required this.a,
-    required this.b,
-    required this.c,
-    required this.isBool,
-    required this.typeid,
-  });
-
-}

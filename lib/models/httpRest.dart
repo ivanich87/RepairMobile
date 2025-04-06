@@ -212,6 +212,39 @@ Future httpGetSmetaParamCalculation(smetaid, roomid, floor, perimeter, openings,
   }
 }
 
+Future httpPostSmetaParamCalculation(smetaid, roomid, floor, perimeter, openings, slopeDoor, slopeWindow, slopeWall, hConst) async {
+  bool res = false;
+  final _queryParameters = {'userId': Globals.anPhone};
+
+  var _url=Uri(path: '${Globals.anPath}smetacalculationparam/$smetaid/$roomid/', host: Globals.anServer, scheme: 'https', queryParameters: _queryParameters);
+  print(_url.path);
+  var _headers = <String, String> {
+    'Accept': 'application/json',
+    'Authorization': Globals.anAuthorization
+  };
+  try {
+    var _body = <String, dynamic> {
+      "floor": floor!.map((v) => v.toJson()).toList(),
+      "perimeter": perimeter!.map((v) => v.toJson()).toList(),
+      "openings": openings!.map((v) => v.toJson()).toList(),
+      "slopeDoor": slopeDoor!.map((v) => v.toJson()).toList(),
+      "slopeWindow": slopeWindow!.map((v) => v.toJson()).toList(),
+      "slopeWall": slopeWall!.map((v) => v.toJson()).toList(),
+      "HWall": hConst
+    };
+    print(jsonEncode(_body));
+    var response = await http.post(_url, headers: _headers, body: jsonEncode(_body));
+    print('Код ответа: ${response.statusCode} Тело ответа: ${response.body}');
+    if (response.statusCode==200)
+      res = true;
+    else
+      res = false;
+    return res;
+  } catch (error) {
+    print("Ошибка импорта работ сметы по помещению: $error");
+  }
+}
+
 Future httpGetListPlat(objectList, analyticId, objectId, platType, kassaSotrId, kassaContractorId, idCash, approve, dateRange) async {
   var queryParameters = <String, dynamic> {
     'analyticId': analyticId,

@@ -16,9 +16,8 @@ class scrSmetaRoomViewScreen extends StatefulWidget {
   final String smeta_id;
   final String room_id;
   final String room_name;
-  final List <ListSmetaParam> param;
 
-  scrSmetaRoomViewScreen(this.smeta_id, this.room_id, this.room_name, this.param);
+  scrSmetaRoomViewScreen(this.smeta_id, this.room_id, this.room_name);
 
   @override
   State<scrSmetaRoomViewScreen> createState() => _scrSmetaRoomViewScreenState();
@@ -28,22 +27,58 @@ class _scrSmetaRoomViewScreenState extends State<scrSmetaRoomViewScreen> {
   List <ListSmetaParam> filtered_param = [];
   bool _isLoad = true;
   List <Works> workList = [];
+  num summa = 0;
+  num seb = 0;
+  String avatar = '';
 
   @override
   void initState() {
     print('initState');
 
-    // httpGetSmetaWorkRoom(widget.smeta_id, widget.room_id).then((value) {
-    //   setState(() {
-    //   });
-    // });
+    ref();
     // TODO: implement initState
     super.initState();
   }
 
+  Future httpGetSmetaRoomInfo() async {
+    final _queryParameters = {'userId': Globals.anPhone};
+
+    var _url=Uri(path: '${Globals.anPath}smetaroominfo/${widget.smeta_id}/${widget.room_id}/', host: Globals.anServer, scheme: 'https', queryParameters: _queryParameters);
+    print(_url.path);
+    print(Globals.anAuthorization);
+    var _headers = <String, String> {
+      'Accept': 'application/json',
+      'Authorization': Globals.anAuthorization
+    };
+    try {
+      var response = await http.get(_url, headers: _headers);
+      print(response.statusCode.toString());
+      if (response.statusCode == 200) {
+        filtered_param.clear();
+        var notesJson = json.decode(response.body);
+        for (var noteJson2 in notesJson['params']) {
+          filtered_param.add(ListSmetaParam.fromJson(noteJson2));
+        }
+        summa = notesJson['summa'];
+        seb = notesJson['seb'];
+        avatar = notesJson['avatar'];
+      }
+      else
+        throw 'Код ответа: ${response.statusCode.toString()}. Ответ: ${response.body}';
+    } catch (error) {
+      print("Ошибка импорта данных сметы: $error");
+    }
+  }
+
+  Future<void> ref() async {
+    await httpGetSmetaRoomInfo();
+    setState(() {
+
+    });
+  }
 
   Widget build(BuildContext context) {
-    _findList(widget.room_id);
+    //_findList(widget.room_id);
     return Scaffold(
       appBar: AppBar(
         title: Text('${widget.room_name}'),
@@ -54,9 +89,9 @@ class _scrSmetaRoomViewScreenState extends State<scrSmetaRoomViewScreen> {
       ),
         body: (_isLoad==false) ? Center(child: CircularProgressIndicator()) : ListView(
           children: [
-              Container(height: 300, color: Colors.brown, margin: EdgeInsets.all(8),
+              Container(height: 300, color: Colors.black, margin: EdgeInsets.all(8),
                 child: Center(
-                  child: Text('Тут будет фото')
+                  child: Image.network(avatar),
               ),),
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
@@ -69,8 +104,9 @@ class _scrSmetaRoomViewScreenState extends State<scrSmetaRoomViewScreen> {
                 child: ElevatedButton.icon(
                   icon: Icon(Icons.abc, color: Colors.black),
                   label: Text('Помощник расчета параметров', style: TextStyle(color: Colors.black, fontSize: 15)),
-                  onPressed: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => scrSmetaParamCalculationScreen(widget.smeta_id, widget.room_id, widget.room_name, widget.param)));
+                  onPressed: () async {
+                    await Navigator.push(context, MaterialPageRoute(builder: (context) => scrSmetaParamCalculationScreen(widget.smeta_id, widget.room_id, widget.room_name, filtered_param)));
+                    ref();
                   },
                   style: ElevatedButton.styleFrom(backgroundColor: Colors.green,
                     shape: RoundedRectangleBorder(
@@ -91,14 +127,14 @@ class _scrSmetaRoomViewScreenState extends State<scrSmetaRoomViewScreen> {
                       ListTile(
                         title: Text('Сумма сметы', style: TextStyle(fontSize: 18)),
                         subtitle: Text('Сумма за работы', style: TextStyle(fontSize: 12)),
-                        trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(134000), style: TextStyle(fontSize: 16, color: Colors.green.shade800, fontWeight: FontWeight.bold),),
+                        trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(summa), style: TextStyle(fontSize: 16, color: Colors.green.shade800, fontWeight: FontWeight.bold),),
                       )
                     ),
                     Card(child:
                       ListTile(
                         title: Text('Себестоимость', style: TextStyle(fontSize: 18)),
                         subtitle: Text('Сумма мастеров', style: TextStyle(fontSize: 12)),
-                        trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(134000), style: TextStyle(fontSize: 16, color: Colors.red.shade800, fontWeight: FontWeight.bold),),
+                        trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(seb), style: TextStyle(fontSize: 16, color: Colors.red.shade800, fontWeight: FontWeight.bold),),
                       )
                     ),
                   ],
@@ -118,7 +154,8 @@ class _scrSmetaRoomViewScreenState extends State<scrSmetaRoomViewScreen> {
                     setState(() {
                       _isLoad = true;
                     });
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => scrSmetaPriceViewScreen(workList, '00000000-0000-0000-0000-000000000000', widget.room_name, SmetaAllWork(false))));
+                    await Navigator.push(context, MaterialPageRoute(builder: (context) => scrSmetaPriceViewScreen(workList, '00000000-0000-0000-0000-000000000000', widget.room_name, SmetaAllWork(false))));
+                    ref();
                   },
                   style: ElevatedButton.styleFrom(backgroundColor: Colors.green,
                     shape: RoundedRectangleBorder(
@@ -152,11 +189,11 @@ class _scrSmetaRoomViewScreenState extends State<scrSmetaRoomViewScreen> {
     );
   }
 
-  void _findList(value) {
-    setState(() {
-      filtered_param = widget.param.where((element) => element.room_id!.toLowerCase().contains(value.toLowerCase())).toList();
-    });
-  }
+  // void _findList(value) {
+  //   setState(() {
+  //     filtered_param = widget.param.where((element) => element.room_id!.toLowerCase().contains(value.toLowerCase())).toList();
+  //   });
+  // }
 
 
 

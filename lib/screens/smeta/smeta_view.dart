@@ -79,7 +79,7 @@ class _scrSmetaViewScreenState extends State<scrSmetaViewScreen> {
                           //   isLoad = true;
                           // });
                           //Navigator.push(context, MaterialPageRoute(builder: (context) => scrSmetaPriceViewScreen(workList, '00000000-0000-0000-0000-000000000000', roomList[index].name, SmetaAllWork(false))));
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => scrSmetaRoomViewScreen(widget.smeta.id, roomList[index].id, roomList[index].name, paramList)));
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => scrSmetaRoomViewScreen(widget.smeta.id, roomList[index].id, roomList[index].name)));
                         },
                       ),
                     );

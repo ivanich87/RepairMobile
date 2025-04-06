@@ -178,6 +178,13 @@ class _scrSmetaParamCalculationScreenState extends State<scrSmetaParamCalculatio
             ],
 
           ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          bool _res = await httpPostSmetaParamCalculation(widget.smeta_id, widget.room_id, floor, perimeter, openings, slopeDoor, slopeWindow, slopeWall, hConst);
+          if (_res)
+            Navigator.pop(context);
+        },
+        child: Icon(Icons.save))
     );
   }
 
