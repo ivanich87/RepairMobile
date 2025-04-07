@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:repairmodule/models/ListWorks.dart';
 import 'package:repairmodule/models/Lists.dart';
+import 'package:repairmodule/screens/smeta/smetaWork_editing.dart';
 
 
 
@@ -11,7 +12,7 @@ class scrSmetaPriceViewScreen extends StatefulWidget {
   final List <Works> works;
   final String parentId;
   final String parentName;
-  SmetaAllWork smetaAllWork;
+  final SmetaAllWork smetaAllWork;
 
   scrSmetaPriceViewScreen(this.works, this.parentId, this.parentName, this.smetaAllWork);
 
@@ -49,11 +50,14 @@ class _scrSmetaPriceViewScreenState extends State<scrSmetaPriceViewScreen> {
                     return Card(
                       child: ListTile(
                         title: Text(filtered_works[index].workName ?? '00', style: TextStyle(fontWeight: FontWeight.normal, fontSize: 18)),
-                        trailing: (filtered_works[index].isFolder!) ? Icon(Icons.navigate_next) : Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(filtered_works[index].summa), style: TextStyle(fontSize: 16)),
+                        trailing: _workTrailing(filtered_works[index]), //(filtered_works[index].isFolder!) ? Icon(Icons.navigate_next) : Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(filtered_works[index].summa), style: TextStyle(fontSize: 16)),
                         onTap: () async {
                           if (filtered_works[index].isFolder!) {
                             await Navigator.push(context, MaterialPageRoute(builder: (context) => scrSmetaPriceViewScreen(widget.works, filtered_works[index].workId!, filtered_works[index].workName!, widget.smetaAllWork)));
                             _findList(widget.parentId);
+                          }
+                          else {
+                            await Navigator.push(context, MaterialPageRoute(builder: (context) => scrSmetaWorkEditingScreen(filtered_works[index], true)));
                           }
                         },
                       ),
@@ -77,6 +81,8 @@ class _scrSmetaPriceViewScreenState extends State<scrSmetaPriceViewScreen> {
             child: (widget.smetaAllWork.allPrice) ? Text('-') : Text('+'),)
           //backgroundColor: Colors.grey[900]),
     );
+
+
   }
 
   void _findList(value) {
@@ -85,5 +91,16 @@ class _scrSmetaPriceViewScreenState extends State<scrSmetaPriceViewScreen> {
     });
   }
 
+}
+
+_workTrailing(Works _work) {
+    return (_work.isFolder!) ? Icon(Icons.navigate_next) :
+    (_work.kol==0) ? Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(_work.summa), style: TextStyle(fontSize: 16)) :
+    Column(mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(_work.summa), style: TextStyle(fontSize: 16)),
+        Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(_work.kol), style: TextStyle(fontSize: 14)),
+      ],
+    );
 }
 
