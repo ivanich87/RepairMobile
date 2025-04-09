@@ -8,7 +8,9 @@ import 'package:repairmodule/components/SingleSelections.dart';
 import 'package:repairmodule/models/ListWorks.dart';
 import 'package:repairmodule/models/Lists.dart';
 import 'package:http/http.dart' as http;
+import 'package:repairmodule/models/httpRest.dart';
 import 'package:repairmodule/screens/pdf2.dart';
+import 'package:repairmodule/screens/smeta/smetaPrice_view.dart';
 import 'package:repairmodule/screens/works_edit.dart';
 
 
@@ -98,13 +100,21 @@ class _scrAktViewScreenState extends State<scrAktViewScreen> {
           ]),
           floatingActionButton: FloatingActionButton(
             onPressed: () async {
-              var _res = await Navigator.push(context, MaterialPageRoute(builder: (context) =>
-                  scrWorksEditScreen(widget.akt.id, 2, widget.akt.dogId,
-                      widget.akt.additionalWork, priceDefault)));
-              if (_res!=null) {
-                widget.akt.id = _res;
-                initState();
-              }
+              List <Works> workList = [];
+              await httpGetSmetaAktWorks(widget.akt.id, workList);
+              print(workList.length);
+              // setState(() {
+              //   _isLoad = true;
+              // });
+              await Navigator.push(context, MaterialPageRoute(builder: (context) => scrSmetaPriceViewScreen(workList, '00000000-0000-0000-0000-000000000000', 'Помещения', '00000000-0000-0000-0000-000000000000', SmetaAllWork(false))));
+
+              // var _res = await Navigator.push(context, MaterialPageRoute(builder: (context) =>
+              //     scrWorksEditScreen(widget.akt.id, 2, widget.akt.dogId,
+              //         widget.akt.additionalWork, priceDefault)));
+              // if (_res!=null) {
+              //   widget.akt.id = _res;
+              //   initState();
+              // }
             },
             child: Icon(Icons.edit),
         )

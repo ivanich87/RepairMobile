@@ -165,6 +165,35 @@ Future httpGetSmetaRoomWorks(smetaid, roomid, workList) async {
   }
 }
 
+Future httpGetSmetaAktWorks(akt_id, workList) async {
+  final _queryParameters = {'userId': Globals.anPhone};
+
+  var _url=Uri(path: '${Globals.anPath}smetaaktworks/$akt_id/0/', host: Globals.anServer, scheme: 'https', queryParameters: _queryParameters);
+  print(_url.path);
+  print(Globals.anAuthorization);
+  var _headers = <String, String> {
+    'Accept': 'application/json',
+    'Authorization': Globals.anAuthorization
+  };
+  try {
+    var response = await http.get(_url, headers: _headers);
+    print(response.statusCode.toString());
+    if (response.statusCode == 200) {
+      workList.clear();
+
+      var notesJson = json.decode(response.body);
+      for (var noteJson3 in notesJson['works']) {
+        workList.add(Works.fromJson(noteJson3));
+      }
+    }
+    else
+      throw 'Код ответа: ${response.statusCode.toString()}. Ответ: ${response.body}';
+  } catch (error) {
+    print("Ошибка импорта данных сметы: $error");
+  }
+}
+
+
 Future httpGetSmetaParamCalculation(smetaid, roomid, floor, perimeter, openings, slopeDoor, slopeWindow, slopeWall, slopeConst, hConst) async {
   final _queryParameters = {'userId': Globals.anPhone};
 

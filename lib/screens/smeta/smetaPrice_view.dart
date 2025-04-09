@@ -12,9 +12,10 @@ class scrSmetaPriceViewScreen extends StatefulWidget {
   final List <Works> works;
   final String parentId;
   final String parentName;
+  final String roomId;
   final SmetaAllWork smetaAllWork;
 
-  scrSmetaPriceViewScreen(this.works, this.parentId, this.parentName, this.smetaAllWork);
+  scrSmetaPriceViewScreen(this.works, this.parentId, this.parentName, this.roomId, this.smetaAllWork);
 
   @override
   State<scrSmetaPriceViewScreen> createState() => _scrSmetaPriceViewScreenState();
@@ -25,7 +26,7 @@ class _scrSmetaPriceViewScreenState extends State<scrSmetaPriceViewScreen> {
 
   @override
   void initState() {
-    _findList(widget.parentId);
+    _findList(widget.parentId, widget.roomId);
     // TODO: implement initState
     super.initState();
   }
@@ -53,8 +54,8 @@ class _scrSmetaPriceViewScreenState extends State<scrSmetaPriceViewScreen> {
                         trailing: _workTrailing(filtered_works[index]), //(filtered_works[index].isFolder!) ? Icon(Icons.navigate_next) : Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(filtered_works[index].summa), style: TextStyle(fontSize: 16)),
                         onTap: () async {
                           if (filtered_works[index].isFolder!) {
-                            await Navigator.push(context, MaterialPageRoute(builder: (context) => scrSmetaPriceViewScreen(widget.works, filtered_works[index].workId!, filtered_works[index].workName!, widget.smetaAllWork)));
-                            _findList(widget.parentId);
+                            await Navigator.push(context, MaterialPageRoute(builder: (context) => scrSmetaPriceViewScreen(widget.works, filtered_works[index].workId!, filtered_works[index].workName!, filtered_works[index].roomId!, widget.smetaAllWork)));
+                            _findList(widget.parentId, widget.roomId);
                           }
                           else {
                             await Navigator.push(context, MaterialPageRoute(builder: (context) => scrSmetaWorkEditingScreen(filtered_works[index], true)));
@@ -71,7 +72,7 @@ class _scrSmetaPriceViewScreenState extends State<scrSmetaPriceViewScreen> {
           floatingActionButton: (Globals.anCreateObject==false) ? null : FloatingActionButton(
             onPressed: () async {
               widget.smetaAllWork.allPrice = !widget.smetaAllWork.allPrice;
-              _findList(widget.parentId);
+              _findList(widget.parentId, widget.roomId);
               // final newObjectId = await Navigator.push(context, MaterialPageRoute(builder: (context) => scrObjectCreateScreen(),)) ?? '';
               // if (newObjectId!='') {
               //   Navigator.push(context, MaterialPageRoute( builder: (context) => scrObjectsViewScreen(id: newObjectId)));
@@ -85,10 +86,18 @@ class _scrSmetaPriceViewScreenState extends State<scrSmetaPriceViewScreen> {
 
   }
 
-  void _findList(value) {
-    setState(() {
-      filtered_works = widget.works.where((element) => element.parentId!.toLowerCase().contains(value.toLowerCase()) && (element.kol ?? 0)>((widget.smetaAllWork.allPrice==true) ? -1 : 0)).toList();
-    });
+  void _findList(parentId, roomId) {
+    if (roomId=='00000000-0000-0000-0000-000000000000') {
+      setState(() {
+        filtered_works = widget.works.where((element) => element.parentId!.toLowerCase().contains(parentId.toLowerCase()) && (element.kol ?? 0)>((widget.smetaAllWork.allPrice==true) ? -1 : 0)).toList();
+      });
+    }
+    else {
+      setState(() {
+        filtered_works = widget.works.where((element) => element.roomId!.toLowerCase().contains(roomId.toLowerCase()) && element.parentId!.toLowerCase().contains(parentId.toLowerCase()) && (element.kol ?? 0)>((widget.smetaAllWork.allPrice==true) ? -1 : 0)).toList();
+      });
+    }
+
   }
 
 }

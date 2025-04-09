@@ -154,7 +154,7 @@ class _scrSmetaRoomViewScreenState extends State<scrSmetaRoomViewScreen> {
                     setState(() {
                       _isLoad = true;
                     });
-                    await Navigator.push(context, MaterialPageRoute(builder: (context) => scrSmetaPriceViewScreen(workList, '00000000-0000-0000-0000-000000000000', widget.room_name, SmetaAllWork(false))));
+                    await Navigator.push(context, MaterialPageRoute(builder: (context) => scrSmetaPriceViewScreen(workList, '00000000-0000-0000-0000-000000000000', widget.room_name, widget.room_id, SmetaAllWork(false))));
                     ref();
                   },
                   style: ElevatedButton.styleFrom(backgroundColor: Colors.green,
