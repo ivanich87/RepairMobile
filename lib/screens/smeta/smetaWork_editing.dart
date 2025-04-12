@@ -53,12 +53,12 @@ class _scrSmetaWorkEditingScreenState extends State<scrSmetaWorkEditingScreen> {
                 subtitle: Text('Расчитано по формуле и параметрам'),
                   trailing: IconButton(onPressed: () {
                     setState(() {
-                      widget.rabota.kol=widget.rabota.kolSmeta ?? 0;
+                      widget.rabota.kol=widget.rabota.kolRemains ?? 0;
                     });
 
                     }, icon: Row(mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text('${widget.rabota.kolSmeta ?? 0}', style: TextStyle(fontSize: 16)),
+                      Text('${widget.rabota.kolRemains ?? 0}', style: TextStyle(fontSize: 16)),
                       Icon(Icons.arrow_downward)
                     ],
                   ))
@@ -121,9 +121,9 @@ class _scrSmetaWorkEditingScreenState extends State<scrSmetaWorkEditingScreen> {
               if (value == null || value.isEmpty) {
                 return 'Введите количество';
               }
-              // if (!widget.additionalWork && num.tryParse(value)!>widget.rabota.kolRemains!) {
-              //   return 'Максимальное количество может быть ${widget.rabota.kolRemains}';
-              // }
+              if (!widget.additionalWork && num.tryParse(value)!>widget.rabota.kolRemains!) {
+                return 'Максимальное количество может быть ${widget.rabota.kolRemains}';
+              }
               return null;
             },
             decoration: InputDecoration(border: OutlineInputBorder(

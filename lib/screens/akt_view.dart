@@ -106,7 +106,8 @@ class _scrAktViewScreenState extends State<scrAktViewScreen> {
               // setState(() {
               //   _isLoad = true;
               // });
-              await Navigator.push(context, MaterialPageRoute(builder: (context) => scrSmetaPriceViewScreen(workList, '00000000-0000-0000-0000-000000000000', 'Помещения', '00000000-0000-0000-0000-000000000000', SmetaAllWork(false))));
+              List <Works> priceWorkList = [];
+              await Navigator.push(context, MaterialPageRoute(builder: (context) => scrSmetaPriceViewScreen(widget.akt.smetaId, workList, priceWorkList, '00000000-0000-0000-0000-000000000000', 'Помещения', '00000000-0000-0000-0000-000000000000', SmetaAllWork(false, 1), widget.akt.additionalWork, 2)));
 
               // var _res = await Navigator.push(context, MaterialPageRoute(builder: (context) =>
               //     scrWorksEditScreen(widget.akt.id, 2, widget.akt.dogId,

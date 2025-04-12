@@ -41,6 +41,20 @@ class _scrWorkEditingScreenState extends State<scrWorkEditingScreen> {
           children: [
               Text('${widget.rabota.workName}', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),),
               Divider(),
+              titleHeader('Цены'),
+              ListTile(
+                title: Text('Цена клиента'),
+                trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(widget.rabota.price), style: TextStyle(fontSize: 16)),
+              ),
+              ListTile(
+                title: Text('Цена мастеров'),
+                trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(widget.rabota.priceSub), style: TextStyle(fontSize: 16)),
+                onTap: () {
+                  //if (widget.additionalWork)
+                  _tripEditKol(_tripPriceSubEditWidgets());
+                },
+              ),
+              Divider(),
               titleHeader('Количества'),
               ListTile(
                 title: Text('По смете'),
@@ -52,21 +66,21 @@ class _scrWorkEditingScreenState extends State<scrWorkEditingScreen> {
               ),
               ListTile(
                 title: Text('Осталось'),
-                trailing: Text(widget.rabota.kolRemains.toString(), style: TextStyle(fontSize: 16)),
-              ),
-              Divider(),
-            titleHeader('Цены'),
-              ListTile(
-                title: Text('Цена клиента'),
-                trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(widget.rabota.price), style: TextStyle(fontSize: 16)),
-              ),
-              ListTile(
-                title: Text('Цена мастеров'),
-                trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(widget.rabota.priceSub), style: TextStyle(fontSize: 16)),
-                onTap: () {
-                  //if (widget.additionalWork)
-                    _tripEditKol(_tripPriceSubEditWidgets());
-                },
+                //trailing: Text(widget.rabota.kolRemains.toString(), style: TextStyle(fontSize: 16)),
+                  trailing: IconButton(onPressed: () {
+                    setState(() {
+                      widget.rabota.kol=widget.rabota.kolRemains ?? 0;
+                      widget.rabota.summa = widget.rabota.kol!*widget.rabota.price!;
+                      widget.rabota.summaSub = widget.rabota.kol!*widget.rabota.priceSub!;
+                    });
+
+                  }, icon: Row(mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text('${widget.rabota.kolRemains ?? 0}', style: TextStyle(fontSize: 16)),
+                      Icon(Icons.arrow_downward)
+                    ],
+                  ))
+
               ),
               Divider(),
               ListTile(

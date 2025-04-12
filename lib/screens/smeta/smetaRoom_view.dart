@@ -150,11 +150,14 @@ class _scrSmetaRoomViewScreenState extends State<scrSmetaRoomViewScreen> {
                       _isLoad = false;
                     });
 
+                    print('smetaId=${widget.smeta_id}');
+                    print('roomId=${widget.room_id}');
                     await httpGetSmetaRoomWorks(widget.smeta_id, widget.room_id, workList);
                     setState(() {
                       _isLoad = true;
                     });
-                    await Navigator.push(context, MaterialPageRoute(builder: (context) => scrSmetaPriceViewScreen(workList, '00000000-0000-0000-0000-000000000000', widget.room_name, widget.room_id, SmetaAllWork(false))));
+                    List <Works> priceWorkList = [];
+                    await Navigator.push(context, MaterialPageRoute(builder: (context) => scrSmetaPriceViewScreen(widget.smeta_id, workList, priceWorkList, widget.room_id, widget.room_name, widget.room_id, SmetaAllWork(false, 1), true, 1)));
                     ref();
                   },
                   style: ElevatedButton.styleFrom(backgroundColor: Colors.green,
