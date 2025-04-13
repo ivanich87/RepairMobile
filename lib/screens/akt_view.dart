@@ -188,20 +188,29 @@ class _scrAktViewScreenState extends State<scrAktViewScreen> {
   }
 
   _pageWork() {
-    return ListView.builder(
-      padding: EdgeInsets.all(10),
-      physics: BouncingScrollPhysics(),
-      reverse: false,
-      itemCount: ListWorksTitle.length,
-      itemBuilder: (_, index) => Card(
-        child:
-        ExpansionTile(
-          title: Text(ListWorksTitle[index].workName ?? 'dd'),
-          children: //<Widget>[
-          _generateChildrens(ListWorksTitle[index]),
+    if (ListWorksTitle.length==0)
+      return Column(crossAxisAlignment: CrossAxisAlignment.center, mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text('Работ еще нет.'),
+          Text('Добавьте работы по кнопке'),
+          Text('РЕДАКТИРОВАТЬ справа внизу.'),
+        ],
+      );
+    else
+      return ListView.builder(
+        padding: EdgeInsets.all(10),
+        physics: BouncingScrollPhysics(),
+        reverse: false,
+        itemCount: ListWorksTitle.length,
+        itemBuilder: (_, index) => Card(
+          child:
+          ExpansionTile(
+            title: Text(ListWorksTitle[index].workName ?? 'dd'),
+            children: //<Widget>[
+            _generateChildrens(ListWorksTitle[index]),
+          ),
         ),
-      ),
-    );
+      );
   }
 
   PopupMenuButton<MenuSelectPrice> _menuAppBar() {

@@ -435,25 +435,31 @@ class _scrHomeScreenState extends State<scrHomeScreen> with TickerProviderStateM
           await httpGetListSmeta(smetaList);
           return Future<void>.delayed(const Duration(seconds: 2));
         },
-        child: ListView.builder(
-          padding: EdgeInsets.all(10),
-          physics: BouncingScrollPhysics(),
-          reverse: false,
-          itemCount: smetaList.length,
-          itemBuilder: (_, index) {
-            return Card(
-              child: ListTile(
-                title: Text(smetaList[index].name, style: TextStyle(fontWeight: FontWeight.normal, fontSize: 18)),
-                subtitle: Text(smetaList[index].addres),
-                trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(smetaList[index].summa), style: TextStyle(fontSize: 16)),
-                onTap: () async {
-                  await Navigator.push(context, MaterialPageRoute(builder: (context) => scrSmetaViewScreen(smetaList[index])));
-                  ref();
+        child: Column(
+          children: [Text('Данный раздел находится в разработке'),
+            Expanded(
+              child: ListView.builder(
+                padding: EdgeInsets.all(10),
+                physics: BouncingScrollPhysics(),
+                reverse: false,
+                itemCount: smetaList.length,
+                itemBuilder: (_, index) {
+                  return Card(
+                    child: ListTile(
+                      title: Text(smetaList[index].name, style: TextStyle(fontWeight: FontWeight.normal, fontSize: 18)),
+                      subtitle: Text(smetaList[index].addres),
+                      trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(smetaList[index].summa), style: TextStyle(fontSize: 16)),
+                      onTap: () async {
+                        await Navigator.push(context, MaterialPageRoute(builder: (context) => scrSmetaViewScreen(smetaList[index])));
+                        ref();
+                      },
+                    ),
+                  );
+              
                 },
               ),
-            );
-
-          },
+            ),
+          ],
         ),
     );
   }

@@ -33,7 +33,6 @@ class _scrSmetaPriceViewScreenState extends State<scrSmetaPriceViewScreen> {
   bool _isLoad = true;
   bool _isActive=false;
 
-
   @override
   void initState() {
     _findList(widget.parentId, widget.roomId, '');
@@ -59,14 +58,17 @@ class _scrSmetaPriceViewScreenState extends State<scrSmetaPriceViewScreen> {
                 child: ListTile(
                   title: Text(filtered_works[index].workName ?? '00', style: TextStyle(fontWeight: FontWeight.normal, fontSize: 18)),
                   trailing: _workTrailing(filtered_works[index]), //(filtered_works[index].isFolder!) ? Icon(Icons.navigate_next) : Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(filtered_works[index].summa), style: TextStyle(fontSize: 16)),
-                  subtitle: (filtered_works[index].isFolder!) ? null : Text('Кол-во: ${filtered_works[index].kol}; Сумма: ${NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format((widget.smetaAllWork.priceDefault==1) ? filtered_works[index].summa : filtered_works[index].summaSub)}', style: TextStyle(fontStyle: FontStyle.italic, color: _colors(filtered_works[index].kol)),),
+                  subtitle: _workSubtitle(filtered_works[index]), //(filtered_works[index].isFolder!) ? null : Text('Кол-во: ${filtered_works[index].kol}; Сумма: ${NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format((widget.smetaAllWork.priceDefault==1) ? filtered_works[index].summa : filtered_works[index].summaSub)}', style: TextStyle(fontStyle: FontStyle.italic, color: _colors(filtered_works[index].kol)),),
                   onTap: () async {
                     if (filtered_works[index].isFolder!) {
                       await Navigator.push(context, MaterialPageRoute(builder: (context) => scrSmetaPriceViewScreen(widget.smetaId, widget.works, widget.priceWorkList, filtered_works[index].workId!, filtered_works[index].workName!, filtered_works[index].roomId!, widget.smetaAllWork, true, widget.type)));
                       _findList(widget.parentId, widget.roomId, '');
                     }
                     else {
-                      await Navigator.push(context, MaterialPageRoute(builder: (context) => scrWorkEditingScreen(filtered_works[index], widget.additionalWork)));
+                      if (widget.type==1)
+                        await Navigator.push(context, MaterialPageRoute(builder: (context) => scrSmetaWorkEditingScreen(filtered_works[index], widget.additionalWork)));
+                      else
+                        await Navigator.push(context, MaterialPageRoute(builder: (context) => scrWorkEditingScreen(filtered_works[index], widget.additionalWork)));
                       setState(() {
 
                       });
@@ -90,20 +92,22 @@ class _scrSmetaPriceViewScreenState extends State<scrSmetaPriceViewScreen> {
   }
 
   void _findList(parentId, roomId, _filter) {
-    if (roomId=='00000000-0000-0000-0000-000000000000') {
+    if (_filter!='') {
       setState(() {
-        filtered_works = widget.works.where((element) => element.parentId!.toLowerCase().contains(parentId.toLowerCase()) && (element.kol ?? 0)>((widget.smetaAllWork.allPrice==true) ? -1 : 0)).toList();
+      filtered_works = widget.works.where((element) => element.workName!.toLowerCase().contains(_filter.toLowerCase())).toList();
       });
     }
     else {
-      setState(() {
-        filtered_works = widget.works.where((element) => element.roomId!.toLowerCase().contains(roomId.toLowerCase()) && element.parentId!.toLowerCase().contains(parentId.toLowerCase()) && (element.kol ?? 0)>((widget.smetaAllWork.allPrice==true) ? -1 : 0)).toList();
-      });
-    }
-    if (_filter!='') {
-      List <Works> filtered_works2=[];
-      filtered_works2 = filtered_works.where((element) => element.workName!.toLowerCase().contains(_filter.toLowerCase())).toList();
-      filtered_works = filtered_works2;
+      if (roomId == '00000000-0000-0000-0000-000000000000') {
+        setState(() {
+          filtered_works = widget.works.where((element) => element.parentId!.toLowerCase().contains(parentId.toLowerCase()) && (element.kol ?? 0) > ((widget.smetaAllWork.allPrice == true) ? -1 : 0)).toList();
+        });
+      }
+      else {
+        setState(() {
+          filtered_works = widget.works.where((element) => element.roomId!.toLowerCase().contains(roomId.toLowerCase()) && element.parentId!.toLowerCase().contains(parentId.toLowerCase()) && (element.kol ?? 0) > ((widget.smetaAllWork.allPrice == true) ? -1 : 0)).toList();
+        });
+      }
     }
   }
 
@@ -121,6 +125,32 @@ class _scrSmetaPriceViewScreenState extends State<scrSmetaPriceViewScreen> {
         _work.summaSub = _work.kol! * (_work.priceSub ?? 0);
       });
     });
+  }
+
+  _workSubtitle(Works _work) {
+    if (_isActive) {
+      if (_work.isFolder ?? false) {
+        if (widget.type==1)
+          return Text(_work.parentName ?? '');
+        else
+          return Column(mainAxisAlignment: MainAxisAlignment.start, crossAxisAlignment: CrossAxisAlignment.start, children: [Text(_work.roomName ?? ''), Text(_work.parentName ?? '')],);
+      }
+      else {
+        return Column(mainAxisAlignment: MainAxisAlignment.start, crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (widget.type!=1)
+              Text(_work.roomName ?? ''),
+            Text(_work.parentName ?? ''),
+            Text('Кол-во: ${_work.kol}; Сумма: ${NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format((widget.smetaAllWork.priceDefault==1) ? _work.summa : _work.summaSub)}', style: TextStyle(fontStyle: FontStyle.italic, color: _colors(_work.kol)),)
+          ],
+        );
+      }
+    }
+    else {
+      return (_work.isFolder!) ? null : Text('Кол-во: ${_work.kol}; Сумма: ${NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format((widget.smetaAllWork.priceDefault==1) ? _work.summa : _work.summaSub)}', style: TextStyle(fontStyle: FontStyle.italic, color: _colors(_work.kol)),);
+    }
+    return null;
+
   }
 
   _colors(kol) {
@@ -189,7 +219,7 @@ class _scrSmetaPriceViewScreenState extends State<scrSmetaPriceViewScreen> {
     return Row(
       children: [
         if (!_isActive)
-          Text(widget.parentName, style: Theme.of(context).appBarTheme.titleTextStyle),
+          Expanded(flex: 5,  child: Text(widget.parentName, style: Theme.of(context).appBarTheme.titleTextStyle)),
         Expanded(
           child: Align(
             alignment: Alignment.centerRight,
@@ -200,7 +230,7 @@ class _scrSmetaPriceViewScreenState extends State<scrSmetaPriceViewScreen> {
                 width: double.infinity,
                 height: 40,
                 decoration: BoxDecoration(
-                    color: Colors.white30,
+                    color: Colors.white,
                     borderRadius: BorderRadius.circular(4.0)),
                 child: TextField(autofocus: true,
                   decoration: InputDecoration(
