@@ -102,8 +102,11 @@ Future httpGetListSmeta(objectList) async {
   }
 }
 
-Future httpGetSmetaInfo(id, roomList) async { //, paramList, workList
+Future httpGetSmetaInfo(id, roomList) async { //, pa// ramList, workList
   final _queryParameters = {'userId': Globals.anPhone};
+
+  if (id=='' || id=='new')
+    return;
 
   var _url=Uri(path: '${Globals.anPath}smetainfo/$id/', host: Globals.anServer, scheme: 'https', queryParameters: _queryParameters);
   print(_url.path);
@@ -137,6 +140,44 @@ Future httpGetSmetaInfo(id, roomList) async { //, paramList, workList
   }
 }
 
+Future httpPostSmetaInfo(smeta, roomList) async {
+  final _queryParameters = {'userId': Globals.anPhone};
+
+  var _url=Uri(path: '${Globals.anPath}smetainfo/${smeta.id}/', host: Globals.anServer, scheme: 'https', queryParameters: _queryParameters);
+  print(_url.path);
+  var _headers = <String, String> {
+    'Accept': 'application/json',
+    'Authorization': Globals.anAuthorization
+  };
+  try {
+    var _body = <String, dynamic> {
+      "name": smeta.name,
+      "addres": smeta.addres,
+      "comment": smeta.comment,
+      "rooms": roomList!.map((v) => v.toJson()).toList()
+    };
+    print(jsonEncode(_body));
+    var response = await http.post(_url, headers: _headers, body: jsonEncode(_body));
+    print('Код ответа: ${response.statusCode} Тело ответа: ${response.body}');
+    if (response.statusCode==200) {
+      if (smeta.id == 'new') {
+        var noteJson = json.decode(response.body);
+        ListSmeta _smeta2 = ListSmeta.fromJson(noteJson);
+        print('Новый идентификатор сметы: ${_smeta2.id}');
+        smeta.id = _smeta2.id;
+        smeta.number = _smeta2.number;
+        smeta.date = _smeta2.date;
+        smeta.name = _smeta2.name;
+        smeta.addres = _smeta2.addres;
+        smeta.comment = _smeta2.comment;
+      }
+    }
+
+  } catch (error) {
+    print("Ошибка импорта работ сметы по помещению: $error");
+  }
+}
+
 Future httpGetSmetaRoomWorks(smetaid, roomid, workList) async {
   final _queryParameters = {'userId': Globals.anPhone};
 
@@ -165,8 +206,8 @@ Future httpGetSmetaRoomWorks(smetaid, roomid, workList) async {
   }
 }
 
-Future httpGetSmetaAktWorks(akt_id, workList) async {
-  final _queryParameters = {'userId': Globals.anPhone};
+Future httpGetSmetaAktWorks(akt_id, dog_id, workList) async {
+  final _queryParameters = {'userId': Globals.anPhone, 'dogId': dog_id};
 
   var _url=Uri(path: '${Globals.anPath}smetaaktworks/$akt_id/0/', host: Globals.anServer, scheme: 'https', queryParameters: _queryParameters);
   print(_url.path);
@@ -185,6 +226,7 @@ Future httpGetSmetaAktWorks(akt_id, workList) async {
       for (var noteJson3 in notesJson['works']) {
         workList.add(Works.fromJson(noteJson3));
       }
+      print(workList.length);
     }
     else
       throw 'Код ответа: ${response.statusCode.toString()}. Ответ: ${response.body}';
@@ -273,6 +315,44 @@ Future httpPostSmetaParamCalculation(smetaid, roomid, floor, perimeter, openings
     print("Ошибка импорта работ сметы по помещению: $error");
   }
 }
+
+Future<bool> httpObjectUpdateWorks(object, dogId, type, ListWorks) async {
+  bool _result=false;
+
+  final _queryParameters = {'userId': Globals.anPhone, 'dogId': dogId};
+
+  var _url=Uri(path: '${Globals.anPath}workedit/${object.id}/${type}/', host: Globals.anServer, scheme: 'https', queryParameters: _queryParameters);
+  var _headers = <String, String> {
+    'Accept': 'application/json',
+    'Authorization': Globals.anAuthorization
+  };
+
+  try {
+    print('Start export works!!!!');
+    print(json.encode(ListWorks));
+    var response = await http.post(_url, headers: _headers, body: json.encode(ListWorks));
+    print('Код ответа: ${response.statusCode} Тело ответа: ${response.body}');
+
+    if (response.statusCode == 200) {
+      var data = json.decode(response.body);
+      String _id = data['Код'] ?? '';
+      _result = data['Успешно'] ?? false;
+      String _message = data['Сообщение'] ?? '';
+
+      object.id = _id;
+
+      print('Работы по акту выгружены. Результат:  $_result. Сообщение:  $_message');
+    }
+    else {
+      _result = false;
+    }
+  } catch (error) {
+    _result = false;
+    print("Ошибка при выгрузке работ по акту: $error");
+  }
+  return _result ?? false;
+}
+
 
 Future httpGetListPlat(objectList, analyticId, objectId, platType, kassaSotrId, kassaContractorId, idCash, approve, dateRange) async {
   var queryParameters = <String, dynamic> {

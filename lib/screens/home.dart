@@ -383,10 +383,8 @@ class _scrHomeScreenState extends State<scrHomeScreen> with TickerProviderStateM
       case 3:
         return FloatingActionButton(
           onPressed: () async {
-            // List<taskObservertList> taskObservers=[];
-            // taskList newTask = taskList(id: '', number: 0, name: '', content: '', directorId: Globals.anUserId, director: Globals.anUserName, executorId: '', executor: '', dateCreate: DateTime.now(), dateTo: DateTime.now(), statusId: '52139514-180a-4b78-a882-187cc6832af2', status: 'Ждет исполнителя', reportToEnd: true, resultText: '', objectId: '', objectName: '', generalTaskId: '', generalTaskName: '', generalTaskNumber: 0, generalTaskDateCreate: DateTime.now(), generalTaskExecutor: '', timeTracking: false, changeDeadline: false, resultControl: false, taskCloseAuto: false, deadlineFromSubtask: false, schemeTaxi: true);
-            // await Navigator.push(context, MaterialPageRoute(builder: (context) => scrTaskEditScreen(task: newTask, TaskObservertList: taskObservers))) ?? '';
-            // ref();
+            await Navigator.push(context, MaterialPageRoute(builder: (context) => scrSmetaViewScreen(ListSmeta('new', '', DateTime.now(), 'Новая смета', 'Новая смета', 0, 0, ''))));
+            ref();
           },
           child: Icon(Icons.add),);
       case 4:

@@ -9,6 +9,7 @@ import 'package:http/http.dart' as http;
 import 'package:repairmodule/models/httpRest.dart';
 import 'package:repairmodule/screens/smeta/smetaPrice_view.dart';
 import 'package:repairmodule/screens/smeta/smetaRoom_view.dart';
+import 'package:repairmodule/screens/sprList.dart';
 
 
 
@@ -29,13 +30,25 @@ class _scrSmetaViewScreenState extends State<scrSmetaViewScreen> {
   void initState() {
     print('initState');
 
-    httpGetSmetaInfo(widget.smeta.id, roomList).then((value) {
-      setState(() {
-        //workList.clear();
-      });
-    });
+    _refSmeta();
+
     // TODO: implement initState
     super.initState();
+  }
+
+  _refSmeta() async {
+    await httpGetSmetaInfo(widget.smeta.id, roomList);
+    setState(() {
+
+    });
+  }
+
+  _saveSmeta() async {
+    await httpPostSmetaInfo(widget.smeta, roomList);
+    setState(() {
+
+    });
+
   }
 
   Widget build(BuildContext context) {
@@ -61,48 +74,67 @@ class _scrSmetaViewScreenState extends State<scrSmetaViewScreen> {
               Divider(),
               SizedBox(height: 8,),
               Text('Помещения:', style: TextStyle(fontSize: 16)),
-              Expanded(
-                child: ListView.builder(
-                  //padding: EdgeInsets.all(10),
-                  physics: BouncingScrollPhysics(),
-                  reverse: false,
-                  itemCount: roomList.length,
-                    itemBuilder: (_, index) {
-                      return Card(
-                        child: ListTile(
-                          title: Text(roomList[index].name, style: TextStyle(fontWeight: FontWeight.normal, fontSize: 18)),
-                          trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(roomList[index].summa), style: TextStyle(fontSize: 16)),
-                          onTap: () async {
-                            // setState(() {
-                            //   isLoad = false;
-                            // });
+              ListView.builder(
+                shrinkWrap: true,
+                //padding: EdgeInsets.all(10),
+                physics: BouncingScrollPhysics(),
+                reverse: false,
+                itemCount: roomList.length,
+                  itemBuilder: (_, index) {
+                    return Card(
+                      child: ListTile(
+                        title: Text(roomList[index].name, style: TextStyle(fontWeight: FontWeight.normal, fontSize: 18)),
+                        trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(roomList[index].summa), style: TextStyle(fontSize: 16)),
+                        onTap: () async {
+                          // setState(() {
+                          //   isLoad = false;
+                          // });
 
-                            // await httpGetSmetaRoomWorks(widget.smeta.id, roomList[index].id, workList);
-                            // setState(() {
-                            //   isLoad = true;
-                            // });
-                            //Navigator.push(context, MaterialPageRoute(builder: (context) => scrSmetaPriceViewScreen(workList, '00000000-0000-0000-0000-000000000000', roomList[index].name, SmetaAllWork(false))));
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => scrSmetaRoomViewScreen(widget.smeta.id, roomList[index].id, roomList[index].name)));
-                          },
-                        ),
-                      );
+                          // await httpGetSmetaRoomWorks(widget.smeta.id, roomList[index].id, workList);
+                          // setState(() {
+                          //   isLoad = true;
+                          // });
+                          //Navigator.push(context, MaterialPageRoute(builder: (context) => scrSmetaPriceViewScreen(workList, '00000000-0000-0000-0000-000000000000', roomList[index].name, SmetaAllWork(false))));
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => scrSmetaRoomViewScreen(widget.smeta.id, roomList[index].id, roomList[index].name)));
+                        },
+                      ),
+                    );
 
+                  },
+                ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                child: Center(
+                  child: ElevatedButton.icon(
+                    icon: Icon(Icons.add, color: Colors.black),
+                    label: Text('Добавить помещение', style: TextStyle(color: Colors.black, fontSize: 15)),
+                    onPressed: () async {
+                      final newObjectId = await Navigator.push(context, MaterialPageRoute(builder: (context) => scrListScreen(sprName: 'Помещения', onType: 'pop'),)) ?? '';
+                      if (newObjectId.id!='') {
+                        setState(() {
+                          roomList.add(ListSmetaRoom(newObjectId.id, newObjectId.name, 0, 0));
+                        });
+                      }
                     },
+                    style: ElevatedButton.styleFrom(backgroundColor: Colors.green,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12.0),
+                      ),
+                    ),
                   ),
-              ),
+                ),
+              )
+
             ],
           ),
         ),
           floatingActionButton: (Globals.anCreateObject==false) ? null : FloatingActionButton(
             onPressed: () async {
-              // final newObjectId = await Navigator.push(context, MaterialPageRoute(builder: (context) => scrObjectCreateScreen(),)) ?? '';
-              // if (newObjectId!='') {
-              //   Navigator.push(context, MaterialPageRoute( builder: (context) => scrObjectsViewScreen(id: newObjectId)));
-              //   initState();
-              // }
+              _saveSmeta();
             },
-            child: Icon(Icons.add),)
+            child: Icon(Icons.save),)
     );
   }
 }
+
 

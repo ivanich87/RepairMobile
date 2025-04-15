@@ -44,6 +44,9 @@ class _scrAktViewScreenState extends State<scrAktViewScreen> {
       var response = await http.get(_url, headers: _headers);
       print(response.statusCode.toString());
       if (response.statusCode == 200) {
+        ListWorks.clear();
+        ListWorksTitle.clear();
+
         print(response.body.toString());
         //widget.akt = Akt.fromJson(json.decode(response.body));
         widget.akt.summa = json.decode(response.body)['summa'];
@@ -71,8 +74,6 @@ class _scrAktViewScreenState extends State<scrAktViewScreen> {
       priceDefault=2;
 
     print('initState');
-    ListWorks.clear();
-    ListWorksTitle.clear();
 
     httpGetInfoObject().then((value) {
       setState(() {
@@ -81,6 +82,14 @@ class _scrAktViewScreenState extends State<scrAktViewScreen> {
     // TODO: implement initState
     //super.initState();
   }
+
+  ref() async {
+    await httpGetInfoObject();
+     setState(() {
+
+     });
+  }
+
   Widget build(BuildContext context) {
     return DefaultTabController(
       length: 2,
@@ -101,13 +110,20 @@ class _scrAktViewScreenState extends State<scrAktViewScreen> {
           floatingActionButton: FloatingActionButton(
             onPressed: () async {
               List <Works> workList = [];
-              await httpGetSmetaAktWorks(widget.akt.id, workList);
+              await httpGetSmetaAktWorks(widget.akt.id, widget.akt.dogId, workList);
               print(workList.length);
               // setState(() {
               //   _isLoad = true;
               // });
               List <Works> priceWorkList = [];
-              await Navigator.push(context, MaterialPageRoute(builder: (context) => scrSmetaPriceViewScreen(widget.akt.smetaId, workList, priceWorkList, '00000000-0000-0000-0000-000000000000', 'Помещения', '00000000-0000-0000-0000-000000000000', SmetaAllWork(false, 1), widget.akt.additionalWork, 2)));
+              SmetaAllWork smetaAllWork = SmetaAllWork(false, priceDefault, widget.akt.id);
+              await Navigator.push(context, MaterialPageRoute(builder: (context) => scrSmetaPriceViewScreen(widget.akt.smetaId, workList, priceWorkList, '00000000-0000-0000-0000-000000000000', 'Помещения', '00000000-0000-0000-0000-000000000000', smetaAllWork, widget.akt.additionalWork, 2)));
+              print('Текущий ИД акта = ${widget.akt.id}');
+              if (widget.akt.id=='' || widget.akt.id=='0' || widget.akt.id=='new')
+                widget.akt.id = smetaAllWork.id;
+              print('Текущий ИД акта = ${smetaAllWork.id}');
+              print('Текущий ИД акта = ${widget.akt.id}');
+              ref();
 
               // var _res = await Navigator.push(context, MaterialPageRoute(builder: (context) =>
               //     scrWorksEditScreen(widget.akt.id, 2, widget.akt.dogId,

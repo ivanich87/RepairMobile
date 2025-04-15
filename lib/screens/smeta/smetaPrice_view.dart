@@ -61,7 +61,10 @@ class _scrSmetaPriceViewScreenState extends State<scrSmetaPriceViewScreen> {
                   subtitle: _workSubtitle(filtered_works[index]), //(filtered_works[index].isFolder!) ? null : Text('Кол-во: ${filtered_works[index].kol}; Сумма: ${NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format((widget.smetaAllWork.priceDefault==1) ? filtered_works[index].summa : filtered_works[index].summaSub)}', style: TextStyle(fontStyle: FontStyle.italic, color: _colors(filtered_works[index].kol)),),
                   onTap: () async {
                     if (filtered_works[index].isFolder!) {
-                      await Navigator.push(context, MaterialPageRoute(builder: (context) => scrSmetaPriceViewScreen(widget.smetaId, widget.works, widget.priceWorkList, filtered_works[index].workId!, filtered_works[index].workName!, filtered_works[index].roomId!, widget.smetaAllWork, true, widget.type)));
+                      var _CloseParam = await Navigator.push(context, MaterialPageRoute(builder: (context) => scrSmetaPriceViewScreen(widget.smetaId, widget.works, widget.priceWorkList, filtered_works[index].workId!, filtered_works[index].workName!, filtered_works[index].roomId!, widget.smetaAllWork, true, widget.type)));
+                      if (_CloseParam=='CloseAll')
+                        Navigator.pop(context, 'CloseAll');
+                      else
                       _findList(widget.parentId, widget.roomId, '');
                     }
                     else {
@@ -81,10 +84,19 @@ class _scrSmetaPriceViewScreenState extends State<scrSmetaPriceViewScreen> {
           ),
           floatingActionButton: (Globals.anCreateObject==false) ? null : FloatingActionButton(
             onPressed: () async {
-              widget.smetaAllWork.allPrice = !widget.smetaAllWork.allPrice;
-              _findList(widget.parentId, widget.roomId, '');
+              bool _res = await httpObjectUpdateWorks(widget.smetaAllWork, widget.smetaId, widget.type, widget.works);
+              if (_res)
+                Navigator.pop(context, 'CloseAll');
+              else {
+                final snackBar = SnackBar(
+                  content: Text('Ошибка при сохранении работ'),
+                );
+                ScaffoldMessenger.of(context).showSnackBar(snackBar);
+              }
+              //widget.smetaAllWork.allPrice = !widget.smetaAllWork.allPrice;
+              //_findList(widget.parentId, widget.roomId, '');
             },
-            child: (widget.smetaAllWork.allPrice) ? Text('-') : Text('+'),)
+            child: Icon(Icons.save)) //(widget.smetaAllWork.allPrice) ? Text('-') : Text('+')
           //backgroundColor: Colors.grey[900]),
     );
 
@@ -100,16 +112,17 @@ class _scrSmetaPriceViewScreenState extends State<scrSmetaPriceViewScreen> {
     else {
       if (roomId == '00000000-0000-0000-0000-000000000000') {
         setState(() {
-          filtered_works = widget.works.where((element) => element.parentId!.toLowerCase().contains(parentId.toLowerCase()) && (element.kol ?? 0) > ((widget.smetaAllWork.allPrice == true) ? -1 : 0)).toList();
+          filtered_works = widget.works.where((element) => element.parentId!.toLowerCase().contains(parentId.toLowerCase()) && ((widget.type==1) ? (element.kol ?? 0) : (element.kolRemains ?? 0)) > ((widget.smetaAllWork.allPrice == true) ? -1 : 0)).toList();
         });
       }
       else {
         setState(() {
-          filtered_works = widget.works.where((element) => element.roomId!.toLowerCase().contains(roomId.toLowerCase()) && element.parentId!.toLowerCase().contains(parentId.toLowerCase()) && (element.kol ?? 0) > ((widget.smetaAllWork.allPrice == true) ? -1 : 0)).toList();
+          filtered_works = widget.works.where((element) => element.roomId!.toLowerCase().contains(roomId.toLowerCase()) && element.parentId!.toLowerCase().contains(parentId.toLowerCase()) && ((widget.type==1) ? (element.kol ?? 0) : (element.kolRemains ?? 0)) > ((widget.smetaAllWork.allPrice == true) ? -1 : 0)).toList();
         });
       }
     }
   }
+
 
   _workTrailing(Works _work) {
     return (_work.isFolder!) ? Icon(Icons.navigate_next) :

@@ -429,6 +429,14 @@ class ListSmetaRoom {
     summa = json['summa'] ?? 0;
     seb = json['seb'] ?? 0;
   }
+
+  Map<String, dynamic> toJson() =>
+      {
+        'id': id,
+        'name': name,
+        'summa': summa,
+        'seb': seb
+      };
 }
 
 

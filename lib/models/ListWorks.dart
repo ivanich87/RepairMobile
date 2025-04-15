@@ -74,7 +74,8 @@ class Works {
 class SmetaAllWork{
   late bool allPrice;
   late int priceDefault;
+  late String id;
 
-  SmetaAllWork(this.allPrice, this.priceDefault);
+  SmetaAllWork(this.allPrice, this.priceDefault, this.id);
 
 }
