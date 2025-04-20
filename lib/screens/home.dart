@@ -259,8 +259,9 @@ class _scrHomeScreenState extends State<scrHomeScreen> with TickerProviderStateM
     });
 
     _taskTabController = TabController(length: 4, vsync: this, initialIndex: 0);
-     httpGetInfo(CashSummaAll, CashSummaPO, ObjectKol, ApprovalKol).then((value) {
-       setState(() {
+     //httpGetInfo(CashSummaAll, CashSummaPO, ObjectKol, ApprovalKol).then((value) {
+    _httpGetInfo().then((value) { //CashSummaAll, CashSummaPO, ObjectKol, ApprovalKol
+      setState(() {
          _platTabController = TabController(length: (Globals.anApprovalPlat==true) ? 3: 2, vsync: this);
        });
      });
@@ -288,7 +289,8 @@ class _scrHomeScreenState extends State<scrHomeScreen> with TickerProviderStateM
   }
 
   ref() async {
-    await httpGetInfo(CashSummaAll, CashSummaPO, ObjectKol, ApprovalKol);
+    //await httpGetInfo(CashSummaAll, CashSummaPO, ObjectKol, ApprovalKol);
+    await _httpGetInfo();
     if (Globals.anUserRoleId!=3) {
       _filter.kassaSotrId = Globals.anUserId;
       _filter.kassaSortName = Globals.anUserName;
