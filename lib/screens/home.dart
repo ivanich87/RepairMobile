@@ -383,7 +383,7 @@ class _scrHomeScreenState extends State<scrHomeScreen> with TickerProviderStateM
       case 3:
         return FloatingActionButton(
           onPressed: () async {
-            await Navigator.push(context, MaterialPageRoute(builder: (context) => scrSmetaViewScreen(ListSmeta('new', '', DateTime.now(), 'Новая смета', 'Новая смета', 0, 0, ''))));
+            await Navigator.push(context, MaterialPageRoute(builder: (context) => scrSmetaViewScreen(ListSmeta('new', '', DateTime.now(), 'Новая смета', 'Новая смета', 0, 0, '', '', ''))));
             ref();
           },
           child: Icon(Icons.add),);
@@ -439,7 +439,7 @@ class _scrHomeScreenState extends State<scrHomeScreen> with TickerProviderStateM
               child: ListView.builder(
                 padding: EdgeInsets.all(10),
                 physics: BouncingScrollPhysics(),
-                reverse: false,
+                reverse: true,
                 itemCount: smetaList.length,
                 itemBuilder: (_, index) {
                   return Card(

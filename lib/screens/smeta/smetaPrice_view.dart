@@ -48,40 +48,62 @@ class _scrSmetaPriceViewScreenState extends State<scrSmetaPriceViewScreen> {
         centerTitle: true,
         actions:     (widget.type==1 || widget.parentId=='00000000-0000-0000-0000-000000000000') ? null : <Widget>[_menuAppBar()],
       ),
-        body: (_isLoad==false) ? Center(child: CircularProgressIndicator()) : ListView.builder(
-          padding: EdgeInsets.all(10),
-          physics: BouncingScrollPhysics(),
-          reverse: false,
-          itemCount: filtered_works.length,
-            itemBuilder: (_, index) {
-              return Card(
-                child: ListTile(
-                  title: Text(filtered_works[index].workName ?? '00', style: TextStyle(fontWeight: FontWeight.normal, fontSize: 18)),
-                  trailing: _workTrailing(filtered_works[index]), //(filtered_works[index].isFolder!) ? Icon(Icons.navigate_next) : Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(filtered_works[index].summa), style: TextStyle(fontSize: 16)),
-                  subtitle: _workSubtitle(filtered_works[index]), //(filtered_works[index].isFolder!) ? null : Text('Кол-во: ${filtered_works[index].kol}; Сумма: ${NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format((widget.smetaAllWork.priceDefault==1) ? filtered_works[index].summa : filtered_works[index].summaSub)}', style: TextStyle(fontStyle: FontStyle.italic, color: _colors(filtered_works[index].kol)),),
-                  onTap: () async {
-                    if (filtered_works[index].isFolder!) {
-                      var _CloseParam = await Navigator.push(context, MaterialPageRoute(builder: (context) => scrSmetaPriceViewScreen(widget.smetaId, widget.works, widget.priceWorkList, filtered_works[index].workId!, filtered_works[index].workName!, filtered_works[index].roomId!, widget.smetaAllWork, true, widget.type)));
-                      if (_CloseParam=='CloseAll')
-                        Navigator.pop(context, 'CloseAll');
-                      else
-                      _findList(widget.parentId, widget.roomId, '');
-                    }
-                    else {
-                      if (widget.type==1)
-                        await Navigator.push(context, MaterialPageRoute(builder: (context) => scrSmetaWorkEditingScreen(filtered_works[index], widget.additionalWork)));
-                      else
-                        await Navigator.push(context, MaterialPageRoute(builder: (context) => scrWorkEditingScreen(filtered_works[index], widget.additionalWork)));
-                      setState(() {
+        body: (_isLoad==false) ? Center(child: CircularProgressIndicator()) :
+        Column(
+          children: [
+            ElevatedButton.icon(
+              icon: (widget.smetaAllWork.allPrice) ? Icon(Icons.done_all, color: Colors.black) : Icon(Icons.add, color: Colors.black),
+              label: _filterLabelText(),
+              onPressed: () async {
+                widget.smetaAllWork.allPrice = !widget.smetaAllWork.allPrice;
+                _findList(widget.parentId, widget.roomId, '');
+              },
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.white10,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12.0),
+                ),
+              ),
+            ),
+            Expanded(
+              child: ListView.builder(
+                padding: EdgeInsets.all(10),
+                physics: BouncingScrollPhysics(),
+                reverse: false,
+                itemCount: filtered_works.length,
+                  itemBuilder: (_, index) {
+                    return Card(
+                      child: ListTile(
+                        title: Text(filtered_works[index].workName ?? '00', style: TextStyle(fontWeight: FontWeight.normal, fontSize: 18)),
+                        trailing: _workTrailing(filtered_works[index]), //(filtered_works[index].isFolder!) ? Icon(Icons.navigate_next) : Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(filtered_works[index].summa), style: TextStyle(fontSize: 16)),
+                        subtitle: _workSubtitle(filtered_works[index]), //(filtered_works[index].isFolder!) ? null : Text('Кол-во: ${filtered_works[index].kol}; Сумма: ${NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format((widget.smetaAllWork.priceDefault==1) ? filtered_works[index].summa : filtered_works[index].summaSub)}', style: TextStyle(fontStyle: FontStyle.italic, color: _colors(filtered_works[index].kol)),),
+                        onTap: () async {
+                          if (filtered_works[index].isFolder!) {
+                            var _CloseParam = await Navigator.push(context, MaterialPageRoute(builder: (context) => scrSmetaPriceViewScreen(widget.smetaId, widget.works, widget.priceWorkList, filtered_works[index].workId!, filtered_works[index].workName!, filtered_works[index].roomId!, widget.smetaAllWork, true, widget.type)));
+                            if (_CloseParam.toString()=='CloseAll')
+                              Navigator.pop(context, 'CloseAll');
+                            else
+                            _findList(widget.parentId, widget.roomId, '');
+                          }
+                          else {
+                            if (widget.type==1){
+                              await Navigator.push(context, MaterialPageRoute(builder: (context) => scrSmetaWorkEditingScreen(filtered_works[index], widget.additionalWork)));
+                              _parentAddRecursion(filtered_works[index].parentId);
+                            }
+                            else
+                              await Navigator.push(context, MaterialPageRoute(builder: (context) => scrWorkEditingScreen(filtered_works[index], widget.additionalWork)));
+                            setState(() {
 
-                      });
-                    }
+                            });
+                          }
+                        },
+                      ),
+                    );
+
                   },
                 ),
-              );
-
-            },
-          ),
+            ),
+          ],
+        ),
           floatingActionButton: (Globals.anCreateObject==false) ? null : FloatingActionButton(
             onPressed: () async {
               bool _res = await httpObjectUpdateWorks(widget.smetaAllWork, widget.smetaId, widget.type, widget.works);
@@ -96,7 +118,7 @@ class _scrSmetaPriceViewScreenState extends State<scrSmetaPriceViewScreen> {
               //widget.smetaAllWork.allPrice = !widget.smetaAllWork.allPrice;
               //_findList(widget.parentId, widget.roomId, '');
             },
-            child: Icon(Icons.save)) //(widget.smetaAllWork.allPrice) ? Text('-') : Text('+')
+            child: Icon(Icons.save))
           //backgroundColor: Colors.grey[900]),
     );
 
@@ -123,6 +145,12 @@ class _scrSmetaPriceViewScreenState extends State<scrSmetaPriceViewScreen> {
     }
   }
 
+  _filterLabelText() {
+    if (widget.type==1)
+      return (widget.smetaAllWork.allPrice) ? Text('Оставить только выбранные') : Text('Показать весь прайс');
+    else
+      return (widget.smetaAllWork.allPrice) ? Text('Оставить только не выполненные') : Text('Показать все работы по смете');
+  }
 
   _workTrailing(Works _work) {
     return (_work.isFolder!) ? Icon(Icons.navigate_next) :
@@ -226,6 +254,18 @@ class _scrSmetaPriceViewScreenState extends State<scrSmetaPriceViewScreen> {
     }
     widget.smetaAllWork.allPrice=true;
 
+  }
+
+  _parentAddRecursion(_parentId) {
+    List <Works> priceFilteredWorkList = [];
+    print('Количество работ к добавлению1 ');
+    priceFilteredWorkList = widget.works.where((element) => element.workId!.toLowerCase().contains(_parentId.toLowerCase())).toList();
+    print('Количество работ к добавлению2 ${priceFilteredWorkList.length}');
+    for (var noteJson3 in priceFilteredWorkList) {
+      noteJson3.kol=1;
+      noteJson3.kolRemains=1;
+      _parentAddRecursion(noteJson3.parentId);
+    }
   }
 
   _SearchBar() {

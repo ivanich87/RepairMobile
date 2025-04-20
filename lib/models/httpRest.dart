@@ -102,7 +102,7 @@ Future httpGetListSmeta(objectList) async {
   }
 }
 
-Future httpGetSmetaInfo(id, roomList) async { //, pa// ramList, workList
+Future httpGetSmetaInfo(id, roomList, smeta) async { //, pa// ramList, workList
   final _queryParameters = {'userId': Globals.anPhone};
 
   if (id=='' || id=='new')
@@ -123,6 +123,14 @@ Future httpGetSmetaInfo(id, roomList) async { //, pa// ramList, workList
       //paramList.clear();
 
       var notesJson = json.decode(response.body);
+      smeta.number = notesJson['number'];
+      smeta.date = DateTime.tryParse(notesJson['date']);
+      smeta.name = notesJson['name'];
+      smeta.addres = notesJson['addres'];
+      smeta.summa = notesJson['summa'];
+      smeta.seb = notesJson['seb'];
+      smeta.comment = notesJson['comment'];
+
       for (var noteJson1 in notesJson['rooms']) {
         roomList.add(ListSmetaRoom.fromJson(noteJson1));
       }

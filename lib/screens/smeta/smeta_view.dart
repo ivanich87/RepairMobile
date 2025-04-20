@@ -25,6 +25,12 @@ class scrSmetaViewScreen extends StatefulWidget {
 class _scrSmetaViewScreenState extends State<scrSmetaViewScreen> {
   List <ListSmetaRoom> roomList = [];
   bool isLoad = true;
+  bool isChange = false;
+
+  bool _writeName = false;
+  bool _writeAddres = false;
+  TextEditingController smetaName = TextEditingController(text: '');
+  TextEditingController smetaAddres = TextEditingController(text: '');
 
   @override
   void initState() {
@@ -37,7 +43,7 @@ class _scrSmetaViewScreenState extends State<scrSmetaViewScreen> {
   }
 
   _refSmeta() async {
-    await httpGetSmetaInfo(widget.smeta.id, roomList);
+    await httpGetSmetaInfo(widget.smeta.id, roomList, widget.smeta);
     setState(() {
 
     });
@@ -48,10 +54,52 @@ class _scrSmetaViewScreenState extends State<scrSmetaViewScreen> {
     setState(() {
 
     });
+    isChange = false;
+  }
 
+  _title(type, val){
+    if (type==1) {
+      if (val==true)
+        return TextFormField(
+            textAlign: TextAlign.start,
+            controller: smetaName,
+            keyboardType: TextInputType.text,
+            style: TextStyle(fontSize: 18),
+            decoration: InputDecoration(border: OutlineInputBorder(), labelText: 'Название сметы',
+            ),
+            textInputAction: TextInputAction.next,
+            validator: (value) {
+              if (value == null || value.isEmpty) {return 'Заполните название сметы';}
+              return null;
+            }
+        );
+      else
+        return Text('${widget.smeta.name}', style: TextStyle(fontSize: 18));
+    }
+
+    if (type==2) {
+      if (val==true)
+        return TextFormField(
+            textAlign: TextAlign.start,
+            controller: smetaAddres,
+            keyboardType: TextInputType.text,
+            style: TextStyle(fontSize: 18),
+            decoration: InputDecoration(border: OutlineInputBorder(), labelText: 'Адрес объекта',
+            ),
+            textInputAction: TextInputAction.next,
+            validator: (value) {
+              if (value == null || value.isEmpty) {return 'Заполните адрес объекта';}
+              return null;
+            }
+        );
+      else
+        return Text('${widget.smeta.addres}', style: TextStyle(fontSize: 18));
+    }
   }
 
   Widget build(BuildContext context) {
+    smetaName.text = widget.smeta.name;
+    smetaAddres.text = widget.smeta.addres;
     return Scaffold(
       appBar: AppBar(
         title: Text('Смета № ${widget.smeta.number}'),
@@ -62,12 +110,54 @@ class _scrSmetaViewScreenState extends State<scrSmetaViewScreen> {
       ),
         body: (isLoad==false) ? Center(child: CircularProgressIndicator()) : Padding(
           padding: const EdgeInsets.all(10.0),
-          child: Column(crossAxisAlignment: CrossAxisAlignment.start,
+          child: ListView(
             children: [
+              Center(child: Text('Смета № ${widget.smeta.number} от ${DateFormat('dd.MM.yyyy').format(widget.smeta.date)}', style: TextStyle(fontSize: 16),)),
               Divider(),
-              Text('Смета № ${widget.smeta.number} от ${DateFormat('dd.MM.yyyy').format(widget.smeta.date)}', style: TextStyle(fontSize: 16),),
-              Text(widget.smeta.name, style: TextStyle(fontSize: 16),),
-              Text(widget.smeta.addres, style: TextStyle(fontSize: 16),),
+              Card(
+                child: ListTile(
+                  title: _title(1, _writeName),
+                  subtitle: (_writeName==true) ? null : Text('Название сметы'),
+                  trailing: IconButton(icon: (_writeName==true) ? Icon(Icons.check) : Icon(Icons.edit), onPressed: (){
+                    _writeName= !_writeName;
+                    widget.smeta.name = smetaName.text;
+                    isChange = true;
+                    setState(() {
+
+                    });
+                    },),
+                ),
+              ),
+              Card(
+                child: ListTile(
+                  title: _title(2, _writeAddres),
+                  subtitle: (_writeAddres==true) ? null : Text('Адрес'),
+                  trailing: IconButton(icon: (_writeAddres==true) ? Icon(Icons.check) : Icon(Icons.edit), onPressed: (){
+                    _writeAddres= !_writeAddres;
+                    widget.smeta.addres = smetaAddres.text;
+                    isChange=true;
+                    setState(() {
+
+                    });
+                  },),
+                ),
+              ),
+              Card(
+                child: ListTile(
+                  title: Text('${widget.smeta.price}', style: TextStyle(fontSize: 18)),
+                  subtitle: Text('Прайс'),
+                  trailing: IconButton(icon: Icon(Icons.edit), onPressed: () async {
+                    final newObjectId = await Navigator.push(context, MaterialPageRoute(builder: (context) => scrListScreen(sprName: 'Прайсы', onType: 'pop'),)) ?? '';
+                    if (newObjectId.id!='') {
+                      setState(() {
+                        roomList.add(ListSmetaRoom(newObjectId.id, newObjectId.name, 0, 0));
+                      });
+                      isChange = true;
+                    }
+                  },),
+                ),
+              ),
+
               Divider(),
               Text('Сумма сметы: ${NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(widget.smeta.summa)}', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.green.shade800)),
               Text('Себестоимость: ${NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(widget.smeta.seb)}', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.red.shade800)),
@@ -86,17 +176,11 @@ class _scrSmetaViewScreenState extends State<scrSmetaViewScreen> {
                         title: Text(roomList[index].name, style: TextStyle(fontWeight: FontWeight.normal, fontSize: 18)),
                         trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(roomList[index].summa), style: TextStyle(fontSize: 16)),
                         onTap: () async {
-                          // setState(() {
-                          //   isLoad = false;
-                          // });
-
-                          // await httpGetSmetaRoomWorks(widget.smeta.id, roomList[index].id, workList);
-                          // setState(() {
-                          //   isLoad = true;
-                          // });
-                          //Navigator.push(context, MaterialPageRoute(builder: (context) => scrSmetaPriceViewScreen(workList, '00000000-0000-0000-0000-000000000000', roomList[index].name, SmetaAllWork(false))));
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => scrSmetaRoomViewScreen(widget.smeta.id, roomList[index].id, roomList[index].name)));
-                        },
+                          if (isChange)
+                            _saveSmeta();
+                          await Navigator.push(context, MaterialPageRoute(builder: (context) => scrSmetaRoomViewScreen(widget.smeta.id, roomList[index].id, roomList[index].name)));
+                          _refSmeta();
+                          },
                       ),
                     );
 
@@ -114,6 +198,7 @@ class _scrSmetaViewScreenState extends State<scrSmetaViewScreen> {
                         setState(() {
                           roomList.add(ListSmetaRoom(newObjectId.id, newObjectId.name, 0, 0));
                         });
+                        isChange = true;
                       }
                     },
                     style: ElevatedButton.styleFrom(backgroundColor: Colors.green,
