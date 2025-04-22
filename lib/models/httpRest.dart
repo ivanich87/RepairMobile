@@ -162,6 +162,7 @@ Future httpPostSmetaInfo(smeta, roomList) async {
       "name": smeta.name,
       "addres": smeta.addres,
       "comment": smeta.comment,
+      "priceId": smeta.priceId,
       "rooms": roomList!.map((v) => v.toJson()).toList()
     };
     print(jsonEncode(_body));
@@ -178,6 +179,8 @@ Future httpPostSmetaInfo(smeta, roomList) async {
         smeta.name = _smeta2.name;
         smeta.addres = _smeta2.addres;
         smeta.comment = _smeta2.comment;
+        smeta.priceId = _smeta2.priceId;
+        smeta.price = _smeta2.price;
       }
     }
 
