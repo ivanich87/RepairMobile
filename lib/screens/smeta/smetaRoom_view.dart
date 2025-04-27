@@ -27,6 +27,7 @@ class _scrSmetaRoomViewScreenState extends State<scrSmetaRoomViewScreen> {
   List <ListSmetaParam> filtered_param = [];
   bool _isLoad = true;
   List <Works> workList = [];
+  List <Materials> materialList= [];
   num summa = 0;
   num seb = 0;
   String avatar = 'https://akfengroup.ru/800/600/https/remontprestizh.ru/wp-content/uploads/2016/03/1-3d.jpg';
@@ -125,7 +126,7 @@ class _scrSmetaRoomViewScreenState extends State<scrSmetaRoomViewScreen> {
                   children: [
                     Card(child:
                       ListTile(
-                        title: Text('Сумма сметы', style: TextStyle(fontSize: 18)),
+                        title: Text('Сумма для клиента', style: TextStyle(fontSize: 18)),
                         subtitle: Text('Сумма за работы', style: TextStyle(fontSize: 12)),
                         trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(summa), style: TextStyle(fontSize: 16, color: Colors.green.shade800, fontWeight: FontWeight.bold),),
                       )
@@ -152,7 +153,9 @@ class _scrSmetaRoomViewScreenState extends State<scrSmetaRoomViewScreen> {
 
                     print('smetaId=${widget.smeta_id}');
                     print('roomId=${widget.room_id}');
-                    await httpGetSmetaRoomWorks(widget.smeta_id, widget.room_id, workList);
+                    await httpGetSmetaRoomWorks(widget.smeta_id, widget.room_id, workList, materialList);
+                    print('Кол-во материалов: ${materialList.length}');
+
                     bool _allPrice = true;
                     if ((workList.where((element) =>  (element.kol ?? 0)  >  0).toList().length)>0)
                       _allPrice = false;
@@ -160,7 +163,7 @@ class _scrSmetaRoomViewScreenState extends State<scrSmetaRoomViewScreen> {
                       _isLoad = true;
                     });
                     List <Works> priceWorkList = [];
-                    await Navigator.push(context, MaterialPageRoute(builder: (context) => scrSmetaPriceViewScreen(widget.smeta_id, workList, priceWorkList, widget.room_id, widget.room_name, widget.room_id, SmetaAllWork(_allPrice, 1, widget.smeta_id), true, 1)));
+                    await Navigator.push(context, MaterialPageRoute(builder: (context) => scrSmetaPriceViewScreen(widget.smeta_id, workList, priceWorkList, materialList, widget.room_id, widget.room_name, widget.room_id, SmetaAllWork(_allPrice, 1, widget.smeta_id), true, 1)));
                     ref();
                   },
                   style: ElevatedButton.styleFrom(backgroundColor: Colors.green,

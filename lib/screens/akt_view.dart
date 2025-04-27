@@ -117,7 +117,8 @@ class _scrAktViewScreenState extends State<scrAktViewScreen> {
               // });
               List <Works> priceWorkList = [];
               SmetaAllWork smetaAllWork = SmetaAllWork(false, priceDefault, widget.akt.id);
-              await Navigator.push(context, MaterialPageRoute(builder: (context) => scrSmetaPriceViewScreen(widget.akt.smetaId, workList, priceWorkList, '00000000-0000-0000-0000-000000000000', 'Помещения', '00000000-0000-0000-0000-000000000000', smetaAllWork, widget.akt.additionalWork, 2)));
+              List <Materials> materials=[];
+              await Navigator.push(context, MaterialPageRoute(builder: (context) => scrSmetaPriceViewScreen(widget.akt.smetaId, workList, priceWorkList, materials, '00000000-0000-0000-0000-000000000000', 'Помещения', '00000000-0000-0000-0000-000000000000', smetaAllWork, widget.akt.additionalWork, 2)));
               print('Текущий ИД акта = ${widget.akt.id}');
               if (widget.akt.id=='' || widget.akt.id=='0' || widget.akt.id=='new')
                 widget.akt.id = smetaAllWork.id;

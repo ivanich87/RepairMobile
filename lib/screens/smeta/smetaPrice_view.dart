@@ -14,6 +14,7 @@ class scrSmetaPriceViewScreen extends StatefulWidget {
   final String smetaId;
   final List <Works> works;
   final List <Works> priceWorkList;
+  final List <Materials> materials;
   final String parentId;
   final String parentName;
   final String roomId;
@@ -22,7 +23,7 @@ class scrSmetaPriceViewScreen extends StatefulWidget {
   final int type;
 
 
-  scrSmetaPriceViewScreen(this.smetaId, this.works, this.priceWorkList, this.parentId, this.parentName, this.roomId, this.smetaAllWork, this.additionalWork, this.type);
+  scrSmetaPriceViewScreen(this.smetaId, this.works, this.priceWorkList, this.materials, this.parentId, this.parentName, this.roomId, this.smetaAllWork, this.additionalWork, this.type);
 
   @override
   State<scrSmetaPriceViewScreen> createState() => _scrSmetaPriceViewScreenState();
@@ -78,7 +79,7 @@ class _scrSmetaPriceViewScreenState extends State<scrSmetaPriceViewScreen> {
                         subtitle: _workSubtitle(filtered_works[index]), //(filtered_works[index].isFolder!) ? null : Text('Кол-во: ${filtered_works[index].kol}; Сумма: ${NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format((widget.smetaAllWork.priceDefault==1) ? filtered_works[index].summa : filtered_works[index].summaSub)}', style: TextStyle(fontStyle: FontStyle.italic, color: _colors(filtered_works[index].kol)),),
                         onTap: () async {
                           if (filtered_works[index].isFolder!) {
-                            var _CloseParam = await Navigator.push(context, MaterialPageRoute(builder: (context) => scrSmetaPriceViewScreen(widget.smetaId, widget.works, widget.priceWorkList, filtered_works[index].workId!, filtered_works[index].workName!, filtered_works[index].roomId!, widget.smetaAllWork, true, widget.type)));
+                            var _CloseParam = await Navigator.push(context, MaterialPageRoute(builder: (context) => scrSmetaPriceViewScreen(widget.smetaId, widget.works, widget.priceWorkList, widget.materials, filtered_works[index].workId!, filtered_works[index].workName!, filtered_works[index].roomId!, widget.smetaAllWork, true, widget.type)));
                             if (_CloseParam.toString()=='CloseAll')
                               Navigator.pop(context, 'CloseAll');
                             else
@@ -86,7 +87,7 @@ class _scrSmetaPriceViewScreenState extends State<scrSmetaPriceViewScreen> {
                           }
                           else {
                             if (widget.type==1){
-                              await Navigator.push(context, MaterialPageRoute(builder: (context) => scrSmetaWorkEditingScreen(filtered_works[index], widget.additionalWork)));
+                              await Navigator.push(context, MaterialPageRoute(builder: (context) => scrSmetaWorkEditingScreen(filtered_works[index], _filterMaterials(filtered_works[index].workId), widget.additionalWork)));
                               _parentAddRecursion(filtered_works[index].parentId);
                             }
                             else
@@ -145,6 +146,10 @@ class _scrSmetaPriceViewScreenState extends State<scrSmetaPriceViewScreen> {
     }
   }
 
+  _filterMaterials(_workId) {
+    return widget.materials.where((element) => element.workId!.toLowerCase().contains(_workId.toLowerCase())).toList();
+  }
+
   _filterLabelText() {
     if (widget.type==1)
       return (widget.smetaAllWork.allPrice) ? Text('Оставить только выбранные') : Text('Показать весь прайс');
@@ -182,13 +187,21 @@ class _scrSmetaPriceViewScreenState extends State<scrSmetaPriceViewScreen> {
             if (widget.type!=1)
               Text(_work.roomName ?? ''),
             Text(_work.parentName ?? ''),
-            Text('Кол-во: ${_work.kol}; Сумма: ${NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format((widget.smetaAllWork.priceDefault==1) ? _work.summa : _work.summaSub)}', style: TextStyle(fontStyle: FontStyle.italic, color: _colors(_work.kol)),)
+            Text('Кол-во: ${_work.kol}; Сумма: ${NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format((widget.smetaAllWork.priceDefault==1) ? _work.summa : _work.summaSub)}', style: TextStyle(fontStyle: FontStyle.italic, color: _colors(_work.kol)),),
+            Text('Материалы cумма: ${NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format((widget.smetaAllWork.priceDefault==1) ? _work.materialSumma : _work.materialSummaSeb)}', style: TextStyle(fontStyle: FontStyle.italic, color: _colors(_work.kol)),)
           ],
         );
       }
     }
     else {
-      return (_work.isFolder!) ? null : Text('Кол-во: ${_work.kol}; Сумма: ${NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format((widget.smetaAllWork.priceDefault==1) ? _work.summa : _work.summaSub)}', style: TextStyle(fontStyle: FontStyle.italic, color: _colors(_work.kol)),);
+      return (_work.isFolder!) ? null :
+        Column(mainAxisAlignment: MainAxisAlignment.start, crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Кол-во: ${_work.kol}; Сумма: ${NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format((widget.smetaAllWork.priceDefault==1) ? _work.summa : _work.summaSub)}', style: TextStyle(fontStyle: FontStyle.italic, color: _colors(_work.kol)),),
+            if ((_work.materialSumma ?? 0)>0)
+              Text('Сумма материалов: ${NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format((widget.smetaAllWork.priceDefault==1) ? (_work.materialSumma ?? 0) : (_work.materialSummaSeb ?? 0))}', style: TextStyle(fontStyle: FontStyle.italic, color: _colors(_work.kol)),)
+          ],
+        );
     }
     return null;
 
@@ -219,7 +232,7 @@ class _scrSmetaPriceViewScreenState extends State<scrSmetaPriceViewScreen> {
             print('parentId=${widget.parentId}');
 
             if (widget.priceWorkList.length==0) {
-              await httpGetSmetaRoomWorks(widget.smetaId, widget.roomId, widget.priceWorkList);
+              await httpGetSmetaRoomWorks(widget.smetaId, widget.roomId, widget.priceWorkList, widget.materials);
             }
             setState(() {
               _isLoad = true;

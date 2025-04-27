@@ -189,7 +189,7 @@ Future httpPostSmetaInfo(smeta, roomList) async {
   }
 }
 
-Future httpGetSmetaRoomWorks(smetaid, roomid, workList) async {
+Future httpGetSmetaRoomWorks(smetaid, roomid, workList, materialList) async {
   final _queryParameters = {'userId': Globals.anPhone};
 
   var _url=Uri(path: '${Globals.anPath}smetaroomworks/$smetaid/$roomid/', host: Globals.anServer, scheme: 'https', queryParameters: _queryParameters);
@@ -204,10 +204,14 @@ Future httpGetSmetaRoomWorks(smetaid, roomid, workList) async {
     print(response.statusCode.toString());
     if (response.statusCode == 200) {
       workList.clear();
+      materialList.clear();
 
       var notesJson = json.decode(response.body);
       for (var noteJson3 in notesJson['works']) {
         workList.add(Works.fromJson(noteJson3));
+      }
+      for (var noteJson2 in notesJson['materials']) {
+        materialList.add(Materials.fromJson(noteJson2));
       }
     }
     else

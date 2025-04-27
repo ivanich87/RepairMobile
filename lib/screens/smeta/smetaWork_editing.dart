@@ -2,15 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:repairmodule/components/SingleSelections.dart';
 import 'package:repairmodule/models/ListWorks.dart';
+import 'package:repairmodule/screens/smeta/material_editing.dart';
 
 
 
 
 class scrSmetaWorkEditingScreen extends StatefulWidget {
   final Works rabota;
+  final List <Materials> materials;
   final bool additionalWork;
 
-  scrSmetaWorkEditingScreen(this.rabota, this.additionalWork);
+  scrSmetaWorkEditingScreen(this.rabota, this.materials, this.additionalWork);
 
   @override
   State<scrSmetaWorkEditingScreen> createState() => _scrSmetaWorkEditingScreenState();
@@ -54,6 +56,19 @@ class _scrSmetaWorkEditingScreenState extends State<scrSmetaWorkEditingScreen> {
                   trailing: IconButton(onPressed: () {
                     setState(() {
                       widget.rabota.kol=widget.rabota.kolRemains ?? 0;
+                      num _sumMaterial = 0;
+                      num _sebMaterial = 0;
+                      for (var str in widget.materials) {
+                        if (str.def==true || (str.kol ?? 0)>0) {
+                          str.kol = (widget.rabota.kol ?? 0) * (str.consumption ?? 0);
+                          str.summa = (str.kol ?? 0) * (str.price ?? 0);
+                          str.summaSeb = (str.kol ?? 0) * (str.priceSeb ?? 0);
+                        }
+                        _sumMaterial = _sumMaterial + (str.summa ?? 0);
+                        _sebMaterial = _sebMaterial + (str.summaSeb ?? 0);
+                      }
+                      widget.rabota.materialSumma = _sumMaterial;
+                      widget.rabota.materialSummaSeb = _sebMaterial;
                     });
 
                     }, icon: Row(mainAxisSize: MainAxisSize.min,
@@ -72,7 +87,43 @@ class _scrSmetaWorkEditingScreenState extends State<scrSmetaWorkEditingScreen> {
                   },
               ),
               Divider(),
-            ],
+              SizedBox(height: 10,),
+              if (widget.materials.length>0)
+                titleHeader('Материалы'),
+              ListView.builder(shrinkWrap: true,
+                padding: EdgeInsets.all(1),
+                physics: BouncingScrollPhysics(),
+                reverse: false,
+                itemCount: widget.materials.length,
+                itemBuilder: (_, index) {
+                  return Card(
+                    child: ListTile(
+                      title: Text(widget.materials[index].materialName!, style: TextStyle(fontWeight: FontWeight.normal, fontSize: 18)),
+                      leading: _materialLending(widget.materials[index]),
+                      trailing: _materialTrailing(widget.materials[index]), //Checkbox(value: false, onChanged: (bool? value) {  },),
+                      subtitle: _materialSubtitle(widget.materials[index]),
+                      onTap: () async {
+                        await Navigator.push(context, MaterialPageRoute(builder: (context) => scrMaterialEditingScreen(widget.materials[index], widget.rabota.kol ?? 0)));
+                        num _sumMaterial = 0;
+                        num _sebMaterial = 0;
+                        for (var str in widget.materials) {
+                          _sumMaterial = _sumMaterial + (str.summa ?? 0);
+                          _sebMaterial = _sebMaterial + (str.summaSeb ?? 0);
+                        }
+                        widget.rabota.materialSumma = _sumMaterial;
+                        widget.rabota.materialSummaSeb = _sebMaterial;
+
+                        setState(() {
+
+                        });
+                      },
+                    ),
+                  );
+
+                },
+              )
+
+          ],
           ),
 
 
@@ -82,7 +133,7 @@ class _scrSmetaWorkEditingScreenState extends State<scrSmetaWorkEditingScreen> {
   void _tripEditKol(Widget type) {
     showModalBottomSheet(isScrollControlled: true, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)), context: context, builder: (BuildContext bc) {
       return Container(
-        height: 400,
+        height: 440,
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: type,
@@ -134,9 +185,22 @@ class _scrSmetaWorkEditingScreenState extends State<scrSmetaWorkEditingScreen> {
               child: ElevatedButton(onPressed: () {
                 if (_formKey.currentState?.validate() ?? false) {
                   setState(() {
+                    num _sumMaterial = 0;
+                    num _sebMaterial = 0;
                     widget.rabota.kol=num.tryParse(_kolController.text.replaceAll(',', '.')) ?? 0;
                     widget.rabota.summa = widget.rabota.kol!*widget.rabota.price!;
                     widget.rabota.summaSub = widget.rabota.kol!*widget.rabota.priceSub!;
+                    for (var str in widget.materials) {
+                      if (str.def==true || (str.kol ?? 0)>0) {
+                        str.kol = (widget.rabota.kol ?? 0) * (str.consumption ?? 0);
+                        str.summa = (str.kol ?? 0) * (str.price ?? 0);
+                        str.summaSeb = (str.kol ?? 0) * (str.priceSeb ?? 0);
+                      }
+                      _sumMaterial = _sumMaterial + (str.summa ?? 0);
+                      _sebMaterial = _sebMaterial + (str.summaSeb ?? 0);
+                    }
+                    widget.rabota.materialSumma = _sumMaterial;
+                    widget.rabota.materialSummaSeb = _sebMaterial;
                   });
                   Navigator.pop(context);
                 }
@@ -147,6 +211,30 @@ class _scrSmetaWorkEditingScreenState extends State<scrSmetaWorkEditingScreen> {
         ],
       ),
     );
+  }
+
+  _materialLending(Materials _material) {
+    String _url='https://sun1-83.userapi.com/s/v1/ig2/7t9jiWE0Fldp0dmKRxMIAbxCOAYtCjAB2-SQo_yJ_xk8e8jxC8UiSXx8BKIj981EXnpFOmF5UyINu4alIhbyfLr8.jpg?size=400x400&quality=95&crop=40,0,447,447&ava=1';
+    return Image.network(_material.avatar ?? _url);
+  }
+
+  _materialTrailing(Materials _material) {
+    return Checkbox(value: (_material.kol==0) ? false : true, onChanged: (value) {
+      setState(() {
+        if (value==true){
+          _material.kol= (_material.consumption ?? 0) * (widget.rabota.kol ?? 0);
+        }
+        else {
+          _material.kol=0;
+        }
+        _material.summa = _material.kol! * (_material.price ?? 0);
+        _material.summaSeb = _material.kol! * (_material.priceSeb ?? 0);
+      });
+    });
+  }
+
+  _materialSubtitle(Materials _material) {
+      return Text('Кол-во: ${_material.kol}; Сумма: ${NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(_material.summa)}', style: TextStyle(fontStyle: FontStyle.italic),);
   }
 
   // Widget _tripPriceSubEditWidgets() {

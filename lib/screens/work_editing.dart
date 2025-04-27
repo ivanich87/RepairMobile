@@ -102,7 +102,7 @@ class _scrWorkEditingScreenState extends State<scrWorkEditingScreen> {
   void _tripEditKol(Widget type) {
     showModalBottomSheet(isScrollControlled: true, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)), context: context, builder: (BuildContext bc) {
       return Container(
-        height: 400,
+        height: 440,
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: type,
