@@ -422,14 +422,22 @@ class ListSmeta {
 class ListSmetaRoom {
   late String id;
   late String name;
+  late num summaWork;
+  late num summaWorkSub;
+  late num summaMaterial;
+  late num summaMaterialSeb;
   late num summa;
   late num seb;
 
-  ListSmetaRoom(this.id, this.name, this.summa, this.seb);
+  ListSmetaRoom(this.id, this.name, this.summaWork, this.summaWorkSub, this.summaMaterial, this.summaMaterialSeb, this.summa, this.seb);
 
   ListSmetaRoom.fromJson(Map<String, dynamic> json) {
     id = json['id'] ?? '0';
     name = json['name'] ?? '0';
+    summaWork = json['summaWork'] ?? 0;
+    summaWorkSub = json['summaWorkSub'] ?? 0;
+    summaMaterial = json['summaMaterial'] ?? 0;
+    summa = json['summaMaterialSeb'] ?? 0;
     summa = json['summa'] ?? 0;
     seb = json['seb'] ?? 0;
   }
@@ -438,6 +446,10 @@ class ListSmetaRoom {
       {
         'id': id,
         'name': name,
+        'summaWork': summaWork,
+        'summaWorkSub': summaWorkSub,
+        'summaMaterial': summaMaterial,
+        'summaMaterialSeb': summaMaterialSeb,
         'summa': summa,
         'seb': seb
       };

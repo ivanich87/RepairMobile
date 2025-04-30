@@ -331,7 +331,7 @@ Future httpPostSmetaParamCalculation(smetaid, roomid, floor, perimeter, openings
   }
 }
 
-Future<bool> httpObjectUpdateWorks(object, dogId, type, ListWorks) async {
+Future<bool> httpObjectUpdateWorks(object, dogId, type, ListWorks, ListMaterials) async {
   bool _result=false;
 
   final _queryParameters = {'userId': Globals.anPhone, 'dogId': dogId};
@@ -344,8 +344,9 @@ Future<bool> httpObjectUpdateWorks(object, dogId, type, ListWorks) async {
 
   try {
     print('Start export works!!!!');
-    print(json.encode(ListWorks));
-    var response = await http.post(_url, headers: _headers, body: json.encode(ListWorks));
+    var data = {'ListWorks':ListWorks, 'ListMaterials':ListMaterials};
+    print(json.encode(data));
+    var response = await http.post(_url, headers: _headers, body: json.encode(data));
     print('Код ответа: ${response.statusCode} Тело ответа: ${response.body}');
 
     if (response.statusCode == 200) {

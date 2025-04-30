@@ -104,18 +104,7 @@ class _scrSmetaWorkEditingScreenState extends State<scrSmetaWorkEditingScreen> {
                       subtitle: _materialSubtitle(widget.materials[index]),
                       onTap: () async {
                         await Navigator.push(context, MaterialPageRoute(builder: (context) => scrMaterialEditingScreen(widget.materials[index], widget.rabota.kol ?? 0)));
-                        num _sumMaterial = 0;
-                        num _sebMaterial = 0;
-                        for (var str in widget.materials) {
-                          _sumMaterial = _sumMaterial + (str.summa ?? 0);
-                          _sebMaterial = _sebMaterial + (str.summaSeb ?? 0);
-                        }
-                        widget.rabota.materialSumma = _sumMaterial;
-                        widget.rabota.materialSummaSeb = _sebMaterial;
-
-                        setState(() {
-
-                        });
+                        ref_materialsSum();
                       },
                     ),
                   );
@@ -128,6 +117,20 @@ class _scrSmetaWorkEditingScreenState extends State<scrSmetaWorkEditingScreen> {
 
 
     );
+  }
+
+  ref_materialsSum() {
+    num _sumMaterial = 0;
+    num _sebMaterial = 0;
+    for (var str in widget.materials) {
+      _sumMaterial = _sumMaterial + (str.summa ?? 0);
+      _sebMaterial = _sebMaterial + (str.summaSeb ?? 0);
+    }
+    widget.rabota.materialSumma = _sumMaterial;
+    widget.rabota.materialSummaSeb = _sebMaterial;
+    setState(() {
+
+    });
   }
 
   void _tripEditKol(Widget type) {
@@ -220,16 +223,16 @@ class _scrSmetaWorkEditingScreenState extends State<scrSmetaWorkEditingScreen> {
 
   _materialTrailing(Materials _material) {
     return Checkbox(value: (_material.kol==0) ? false : true, onChanged: (value) {
-      setState(() {
-        if (value==true){
-          _material.kol= (_material.consumption ?? 0) * (widget.rabota.kol ?? 0);
-        }
-        else {
-          _material.kol=0;
-        }
-        _material.summa = _material.kol! * (_material.price ?? 0);
-        _material.summaSeb = _material.kol! * (_material.priceSeb ?? 0);
-      });
+      if (value==true){
+        _material.kol= (_material.consumption ?? 0) * (widget.rabota.kol ?? 0);
+      }
+      else {
+        _material.kol=0;
+      }
+      _material.summa = _material.kol! * (_material.price ?? 0);
+      _material.summaSeb = _material.kol! * (_material.priceSeb ?? 0);
+
+      ref_materialsSum();
     });
   }
 

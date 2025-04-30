@@ -107,7 +107,7 @@ class _scrSmetaPriceViewScreenState extends State<scrSmetaPriceViewScreen> {
         ),
           floatingActionButton: (Globals.anCreateObject==false) ? null : FloatingActionButton(
             onPressed: () async {
-              bool _res = await httpObjectUpdateWorks(widget.smetaAllWork, widget.smetaId, widget.type, widget.works);
+              bool _res = await httpObjectUpdateWorks(widget.smetaAllWork, widget.smetaId, widget.type, widget.works, widget.materials);
               if (_res)
                 Navigator.pop(context, 'CloseAll');
               else {
@@ -169,6 +169,18 @@ class _scrSmetaPriceViewScreenState extends State<scrSmetaPriceViewScreen> {
         }
         _work.summa = _work.kol! * (_work.price ?? 0);
         _work.summaSub = _work.kol! * (_work.priceSub ?? 0);
+
+        num _sumMaterial = 0;
+        num _sebMaterial = 0;
+        for (Materials str in _filterMaterials(_work.workId)) {
+          str.kol = (_work.kol ?? 0) * (str.consumption ?? 0);
+          str.summa = (str.price ?? 0) * (str.kol ?? 0);
+          str.summaSeb = (str.priceSeb ?? 0) * (str.kol ?? 0);
+          _sumMaterial = _sumMaterial + (str.summa ?? 0);
+          _sebMaterial = _sebMaterial + (str.summaSeb ?? 0);
+        }
+        _work.materialSumma = _sumMaterial;
+        _work.materialSummaSeb = _sebMaterial;
       });
     });
   }

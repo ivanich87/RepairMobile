@@ -215,7 +215,7 @@ class _scrSmetaViewScreenState extends State<scrSmetaViewScreen> {
                     return Card(
                       child: ListTile(
                         title: Text(roomList[index].name, style: TextStyle(fontWeight: FontWeight.normal, fontSize: 18)),
-                        trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(roomList[index].summa), style: TextStyle(fontSize: 16)),
+                        trailing: _trailing(roomList[index]),
                         onTap: () async {
                           if (_writeAddres==true) {
                             _writeAddres=false;
@@ -272,7 +272,7 @@ class _scrSmetaViewScreenState extends State<scrSmetaViewScreen> {
                       final newObjectId = await Navigator.push(context, MaterialPageRoute(builder: (context) => scrListScreen(sprName: 'Помещения', onType: 'pop'),)) ?? '';
                       if (newObjectId.id!='') {
                         setState(() {
-                          roomList.add(ListSmetaRoom(newObjectId.id, newObjectId.name, 0, 0));
+                          roomList.add(ListSmetaRoom(newObjectId.id, newObjectId.name, 0, 0,0,0,0,0));
                         });
                         isChange = true;
                       }
@@ -296,6 +296,19 @@ class _scrSmetaViewScreenState extends State<scrSmetaViewScreen> {
             },
             child: Icon(Icons.save),)
     );
+  }
+
+  _trailing(str){
+    if (str.summaMaterial!=0) {
+      return Column(crossAxisAlignment: CrossAxisAlignment.center, mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(str.summaWork), style: TextStyle(fontSize: 16, color: Colors.green.shade800)),
+          Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(str.summaMaterial), style: TextStyle(fontSize: 16, color: Colors.green))
+        ],
+      );
+    }
+    else
+      return Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(str.summa), style: TextStyle(fontSize: 16));
   }
 }
 

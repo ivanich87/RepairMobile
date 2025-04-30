@@ -30,6 +30,10 @@ class _scrSmetaRoomViewScreenState extends State<scrSmetaRoomViewScreen> {
   List <Materials> materialList= [];
   num summa = 0;
   num seb = 0;
+  num summaWork = 0;
+  num summaWorkSub = 0;
+  num summaMaterial =0;
+  num summaMaterialSeb = 0;
   String avatar = 'https://akfengroup.ru/800/600/https/remontprestizh.ru/wp-content/uploads/2016/03/1-3d.jpg';
 
   @override
@@ -62,6 +66,10 @@ class _scrSmetaRoomViewScreenState extends State<scrSmetaRoomViewScreen> {
         }
         summa = notesJson['summa'];
         seb = notesJson['seb'];
+        summaWork = notesJson['summaWork'];
+        summaWorkSub = notesJson['summaWorkSub'];
+        summaMaterial = notesJson['summaMaterial'];
+        summaMaterialSeb = notesJson['summaMaterialSeb'];
         avatar = notesJson['avatar'];
       }
       else
@@ -120,6 +128,52 @@ class _scrSmetaRoomViewScreenState extends State<scrSmetaRoomViewScreen> {
                 padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
                 child: Divider(height: 3),
               ),
+              if (summaMaterial!=0) ...[
+                ListTile(title: Text('РАБОТЫ', style: TextStyle(fontSize: 18),), leading: Icon(Icons.currency_ruble), ),
+                Padding(padding: EdgeInsets.symmetric(horizontal: 10),
+                  child: Column(
+                    children: [
+                      Card(child:
+                        ListTile(
+                          title: Text('Сумма для клиента', style: TextStyle(fontSize: 18)),
+                          subtitle: Text('Сумма за работы', style: TextStyle(fontSize: 12)),
+                          trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(summaWork), style: TextStyle(fontSize: 16, color: Colors.green.shade800, fontWeight: FontWeight.bold),),
+                        )
+                      ),
+                      Card(child:
+                        ListTile(
+                          title: Text('Себестоимость', style: TextStyle(fontSize: 18)),
+                          subtitle: Text('Сумма мастеров', style: TextStyle(fontSize: 12)),
+                          trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(summaWorkSub), style: TextStyle(fontSize: 16, color: Colors.red.shade800, fontWeight: FontWeight.bold),),
+                        )
+                      ),
+                      Divider(),
+                    ],
+                  ),
+                ),
+                ListTile(title: Text('МАТЕРИАЛЫ', style: TextStyle(fontSize: 18),), leading: Icon(Icons.currency_ruble), ),
+                Padding(padding: EdgeInsets.symmetric(horizontal: 10),
+                  child: Column(
+                    children: [
+                      Card(child:
+                        ListTile(
+                          title: Text('Материалы', style: TextStyle(fontSize: 18)),
+                          subtitle: Text('Сумма материалов', style: TextStyle(fontSize: 12)),
+                          trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(summaMaterial), style: TextStyle(fontSize: 16, color: Colors.red.shade800, fontWeight: FontWeight.bold),),
+                        )
+                      ),
+                      Card(child:
+                        ListTile(
+                          title: Text('Себестоимость', style: TextStyle(fontSize: 18)),
+                          subtitle: Text('Себестоимость материалов', style: TextStyle(fontSize: 12)),
+                          trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(summaMaterialSeb), style: TextStyle(fontSize: 16, color: Colors.red.shade800, fontWeight: FontWeight.bold),),
+                        )
+                      ),
+                      Divider(),
+                    ],
+                  ),
+                ),
+              ],
               ListTile(title: Text('СУММЫ', style: TextStyle(fontSize: 18),), leading: Icon(Icons.currency_ruble), ),
               Padding(padding: EdgeInsets.symmetric(horizontal: 10),
                 child: Column(
