@@ -146,11 +146,6 @@ class _scrMaterialEditingScreenState extends State<scrMaterialEditingScreen> {
     );
   }
 
-  _materialLending(Materials _material) {
-    String _url='https://sun1-83.userapi.com/s/v1/ig2/7t9jiWE0Fldp0dmKRxMIAbxCOAYtCjAB2-SQo_yJ_xk8e8jxC8UiSXx8BKIj981EXnpFOmF5UyINu4alIhbyfLr8.jpg?size=400x400&quality=95&crop=40,0,447,447&ava=1';
-    return Image.network(_material.avatar ?? _url);
-  }
-
 
 }
 

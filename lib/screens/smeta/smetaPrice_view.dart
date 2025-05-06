@@ -128,8 +128,10 @@ class _scrSmetaPriceViewScreenState extends State<scrSmetaPriceViewScreen> {
 
   void _findList(parentId, roomId, _filter) {
     if (_filter!='') {
+      print('usaem tyt');
       setState(() {
-      filtered_works = widget.works.where((element) => element.workName!.toLowerCase().contains(_filter.toLowerCase())).toList();
+      filtered_works = widget.works.where((element) => (element.workName ?? '').toLowerCase().contains(_filter.toLowerCase())).toList();
+      print('Нашли работ по фильру: ${filtered_works.length}');
       });
     }
     else {
@@ -186,6 +188,7 @@ class _scrSmetaPriceViewScreenState extends State<scrSmetaPriceViewScreen> {
   }
 
   _workSubtitle(Works _work) {
+    print('_isActive = ${_isActive }');
     if (_isActive) {
       if (_work.isFolder ?? false) {
         if (widget.type==1)
@@ -199,8 +202,9 @@ class _scrSmetaPriceViewScreenState extends State<scrSmetaPriceViewScreen> {
             if (widget.type!=1)
               Text(_work.roomName ?? ''),
             Text(_work.parentName ?? ''),
-            Text('Кол-во: ${_work.kol}; Сумма: ${NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format((widget.smetaAllWork.priceDefault==1) ? _work.summa : _work.summaSub)}', style: TextStyle(fontStyle: FontStyle.italic, color: _colors(_work.kol)),),
-            Text('Материалы cумма: ${NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format((widget.smetaAllWork.priceDefault==1) ? _work.materialSumma : _work.materialSummaSeb)}', style: TextStyle(fontStyle: FontStyle.italic, color: _colors(_work.kol)),)
+            Text('Кол-во: ${_work.kol ?? 0}; Сумма: ${NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format((widget.smetaAllWork.priceDefault==1) ? _work.summa : _work.summaSub)}', style: TextStyle(fontStyle: FontStyle.italic, color: _colors(_work.kol)),),
+            if ((_work.materialSumma ?? 0)>0)
+              Text('Материалы cумма: ${NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format((widget.smetaAllWork.priceDefault==1) ? (_work.materialSumma ?? 0) : (_work.materialSummaSeb ?? 0))}', style: TextStyle(fontStyle: FontStyle.italic, color: _colors(_work.kol ?? 0)),)
           ],
         );
       }

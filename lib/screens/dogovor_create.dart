@@ -9,7 +9,6 @@ import 'package:repairmodule/models/Lists.dart';
 import 'package:repairmodule/screens/object_view.dart';
 import 'package:repairmodule/screens/sprList.dart';
 
-import 'objects.dart';
 import 'objectsListSelected.dart';
 
 class scrDogovorCreateScreen extends StatefulWidget {
@@ -31,8 +30,9 @@ class scrDogovorCreateScreen extends StatefulWidget {
   final num summaSeb;
 
   final String nameDog;
+  final String smetaId;
 
-  scrDogovorCreateScreen({super.key, required this.objectId, required this.objectName, required this.clientId, required this.clientName, required this.newDogovorId, required this.dateRange, required this.managerId, required this.managerName, required this.prorabId, required this.prorabName, required this.summa, required this.summaSeb, required this.nameDog});
+  scrDogovorCreateScreen({super.key, required this.objectId, required this.objectName, required this.clientId, required this.clientName, required this.newDogovorId, required this.dateRange, required this.managerId, required this.managerName, required this.prorabId, required this.prorabName, required this.summa, required this.summaSeb, required this.nameDog, this.smetaId=''});
 
   @override
   State<scrDogovorCreateScreen> createState() => _scrDogovorCreateScreenState();
@@ -66,6 +66,7 @@ class _scrDogovorCreateScreenState extends State<scrDogovorCreateScreen> {
     var _body = <String, String> {
       'Id': widget.newDogovorId,
       'objectId': widget.objectId,
+      'smetaId': widget.smetaId,
       'managerId': widget.managerId,
       'prorabId': widget.prorabId,
       'dtStart': DateFormat('yyyyMMdd').format(dtStart),

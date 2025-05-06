@@ -13,8 +13,12 @@ import 'objects.dart';
 import 'objectsListSelected.dart';
 
 class scrObjectCreateScreen extends StatefulWidget {
-
-  scrObjectCreateScreen({super.key});
+  final String smetaId;
+  final String fio;
+  final String address;
+  final num summaClient;
+  final num summaSeb;
+  scrObjectCreateScreen({super.key, this.smetaId = '', this.fio='', this.address='', this.summaClient = 0, this.summaSeb = 0});
 
   @override
   State<scrObjectCreateScreen> createState() => _scrObjectCreateScreenState();
@@ -73,6 +77,7 @@ class _scrObjectCreateScreenState extends State<scrObjectCreateScreen> {
       'nameDog': nameDog.text,
       'summa': summa.text,
       'summaSeb': summaSeb.text,
+      'smetaId': widget.smetaId
     };
 
     try {
@@ -112,6 +117,13 @@ class _scrObjectCreateScreenState extends State<scrObjectCreateScreen> {
   Widget build(BuildContext context) {
     dtStart = dateRange.start;
     dtStop = dateRange.end;
+    print(widget.summaClient);
+    if (widget.summaClient>0)
+      summa.text = '${widget.summaClient}';
+    if (widget.summaSeb>0)
+      summaSeb.text = '${widget.summaSeb}';
+    clientName.text = '${widget.fio}';
+    address.text = '${widget.address}';
 
     return Scaffold(
         appBar: AppBar(

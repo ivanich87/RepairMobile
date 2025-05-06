@@ -162,6 +162,7 @@ Future httpPostSmetaInfo(smeta, roomList) async {
       "name": smeta.name,
       "addres": smeta.addres,
       "comment": smeta.comment,
+      "materialType": smeta.materialType,
       "priceId": smeta.priceId,
       "rooms": roomList!.map((v) => v.toJson()).toList()
     };

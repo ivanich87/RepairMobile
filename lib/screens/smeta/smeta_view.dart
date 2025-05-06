@@ -7,6 +7,10 @@ import 'package:repairmodule/models/ListWorks.dart';
 import 'package:repairmodule/models/Lists.dart';
 import 'package:http/http.dart' as http;
 import 'package:repairmodule/models/httpRest.dart';
+import 'package:repairmodule/screens/dogovor_create.dart';
+import 'package:repairmodule/screens/dogovor_view.dart';
+import 'package:repairmodule/screens/object_create.dart';
+import 'package:repairmodule/screens/object_view.dart';
 import 'package:repairmodule/screens/pdf2.dart';
 import 'package:repairmodule/screens/smeta/smetaPrice_view.dart';
 import 'package:repairmodule/screens/smeta/smetaRoom_view.dart';
@@ -103,23 +107,81 @@ class _scrSmetaViewScreenState extends State<scrSmetaViewScreen> {
         icon: const Icon(Icons.menu, ),
         offset: const Offset(0, 40),
         onSelected: (MenuEditCommands item) async {
-          if (item == MenuEditCommands.printPriceClient) {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => PDFViewerFromUrl(url: 'https://ace:AxWyIvrAKZkw66S7S0BO@${Globals.anServer}${Globals.anPath}print/${widget.smeta.id}/2/',)));
+          if (item == MenuEditCommands.printPrice) {
+            printSmetaSelectPrice(context, widget.smeta.id);
           }
-          if (item == MenuEditCommands.printPriceSeb) {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => PDFViewerFromUrl(url: 'https://ace:AxWyIvrAKZkw66S7S0BO@${Globals.anServer}${Globals.anPath}print/${widget.smeta.id}/22/',)));
+          if (item == MenuEditCommands.createDog) {
+            createNewDog(context, widget.smeta.id, widget.smeta.summa, widget.smeta.seb, widget.smeta.name, widget.smeta.addres);
           }
         },
         itemBuilder: (BuildContext context) => <PopupMenuEntry<MenuEditCommands>>[
           const PopupMenuItem<MenuEditCommands>(
-            value: MenuEditCommands.printPriceClient,
-            child: Text('Печать сметы по ценам клиента'),
+            value: MenuEditCommands.printPrice,
+            child: ListTile(leading: Icon(Icons.calculate), title: Text('Печать сметы  PDF'))
           ),
+          PopupMenuDivider(),
           const PopupMenuItem<MenuEditCommands>(
-            value: MenuEditCommands.printPriceSeb,
-            child: Text('Печать сметы по ценам мастеров'),
+            value: MenuEditCommands.createDog,
+            child: ListTile(leading: Icon(Icons.document_scanner), title: Text('Создать новый договор')),
           ),
         ].toList());
+  }
+
+  void createNewDog(context, smetaId, summa, summaSeb, fio, address) {
+    showModalBottomSheet(isScrollControlled: true, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)), context: context, builder: (BuildContext bc) {
+      return Container(
+        height: 400,
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: ListView(
+            children: [
+              ListTile(
+                title: Text('Создать новый объект и договор'),
+                trailing: Icon(Icons.navigate_next),
+                onTap: () async {
+                  print(summa);
+                  final newObjectId = await Navigator.push(context, MaterialPageRoute(builder: (context) => scrObjectCreateScreen(smetaId: smetaId, summaClient: summa, summaSeb: summaSeb, fio: fio, address: address),)) ?? '';
+                  if (newObjectId!='') {
+                    Navigator.push(context, MaterialPageRoute( builder: (context) => scrObjectsViewScreen(id: newObjectId)));
+
+                  }
+                },
+              ),
+              ListTile(
+                title: Text('Создать доп соглашение и привязать его к существующему объекту'),
+                trailing: Icon(Icons.navigate_next),
+                onTap: () async {
+                  final newObjectId = await Navigator.push(
+                      context, MaterialPageRoute(builder: (context) =>
+                      scrListScreen(sprName: 'Объекты', onType: 'pop'))) ?? '';
+                  if (newObjectId.id != '') {
+                    DateTimeRange dateRange = DateTimeRange(
+                        start: DateTime.now(), end: DateTime.now());
+                    await Navigator.push(context, MaterialPageRoute(builder: (
+                        context) =>
+                        scrDogovorCreateScreen(objectId: newObjectId.id,
+                          objectName: newObjectId.name,
+                          clientId: '',
+                          clientName: newObjectId.name,
+                          newDogovorId: '',
+                          managerId: '',
+                          managerName: '',
+                          prorabId: '',
+                          prorabName: '',
+                          nameDog: '',
+                          summa: widget.smeta.summa,
+                          summaSeb: widget.smeta.seb,
+                          dateRange: dateRange, smetaId: widget.smeta.id,),));
+                    Navigator.pop(context);
+                  };
+                }
+              )
+            ],
+          ),
+        ),
+      );
+
+    });
   }
 
 
@@ -312,4 +374,4 @@ class _scrSmetaViewScreenState extends State<scrSmetaViewScreen> {
   }
 }
 
-enum MenuEditCommands { printPriceClient, printPriceSeb }
+enum MenuEditCommands { createDog, printPrice }

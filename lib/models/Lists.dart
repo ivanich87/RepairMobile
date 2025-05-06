@@ -399,10 +399,11 @@ class ListSmeta {
   late num summa;
   late num seb;
   late String comment;
+  late int materialType;
   late String price;
   late String priceId;
 
-  ListSmeta(this.id, this.number, this.date, this.name, this.addres, this.summa, this.seb, this.comment, this.price, this.priceId);
+  ListSmeta(this.id, this.number, this.date, this.name, this.addres, this.summa, this.seb, this.comment, this.materialType, this.price, this.priceId);
 
   ListSmeta.fromJson(Map<String, dynamic> json) {
     id = json['id'] ?? '0';
@@ -413,6 +414,7 @@ class ListSmeta {
     summa = json['summa'];
     seb = json['seb'];
     comment = json['comment'];
+    materialType = json['materialType'] ?? 1;
     price = json['price'];
     priceId = json['priceId'];
   }
