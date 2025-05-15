@@ -142,6 +142,7 @@ class _scrSmetaPriceViewScreenState extends State<scrSmetaPriceViewScreen> {
       }
       else {
         setState(() {
+          print('usaem tyt2');
           filtered_works = widget.works.where((element) => element.roomId!.toLowerCase().contains(roomId.toLowerCase()) && element.parentId!.toLowerCase().contains(parentId.toLowerCase()) && ((widget.type==1) ? (element.kol ?? 0) : (element.kolRemains ?? 0)) > ((widget.smetaAllWork.allPrice == true) ? -1 : 0)).toList();
         });
       }
@@ -270,7 +271,7 @@ class _scrSmetaPriceViewScreenState extends State<scrSmetaPriceViewScreen> {
   _workAddRecursion(_priceWorkList, _parentId) {
     List <Works> priceFilteredWorkList = [];
     print('Количество работ к добавлению1 ${_priceWorkList.length}');
-    priceFilteredWorkList = _priceWorkList.where((element) => element.roomId!.toLowerCase().contains(widget.roomId.toLowerCase()) && element.parentId!.toLowerCase().contains(_parentId.toLowerCase()) && (element.kolSmeta ?? 0)==0  && (element.kol ?? 0)==0).toList();
+    priceFilteredWorkList = _priceWorkList.where((element) => element.roomId!.toLowerCase().contains(widget.roomId.toLowerCase()) && (element.kolSmeta ?? 0)==0  && (element.kol ?? 0)==0).toList(); // element.parentId!.toLowerCase().contains(_parentId.toLowerCase()) &&
     print('Количество работ к добавлению2 ${priceFilteredWorkList.length}');
     for (var noteJson3 in priceFilteredWorkList) {
       var _uniqueWork = widget.works.where((element) => element.workId!.toLowerCase().contains(noteJson3.workId!.toLowerCase()));
