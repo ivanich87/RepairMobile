@@ -205,6 +205,7 @@ class _scrAktViewScreenState extends State<scrAktViewScreen> {
   }
 
   _pageWork() {
+    print('Количество работ: ' + ListWorks.length.toString());
     if (ListWorksTitle.length==0)
       return Column(crossAxisAlignment: CrossAxisAlignment.center, mainAxisAlignment: MainAxisAlignment.center,
         children: [

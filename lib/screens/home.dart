@@ -50,6 +50,7 @@ class _scrHomeScreenState extends State<scrHomeScreen> with TickerProviderStateM
   final _sharedFiles = <SharedMediaFile>[];
 
   var objectList = [];
+  var objectListFiltered = [];
   List <ListSmeta> smetaList = [];
   List <ListPlat> platList = [];
   List <ListPlat>  platListFiltered = [];
@@ -303,6 +304,7 @@ class _scrHomeScreenState extends State<scrHomeScreen> with TickerProviderStateM
     await httpGetListBalance(cashBankList, cashKassList, AccountableFounds, AccountableContractor);
 
     await httpGetListObject(objectList);
+    objectListFiltered = objectList;
     await httpGetListSmeta(smetaList);
 
     AccountableFoundsBalance=0;
@@ -351,6 +353,7 @@ class _scrHomeScreenState extends State<scrHomeScreen> with TickerProviderStateM
           onTap: (index) {
             setState(() {
               _selectedIndex = index;
+              _clearFiltered();
             });
           },
           items: _navBarItems),
@@ -418,14 +421,31 @@ class _scrHomeScreenState extends State<scrHomeScreen> with TickerProviderStateM
   }
 
   _pageObjects() {
-    return (objectList.length==0) ? Center(child: Text('У вас еще нет объектов. Добавьте ваш первый объект по кнопке справа внизу')) :
-      ListView.builder(
-        padding: EdgeInsets.all(10),
-        physics: BouncingScrollPhysics(),
-        reverse: false,
-        itemCount: objectList.length,
-        itemBuilder: (_, index) => CardObjectList(event: objectList[index], onType: 'push',),
+    if (objectList.length==0)
+      return Center(child: Text('У вас еще нет объектов. Добавьте ваш первый объект по кнопке справа внизу'));
+    else
+    {
+      return ListView(
+        children: [
+          Padding(
+            padding: EdgeInsets.only(left: 10, right: 10, top: 8),
+            child: Container(
+              height: 35,
+              child: SearchBar(1),
+            ),
+          ),
+          SizedBox(height: 8,),
+          ListView.builder(shrinkWrap: true,
+            padding: EdgeInsets.all(10),
+            physics: BouncingScrollPhysics(),
+            reverse: false,
+            itemCount: objectListFiltered.length,
+            itemBuilder: (_, index) =>
+                CardObjectList(event: objectListFiltered[index], onType: 'push',),
+          ),
+        ],
       );
+    };
   }
 
   _pageSmeta() {
@@ -1002,7 +1022,7 @@ class _scrHomeScreenState extends State<scrHomeScreen> with TickerProviderStateM
         if (_isSearch) ...[
         Container(
           height: 35,
-          child: SearchBar(),
+          child: SearchBar(2),
         ),
         SizedBox(height: 8,),
         ],
@@ -1350,7 +1370,7 @@ class _scrHomeScreenState extends State<scrHomeScreen> with TickerProviderStateM
 
   }
 
-  SearchBar() {
+  SearchBar(findType) {
     return Row(
       children: [
         Expanded(
@@ -1372,11 +1392,18 @@ class _scrHomeScreenState extends State<scrHomeScreen> with TickerProviderStateM
                           IconButton(
                               onPressed: () {
                                 setState(() {
-                                  _isSearch = false;
-                                  _textFindController.text='';
-                                  platListFiltered = platList;
-                                  FocusManager.instance.primaryFocus?.unfocus();
-                                  print('Сбросили фильтр');
+                                  _clearFiltered();
+                                  // if (findType==2) {
+                                  //   _isSearch = false;
+                                  //   platListFiltered = platList;
+                                  // }
+                                  // if (findType==1)
+                                  //   objectListFiltered = objectList;
+                                  //
+                                  // _textFindController.text='';
+                                  //
+                                  // FocusManager.instance.primaryFocus?.unfocus();
+                                  // print('Сбросили фильтр');
 
                                 });
                               },
@@ -1385,7 +1412,10 @@ class _scrHomeScreenState extends State<scrHomeScreen> with TickerProviderStateM
                       ),
                     )),
                 onChanged: (value) {
-                  _findList(value);
+                  if (findType==1)
+                    _findListObject(value);
+                  else
+                    _findList(value);
                 },
               ),
             ),
@@ -1393,6 +1423,25 @@ class _scrHomeScreenState extends State<scrHomeScreen> with TickerProviderStateM
         ),
       ],
     );
+  }
+
+  void _clearFiltered(){
+
+      _isSearch = false;
+      platListFiltered = platList;
+
+      objectListFiltered = objectList;
+
+    _textFindController.text='';
+
+    FocusManager.instance.primaryFocus?.unfocus();
+    print('Сбросили фильтр');
+  }
+
+  void _findListObject(value) {
+    setState(() {
+      objectListFiltered = objectList.where((element) => element.find.toLowerCase().contains(value.toLowerCase())).toList();
+    });
   }
 
   void _findList(value) {

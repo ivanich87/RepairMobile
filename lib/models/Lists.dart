@@ -376,8 +376,9 @@ class ListObject {
   late String addres;
   late int summa;
   late int TipId;
+  late String find;
 
-  ListObject(this.id, this.name, this.addres, this.summa, this.TipId);
+  ListObject(this.id, this.name, this.addres, this.summa, this.TipId, this.find);
 
   ListObject.fromJson(Map<String, dynamic> json) {
     id = json['id'] ?? '0';
@@ -386,6 +387,7 @@ class ListObject {
     final s = double.parse(json['СуммыДоговоров'].toString());
     summa = s.toInt();
     TipId=0;
+    find = '$name$addres';
   }
 
 }

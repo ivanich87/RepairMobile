@@ -42,6 +42,8 @@ class _scrPlatEditScreenState extends State<scrPlatEditScreen> {
     };
     try {
       print('Start export plat!!!!');
+      print('${_url.path}');
+      print(Globals.anAuthorization);
       print(json.encode(_body.toJson()));
       var response = await http.post(_url, headers: _headers, body: json.encode(_body.toJson()));
       print('Код ответа: ${response.statusCode} Тело ответа: ${response.body}');
