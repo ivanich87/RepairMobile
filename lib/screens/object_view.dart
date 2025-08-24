@@ -8,6 +8,8 @@ import 'package:repairmodule/models/Lists.dart';
 import 'package:repairmodule/screens/ReceiptEdit.dart';
 import 'package:repairmodule/screens/dogovor_create.dart';
 import 'package:repairmodule/screens/dogovor_view.dart';
+import 'package:repairmodule/screens/object_List_DDS.dart';
+import 'package:repairmodule/screens/object_List_Dog.dart';
 import 'package:repairmodule/screens/plat_edit.dart';
 import 'package:repairmodule/screens/profileMan.dart';
 import 'package:repairmodule/screens/settings/accessObjects.dart';
@@ -31,10 +33,11 @@ class _scrObjectsViewScreenState extends State<scrObjectsViewScreen> with Single
   List<analyticObjectList> AnalyticObjectList = [];
   List<DogListObject> dogList = [];
 
-  late TabController _tabController;
-
   num summaDown = 0;
   num summaUp = 0;
+
+  num avgRab = 0;
+  num avgMat = 0;
 
   String address = '';
   String name = '';
@@ -81,6 +84,9 @@ class _scrObjectsViewScreenState extends State<scrObjectsViewScreen> with Single
         nameProrab = data['nameProrab'] ?? '';
         idProrab = data['idProrab'] ?? '';
         address = data['address'] ?? '';
+
+        avgRab = data['avgRab'] ?? 0;
+        avgMat = data['avgMat'] ?? 0;
 
         startDate = DateFormat('dd-MM-yyyy').format(DateTime.parse(data['StartDate']));
         stopDate = DateFormat('dd-MM-yyyy').format(DateTime.parse(data['StopDate']));
@@ -164,7 +170,7 @@ class _scrObjectsViewScreenState extends State<scrObjectsViewScreen> with Single
   }
 
   ref() async {
-    httpGetListObject();
+    //httpGetListObject();
     await httpGetInfoObject();
     await httpGetAnalyticListObject();
     setState(() {
@@ -174,65 +180,23 @@ class _scrObjectsViewScreenState extends State<scrObjectsViewScreen> with Single
 
   @override
   void initState() {
-    _tabController = TabController(length: 3, vsync: this, initialIndex: 0);
-    _tabController.addListener(_handleTabIndex);
     ref();
     // TODO: implement initState
     //super.initState();
   }
-  @override
-  void dispose() {
-    _tabController.removeListener(_handleTabIndex);
-    _tabController.dispose();
-    super.dispose();
-  }
 
-  void _handleTabIndex() {
-    setState(() {});
-  }
 
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 3,
-      child: Scaffold(
-          appBar: AppBar(
-            title: Text('Карточка объекта'),
-            //bottom: TabBar(tabs: _tabs),
-            bottom: TabBar(controller: _tabController, tabs: _tabs, isScrollable: true,),
-            centerTitle: true,
-            actions: [IconButton(onPressed: () {}, icon: Icon(Icons.menu))],
-          ),
-          body: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  name,
-                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-                ),
-              ),
-              Divider(),
-
-              Expanded(
-                child: TabBarView(controller: _tabController, children: <Widget> [
-                  _pageGeneral(),
-                  _pageDogList(),
-                  _pageFinteh()
-                ], ),
-              ),
-            ],
-          ),
-          floatingActionButton: _bottomButtons(),
-          //(Globals.anUserRoleId!=3) ? null : (_visibleFloatingActionButton==false) ? null : FloatingActionButton(
-          //  onPressed: () async {
-          //    await Navigator.push(context, MaterialPageRoute(builder: (context) => scrObjectEditScreen(objectId: widget.id, clientId: idClient, clientName: nameClient, clientEMail: emailClient, clientPhone: phoneClient, address: address, area: area),));
-          //    ref();
-          //  },
-          //  child: Icon(Icons.edit),
-          //)
-          //backgroundColor: Colors.grey[900]),
-          ),
-    );
+    return Scaffold(
+        appBar: AppBar(
+          title: Text('Карточка объекта'),
+          //bottom: TabBar(controller: _tabController, tabs: _tabs, isScrollable: true,),
+          centerTitle: true,
+          actions: <Widget>[_menuAppBar()],
+        ),
+        body: _pageGeneral(),
+        floatingActionButton: _bottomButtons(),
+        );
   }
 
   _pageGeneral() {
@@ -241,93 +205,13 @@ class _scrObjectsViewScreenState extends State<scrObjectsViewScreen> with Single
         ref();
         return Future<void>.delayed(const Duration(seconds: 2));
       },
-      child: ListView(
+      child: ListView(padding: EdgeInsets.symmetric(horizontal: 4),
         children: [
-          Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            //crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              ListTile(
-                title: Text(
-                  nameClient,
-                  style: TextStyle(fontWeight: FontWeight.w500, fontSize: 18),
-                ),
-                subtitle: Text('Посмотреть данные по клиенту'),
-                trailing: Icon(Icons.info_outlined),
-                leading: Icon(Icons.account_circle),
-                onTap: (){
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => scrProfileMan(id: idClient,)));
-                },
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  FloatingActionButton.extended(
-                    onPressed: () {
-                      var url = Uri.parse("tel:$phoneClient");
-                      launchUrl(url);
-                    },
-                    heroTag: 'call',
-                    elevation: 0,
-                    backgroundColor: Colors.green,
-                    label: const Text("Позвонить"),
-                    icon: const Icon(Icons.phone),
-                  ),
-                  const SizedBox(width: 16.0),
-                  FloatingActionButton.extended(
-                    onPressed: () async {
-                      makingPhoneCall(phoneClient, 4);
-                    },
-                    heroTag: 'whatsapp',
-                    elevation: 0,
-                    backgroundColor: Colors.green,
-                    label: const FaIcon(FontAwesomeIcons.whatsapp),
-                    // icon: const FaIcon(FontAwesomeIcons.whatsapp), //Icon(Icons.navigation),
-                  ),
-                  const SizedBox(width: 16.0),
-                  FloatingActionButton.extended(
-                    onPressed: () async {
-                      makingPhoneCall(phoneClient, 5);
-                    },
-                    heroTag: 'telegram',
-                    elevation: 0,
-                    backgroundColor: Colors.blue,
-                    label: const FaIcon(FontAwesomeIcons.telegram),
-                    //icon: const Icon(Icons.telegram),
-                  ),
-                ],
-              ),
-              Divider(),
-              SingleSection(
-                title: 'Основное',
-                children: [
-                  _CustomListTile(
-                      title: startDate.toString() + ' - ' + stopDate.toString(),
-                      icon: Icons.calendar_month,
-                      id: '', idType: ''),
-                  _CustomListTile(
-                      title: "Площадь объекта $area м2",
-                      icon: Icons.rectangle_outlined,
-                      id: '', idType: ''),
-                  _CustomListTile(
-                      title: address,//InfoObject['address'],//ObjectData,  //infoObjectData['address'].toString()
-                      icon: Icons.location_on_outlined,
-                      id: '', idType: ''),
-                  ListTile(
-                    title: Text('Настройки доступа'),
-                    leading: Icon(Icons.key),
-                    onTap: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => scrAccessObjectsScreen(widget.id, address)));
-                    },
-                  ),
-                ],
-              ),
-              Divider(),
-              SingleSection(
-                title: 'Ответственные за объект',
+          SizedBox(height: 8,),
+          ObjectTileView(nameClient: nameClient, idClient: idClient, startDate: startDate, stopDate: stopDate, address: address, area: area),
+          SizedBox(height: 4,),
+          Card(
+              child: Column(
                 children: [
                   _CustomListTile(
                       title: nameProrab,
@@ -338,300 +222,165 @@ class _scrObjectsViewScreenState extends State<scrObjectsViewScreen> with Single
                       icon: Icons.headset_mic_sharp,
                       id: idManager, idType: 'scrProfileMan'),
                 ],
-              ),
-              Divider(),
-              // SingleSection(
-              //   title: 'Документы',
-              //   children: [
-              //     _CustomListTile(
-              //         title: "Договора и соглашения",
-              //         icon: Icons.document_scanner,
-              //         id: '{"objectId": "${widget.id}", "objectName": "${address}", "clientId": "${idClient}", "clientName": "${nameClient.replaceAll('"', '')}"}',
-              //         idType: 'objectsListSelectedDog'),
-              //     _CustomListTile(
-              //         title: "Акты выполненных работ",
-              //         icon: Icons.document_scanner_outlined,
-              //         id: '', idType: ''),
-              //     _CustomListTile(
-              //         title: "Финансовые показатели",
-              //         icon: Icons.monetization_on_outlined,
-              //         id: '', idType: '',),
-              //   ],
-              // ),
-              SingleSection(
-                title: 'Суммы',
-                children: [
-                  _CustomListTile(
-                      title: "Сумма договоров ${NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(summa)} руб.",
-                      icon: Icons.currency_ruble,
-                      id: '', idType: ''),
-                  _CustomListTile(
-                      title: "Себестоимость ${NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(summaSeb)} руб.",
-                      icon: Icons.currency_ruble,
-                      id: '', idType: ''),
-                  _CustomListTile(
-                      title: "Внесено клиентом ${NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(summaOpl)} руб.",
-                      icon: Icons.currency_ruble,
-                      id: '', idType: '')
-                ],
               )
-            ],
-          )
-
+          ),
+          SizedBox(height: 4,),
+          Card(
+            child: Column(
+              children: [
+                _CustomListTile(
+                  title: 'Баланс',
+                  trailing: Text('${NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(summaUp-summaDown)} руб.', style: TextStyle(fontSize: 14, color: textColors(summaUp-summaDown))),
+                  icon: null,//Icons.trending_neutral,
+                  id: '', idType: '',
+                ),
+                _CustomListTile(
+                  title: 'Поступления',
+                  trailing: Text('${NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(summaUp)} руб.', style: TextStyle(fontSize: 14, color: textColors(summaUp)),),
+                  icon: null,//Icons.trending_neutral,
+                  id: '', idType: '',
+                ),
+                _CustomListTile(
+                  title: 'Расходы',
+                  trailing: Text('${NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(summaDown)} руб.', style: TextStyle(fontSize: 14, color: textColors(-summaDown)),),
+                  icon: null,//Icons.trending_neutral,
+                  id: '', idType: '',
+                ),
+                _CustomListTile(
+                  title: 'Маржа',
+                  trailing: Text('${NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format((summaUp!=0) ? (summaUp-summaDown)/summaUp*100 : 0)}%', style: TextStyle(fontSize: 14),),
+                  icon: null,//Icons.trending_neutral,
+                  id: '', idType: '',
+                ),
+                _CustomListTile(
+                  title: 'Сумма смет',
+                  trailing: Text('${NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(summa)} руб.', style: TextStyle(fontSize: 14),),
+                  icon: null,//Icons.trending_neutral,
+                  id: '', idType: '',
+                ),
+                _CustomListTile(
+                  title: 'Остаток выплаты',
+                  trailing: Text('${NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(summa-summaOpl)} руб.', style: TextStyle(fontSize: 14, color: textColors(summaOpl-summa)),),
+                  icon: null,//Icons.trending_neutral,
+                  id: '', idType: '',
+                )
+              ],
+            ),
+          ),
+          SizedBox(height: 4,),
+          Card(
+            child: Column(
+              children: [
+                _CustomListTile(
+                  title: 'Стоимость работ м2',
+                  trailing: Text('${NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(avgRab)} руб.', style: TextStyle(fontSize: 14),),
+                  icon: null,//Icons.trending_neutral,
+                  id: '', idType: '',
+                ),
+                _CustomListTile(
+                  title: 'Стоимость материалов м2',
+                  trailing: Text('${NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(avgMat)} руб.', style: TextStyle(fontSize: 14),),
+                  icon: null,//Icons.trending_neutral,
+                  id: '', idType: '',
+                )
+              ],
+            )
+            ,
+          ),
+          SizedBox(height: 4,),
+          Card(
+            child: ListTile(
+              title: Text('Этапы работ/сметы'),
+              trailing: Icon(Icons.navigate_next),
+              onTap: (){
+                Navigator.push(context, MaterialPageRoute(builder: (context) => scrObjectsListDogScreen(id: widget.id, address: address, area: area, idClient: idClient, nameClient: nameClient, idManager: idManager,nameManager: nameManager, idProrab: idProrab, nameProrab: nameProrab, startDate: startDate, stopDate: stopDate)));
+              },
+            ),
+          ),
+          SizedBox(height: 4,),
+          Card(
+            child: ListTile(
+              title: Text('Аналитика ДДС'),
+              trailing: Icon(Icons.navigate_next),
+              onTap: (){
+                Navigator.push(context, MaterialPageRoute(builder: (context) => scrObjectsListDDSScreen(id: widget.id, summa: summa, summaDown: summaDown, summaOpl: summaOpl,summaUp: summaUp, address: address,)));
+              },
+            ),
+          ),
+          SizedBox(height: 4,),
+          Card(
+            child: ListTile(
+              title: Text('План производства работ'),
+              trailing: Icon(Icons.navigate_next),
+              onTap: (){
+                //Navigator.push(context, MaterialPageRoute(builder: (context) => scrProfileMan(id: idClient,)));
+                final snackBar = SnackBar(content: Text('Кнопка в разработке'));
+                ScaffoldMessenger.of(context).showSnackBar(snackBar);
+              },
+            ),
+          ),
+          SizedBox(height: 4,),
+          Card(
+            child: ListTile(
+              title: Text('Документы'),
+              trailing: Icon(Icons.navigate_next),
+              onTap: (){
+                //Navigator.push(context, MaterialPageRoute(builder: (context) => scrProfileMan(id: idClient,)));
+                final snackBar = SnackBar(content: Text('Кнопка в разработке'));
+                ScaffoldMessenger.of(context).showSnackBar(snackBar);
+              },
+            ),
+          ),
+          SizedBox(height: 8,),
         ],
       ),
     );
   }
 
-  _pageDogList() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        titleHeader('Общие показатели'),
-        Container(height: 100,
-          child: ListView(scrollDirection: Axis.horizontal,
-              children: [
-                InkWell(
-                  onTap: () {},
-                  child: _CustomRowTile(
-                    title: 'Клиент',
-                    subtitle: summa,
-                    icon: Icons.trending_neutral,
-                    id: '',
-                  ),
-                ),
-                InkWell(
-                  onTap: () {},
-                  child: _CustomRowTile(
-                    title: 'Мастера',
-                    subtitle: -summaSeb,
-                    icon: Icons.trending_down,
-                    id: '',
-                  ),
-                ),
-                InkWell(
-                  onTap: () {},
-                  child: _CustomRowTile(
-                    title: 'Оплата',
-                    subtitle: summaOpl,
-                    icon: Icons.trending_up,
-                    id: '',
-                  ),
-                ),
-                InkWell(
-                  onTap: () {},
-                  child: _CustomRowTile(
-                    title: 'Выполнено (%)',
-                    subtitle: (summa!=0) ? summaAkt/summa*100 : 0,
-                    icon: Icons.trending_up,
-                    id: '',
-                  ),
-                ),
-              ]
-          ),
-        ),
-        Divider(),
-        titleHeader('Список договоров'),
-        Expanded(
-            child: RefreshIndicator(
-              onRefresh: () async {
-                ref();
-                return Future<void>.delayed(const Duration(seconds: 2));
-              },
-              child: ListView.builder(
-                padding: EdgeInsets.all(10),
-                physics: BouncingScrollPhysics(),
-                reverse: false,
-                itemCount: dogList.length,
-                itemBuilder: (_, index) => Card(
-                  child: ListTile(
-                    title: Text('№${dogList[index].Number} от ${DateFormat('dd.MM.yyyy').format(dogList[index].Date)}'),
-                    subtitle: Text('${dogList[index].name}'),
-                    trailing: Column(
-                      children: [
-                        Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 0).format(dogList[index].summa), style: TextStyle(fontSize: 16, color: Colors.green)),
-                        Text('${NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 0).format(dogList[index].summaAkt/dogList[index].summa*100)}%', style: TextStyle(fontSize: 16, color: Colors.green)),
-                      ],
-                    ),
-                    onTap: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => scrDogovorViewScreen(id: dogList[index].id)));
-                    },
-                  ),
-                ),
-              ),
-            )
-        ),
-      ],
-    );
-  }
-
-  _pageFinteh() {
-    return (Globals.anFinTech==false) ? Center(child: Text('Нет доступа')) :
-    Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        titleHeader('Общие показатели'),
-        Container(height: 100,
-          child: ListView(scrollDirection: Axis.horizontal,
-              children: [
-                  InkWell(
-                    onTap: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => scrCashListScreen(idCash: '0', cashName: 'Все', analytic: '', analyticName: '', objectId: widget.id, objectName: name, platType: '', dateRange: DateTimeRange(start: DateTime(2023), end: DateTime.now()), kassaSotrId: '', kassaSortName: '',  )));
-                    },
-                    child: _CustomRowTile(
-                      title: 'Баланс',
-                      subtitle: summaUp-summaDown,
-                      icon: Icons.trending_neutral,
-                      id: '',
-                    ),
-                  ),
-                  InkWell(
-                    onTap: () {Navigator.push(context, MaterialPageRoute(builder: (context) => scrCashListScreen(idCash: '0', cashName: 'Все', analytic: '', analyticName: '', objectId: widget.id, objectName: name, platType: 'Расход', dateRange: DateTimeRange(start: DateTime(2023), end: DateTime.now()), kassaSotrId: '', kassaSortName: '',  )));},
-                    child: _CustomRowTile(
-                      title: 'Расходы',
-                      subtitle: -summaDown,
-                      icon: Icons.trending_down,
-                      id: '',
-                    ),
-                  ),
-                  InkWell(
-                    onTap: () {Navigator.push(context, MaterialPageRoute(builder: (context) => scrCashListScreen(idCash: '0', cashName: 'Все', analytic: '', analyticName: '', objectId: widget.id, objectName: name, platType: 'Приход', dateRange: DateTimeRange(start: DateTime(2023), end: DateTime.now()), kassaSotrId: '', kassaSortName: '',  )));},
-                    child: _CustomRowTile(
-                      title: 'Поступления',
-                      subtitle: summaUp,
-                      icon: Icons.trending_up,
-                      id: '',
-                    ),
-                  ),
-                  InkWell(
-                    onTap: () {},
-                    child: _CustomRowTile(
-                      title: 'Маржа',
-                      subtitle: (summaUp!=0) ? (summaUp-summaDown)/summaUp*100 : 0,
-                      icon: Icons.trending_up,
-                      id: '',
-                    ),
-                  ),
-                ]
-              ),
-            ),
-            Divider(),
-            titleHeader('Аналитика движения денег'),
-            Expanded(
-                child: RefreshIndicator(
-                  onRefresh: () async {
-                    ref();
-                    return Future<void>.delayed(const Duration(seconds: 2));
-                  },
-                  child: ListView.builder(
-                    padding: EdgeInsets.all(10),
-                    physics: BouncingScrollPhysics(),
-                    reverse: false,
-                    itemCount: AnalyticObjectList.length,
-                    itemBuilder: (_, index) => CardObjectAnalyticList(event: AnalyticObjectList[index], onType: 'push', objectId: widget.id, objectName: address),
-                  ),
-                )
-            ),
-      ],
-    );
-  }
-
   Widget? _bottomButtons() {
-    switch (_tabController.index) {
-      case 0:
-        if (Globals.anUserRoleId!=3)
-          return null;
-        else
-          return (Globals.anUserRoleId!=3) ? null : (_visibleFloatingActionButton==false) ? null : FloatingActionButton(
-            onPressed: () async {
-              await Navigator.push(context, MaterialPageRoute(builder: (context) => scrObjectEditScreen(objectId: widget.id, clientId: idClient, clientName: nameClient, clientEMail: emailClient, clientPhone: phoneClient, address: address, area: area),));
-              ref();
-            },
-            child: Icon(Icons.edit),
-          );
-      case 1:
-        return FloatingActionButton(
-          onPressed: () async {
-            DateTimeRange dateRange = DateTimeRange(start: DateTime.now(), end: DateTime.now());
-            await Navigator.push(context, MaterialPageRoute(builder: (context) => scrDogovorCreateScreen(objectId: widget.id, objectName: name, clientId: idClient, clientName: nameClient, newDogovorId: '', managerId: idManager, managerName: nameManager, prorabId: idProrab, prorabName: nameProrab, nameDog: '', summa: 0, summaSeb: 0, dateRange: dateRange,),));
-            ref();
-          },
-          child: Icon(Icons.add),
-        );
-      case 2:
-        return FloatingActionButton(
-            onPressed: () {},
-            child: _AddMenuIcon());
-
-
-    }
+    if (Globals.anUserRoleId!=3)
+      return null;
+    else
+      return (Globals.anUserRoleId!=3) ? null : (_visibleFloatingActionButton==false) ? null : FloatingActionButton(
+        onPressed: () async {
+          await Navigator.push(context, MaterialPageRoute(builder: (context) => scrObjectEditScreen(objectId: widget.id, clientId: idClient, clientName: nameClient, clientEMail: emailClient, clientPhone: phoneClient, address: address, area: area),));
+          ref();
+        },
+        child: Icon(Icons.edit),
+      );
   }
 
-  _AddMenuIcon() {
+  PopupMenuButton<Menu> _menuAppBar() {
     return PopupMenuButton<Menu>(
-        icon: const Icon(Icons.add),
+        icon: const Icon(Icons.menu, ),
         offset: const Offset(0, 40),
         onSelected: (Menu item) async {
-          if (item.name=='check') //если покупка стройматериалов
-              {
-            Receipt recipientdata = Receipt('', '', DateTime.now(), true, false, false, '', '', widget.id, name, true, '', '', DateTime.now(), 0, 0, 0, false, '', '', '', 'Расход', 0, '7fa144f2-14ca-11ed-80dd-00155d753c19', 'Покупка стройматериалов', '', '', defaultkassaSotr(Globals.anUserId, true), defaultkassaSotr(Globals.anUserName, false), (defaultkassaSotr(Globals.anUserId, true)=='') ? 0 : 1, 'Покупка стройматериалов', 0, []);
-            await Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => scrReceiptEditScreen(receiptData: recipientdata,)));
+          if (item == Menu.itemAccess) {
+            Navigator.push(context, MaterialPageRoute(builder: (context) => scrAccessObjectsScreen(widget.id, address)));
           }
-          else
-            await Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => scrPlatEditScreen(plat2: ListPlat('', 'Новый платеж', DateTime.now(), false, '', true, '', '', '', useDog(item.name), analyticId(item.name, true), analyticId(item.name, false), 0, 0, 0, widget.id, name, '', '', DateTime.now(), useDog(item.name), '', '', defaultkassaSotr(Globals.anUserId, true), defaultkassaSotr(Globals.anUserName, false), (defaultkassaSotr(Globals.anUserId, true)=='') ? 0 : 1, '', '', '', platType(item.name), type(item.name), '', '', '', '', 0, 0, ''),)));
-          ref();
+          if (item == Menu.itemOther) {
+
+          }
         },
         itemBuilder: (BuildContext context) => <PopupMenuEntry<Menu>>[
           const PopupMenuItem<Menu>(
-            value: Menu.oplataDog,
-            child: Text('Оплата от клиента по договору'),
+            value: Menu.itemAccess,
+            child: Text('Настройки доступа'),
           ),
-          const PopupMenuItem<Menu>(
-            value: Menu.oplataMaterials,
-            child: Text('Оплата от клиента за материалы'),
-          ),
-          const PopupMenuItem<Menu>(
-            value: Menu.platUp,
-            child: Text('Поступление денег'),
-          ),
-          const PopupMenuItem<Menu>(
-            value: Menu.platDown,
-            child: Text('Списание денег'),
-          ),
-          const PopupMenuItem<Menu>(
-            value: Menu.check,
-            child: Text('Покупка стройматериалов'),
-          ),
-          const PopupMenuItem<Menu>(
-            value: Menu.platMove,
-            child: Text('Перемещение денег'),
-          ),
-          const PopupMenuItem<Menu>(
-            value: Menu.platDownSotr,
-            child: Text('Выдача в подотчет'),
-          ),
-          const PopupMenuItem<Menu>(
-            value: Menu.platUpSotr,
-            child: Text('Возврат из подотчета'),
-          ),
-        ]);
-
+          // const PopupMenuItem<Menu>(
+          //   value: Menu.itemOther,
+          //   child: Text('Удалить'),
+          // ),
+        ].toList());
   }
 
 }
 
+enum Menu { itemAccess, itemOther }
 
 class _CustomListTile extends StatelessWidget {
   final String title;
-  final IconData icon;
+  final IconData? icon;
   final Widget? trailing;
   final String id;
   final String idType;
@@ -642,14 +391,15 @@ class _CustomListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
+    return ListTile(dense: false, visualDensity: VisualDensity(vertical: -4),
       title: Text(title ?? 'ggg'),
-      leading: Icon(icon),
+      leading: (icon==null ? null: Icon(icon)),
       trailing: trailing,
       onTap: () {
         if (id != '') {
           if (idType=='objectsListSelectedDog') {
             Map valueMap = json.decode(id);
+            Navigator.push(context, MaterialPageRoute(builder: (context) => objectsListSelectedDog(objectId: valueMap['objectId'], objectName: valueMap['objectName'], clientId: valueMap['clientId'],  clientName: valueMap['clientName'],onType: 'push',)));
             Navigator.push(context, MaterialPageRoute(builder: (context) => objectsListSelectedDog(objectId: valueMap['objectId'], objectName: valueMap['objectName'], clientId: valueMap['clientId'],  clientName: valueMap['clientName'],onType: 'push',)));
           }
           if (idType=='scrProfileMan')
@@ -661,47 +411,3 @@ class _CustomListTile extends StatelessWidget {
 
 }
 
-class _CustomRowTile extends StatelessWidget {
-  final String title;
-  final IconData? icon;
-  final num subtitle;
-  final String id;
-
-  const _CustomRowTile(
-      {Key? key, required this.title, this.icon, required this.subtitle, required this.id})
-      : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(2.0),
-      child: Card(
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(title, style: TextStyle(fontSize: 22, fontWeight: FontWeight.normal),),
-                Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(subtitle), style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: textColors(subtitle)))
-              ],
-            ),
-          )
-      ),
-    );
-  }
-
-}
-
-const _tabs = [
-  Tab(icon: Row(children:[Icon(Icons.home_rounded), Text(' Основное')]),
-    //text: "Основное"
-    iconMargin: EdgeInsets.zero
-  ),
-  Tab(icon: Row(children:[Icon(Icons.document_scanner), Text(' Договоры')]),
-    //text: "Договора",
-    iconMargin: EdgeInsets.zero,),
-  Tab(icon: Row(children:[Icon(Icons.shopping_bag_rounded), Text(' Финансы')]),
-    //text: "Финансы",
-    iconMargin: EdgeInsets.zero,),
-];
-
-enum Menu { oplataDog, oplataMaterials, platUp, platDown, check, platDownSotr, platUpSotr , platMove}

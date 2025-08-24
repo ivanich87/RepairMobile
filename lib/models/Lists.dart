@@ -503,6 +503,7 @@ class DogListObject {
   late DateTime StartDate;
   late DateTime StopDate;
   late String nameProrab;
+  late String nameExecutor;
   late String Status;
 
   late int TipId;
@@ -514,7 +515,7 @@ class DogListObject {
   late num summaSeb;
   late String name;
 
-  DogListObject(this.id, this.Number, this.Date, this.StartDate, this.StopDate, this.nameProrab, this.Status, this.TipId, this.nameMan, this.summaAkt, this.summaOplata, this.summa, this.summaSeb, this.name);
+  DogListObject(this.id, this.Number, this.Date, this.StartDate, this.StopDate, this.nameProrab, this.nameExecutor, this.Status, this.TipId, this.nameMan, this.summaAkt, this.summaOplata, this.summa, this.summaSeb, this.name);
 
   DogListObject.fromJson(Map<String, dynamic> json) {
     id = json['id'] ?? '0';
@@ -523,6 +524,7 @@ class DogListObject {
     StartDate = DateTime.tryParse(json['StartDate'])!;
     StopDate = DateTime.tryParse(json['StopDate'])!;
     nameProrab = json['nameProrab'] ?? 'nameProrab';
+    nameExecutor = json['nameExecutor'] ?? 'nameExecutor';
     Status = json['Status'] ?? 'Status';
     TipId = json['TipId'] ?? 0;
     TipName = json['TipName'] ?? 'TipName';

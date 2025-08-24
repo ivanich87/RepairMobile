@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
@@ -55,6 +57,9 @@ textColors(summ) {
   if (summ<0)
     return Colors.red;
   else
+  if (summ==0)
+    return null;
+        else
     return Colors.green;
 }
 
@@ -247,7 +252,7 @@ class _CardObjectListState extends State<CardObjectList> {
         child: ListTile(
           title: Text(widget.event.name, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),),
           subtitle: Text(widget.event.addres),
-          trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 0).format(widget.event.summa), style: TextStyle(fontSize: 16, color: Colors.green)),
+          trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(widget.event.summa), style: TextStyle(fontSize: 16, color: Colors.green)),
           onTap: () async {
             if (widget.onType=='push') {
               print('push');
@@ -395,7 +400,7 @@ class _CardObjectAnalyticListState extends State<CardObjectAnalyticList> {
       child: ListTile(
           title: Text(widget.event.analyticName, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),),
           //subtitle: Text(widget.event.addres),
-          trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 0).format(widget.event.summa), style: TextStyle(fontSize: 16, color: textColors(widget.event.summa))),
+          trailing: Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(widget.event.summa), style: TextStyle(fontSize: 16, color: textColors(widget.event.summa))),
           onTap: () async {
             if (widget.onType=='push') {
               print('push');
@@ -409,4 +414,87 @@ class _CardObjectAnalyticListState extends State<CardObjectAnalyticList> {
           onLongPress: () {}),
     );
   }
+}
+
+class ObjectTileView extends StatelessWidget {
+  final String nameClient;
+  final String idClient;
+  final String startDate;
+  final String stopDate;
+  final String address;
+  final num area;
+
+  const ObjectTileView(
+      {Key? key, required this.nameClient, required this.idClient, required this.startDate, required this.stopDate, required this.address, required this.area})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: Column(
+        children: [
+          ListTile(
+            title: Text(
+              nameClient,
+              style: TextStyle(fontWeight: FontWeight.w500, fontSize: 18),
+            ),
+            subtitle: Text('Посмотреть данные по клиенту'),
+            trailing: Icon(Icons.navigate_next),
+            leading: Icon(Icons.account_circle),
+            onTap: (){
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => scrProfileMan(id: idClient,)));
+            },
+          ),
+          CustomListTile(
+              title: startDate.toString() + ' - ' + stopDate.toString(),
+              icon: Icons.calendar_month,
+              id: '', idType: ''),
+          CustomListTile(
+              title: "Площадь объекта $area м2",
+              icon: Icons.rectangle_outlined,
+              id: '', idType: ''),
+          CustomListTile(
+              title: address,//InfoObject['address'],//ObjectData,  //infoObjectData['address'].toString()
+              icon: Icons.location_on_outlined,
+              id: '', idType: ''),
+        ],
+      ),
+    );
+  }
+
+}
+
+class CustomListTile extends StatelessWidget {
+  final String title;
+  final IconData? icon;
+  final Widget? trailing;
+  final String id;
+  final String idType;
+
+  const CustomListTile(
+      {Key? key, required this.title, required this.icon, this.trailing, required this.id, required this.idType})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(dense: false, visualDensity: VisualDensity(vertical: -4),
+      title: Text(title ?? 'ggg'),
+      leading: (icon==null ? null: Icon(icon)),
+      trailing: trailing,
+      onTap: () {
+        if (id != '') {
+          if (idType=='objectsListSelectedDog') {
+            Map valueMap = json.decode(id);
+            Navigator.push(context, MaterialPageRoute(builder: (context) => objectsListSelectedDog(objectId: valueMap['objectId'], objectName: valueMap['objectName'], clientId: valueMap['clientId'],  clientName: valueMap['clientName'],onType: 'push',)));
+          }
+          if (idType=='scrProfileMan')
+            Navigator.push(context, MaterialPageRoute(builder: (context) => scrProfileMan(id: id,)));
+        }
+      },
+    );
+  }
+
 }

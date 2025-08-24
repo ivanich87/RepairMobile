@@ -13,6 +13,8 @@ import 'package:repairmodule/components/SingleSelections.dart';
 import 'package:repairmodule/models/Lists.dart';
 import 'package:repairmodule/screens/ReceiptEdit.dart';
 import 'package:repairmodule/screens/akt_view.dart';
+import 'package:repairmodule/screens/dogovor_List_Akt.dart';
+import 'package:repairmodule/screens/dogovor_List_DDS.dart';
 import 'package:repairmodule/screens/pdf.dart';
 import 'package:repairmodule/screens/pdf2.dart';
 import 'package:repairmodule/screens/pdf_viewer.dart';
@@ -37,10 +39,12 @@ class scrDogovorViewScreen extends StatefulWidget {
 class _scrDogovorViewScreenState extends State<scrDogovorViewScreen> with SingleTickerProviderStateMixin {
   List<analyticObjectList> AnalyticObjectList = [];
   List<Akt> aktList = [];
-  late TabController _tabController;
 
   num summaDown = 0;
   num summaUp = 0;
+
+  num avgRab = 0;
+  num avgMat = 0;
 
   String idObject = '';
   String address = '';
@@ -102,6 +106,9 @@ class _scrDogovorViewScreenState extends State<scrDogovorViewScreen> with Single
         startDate = DateFormat('dd.MM.yyyy').format(dtStart);
         stopDate = DateFormat('dd.MM.yyyy').format(dtStop);
 
+        avgRab = data['avgRab'] ?? 0;
+        avgMat = data['avgMat'] ?? 0;
+
         summa    = data['summa'] ?? 0;
         summaSeb = data['summaSeb'] ?? 0;
         summaAkt = data['summaAkt'] ?? 0;
@@ -114,7 +121,8 @@ class _scrDogovorViewScreenState extends State<scrDogovorViewScreen> with Single
         }
       }
       else {
-    print('Код ответа сервера: ' + response.statusCode.toString());
+        print('Код ответа сервера: ' + response.statusCode.toString());
+        print('Код ответа сервера: ' + response.body.toString());
     };
     } catch (error) {
       print("Ошибка при формировании списка: $error");
@@ -186,8 +194,6 @@ class _scrDogovorViewScreenState extends State<scrDogovorViewScreen> with Single
 
   @override
   void initState() {
-    _tabController = TabController(length: 3, vsync: this, initialIndex: 0);
-    _tabController.addListener(_handleTabIndex);
     _ref();
     // TODO: implement initState
     super.initState();
@@ -200,54 +206,23 @@ _ref(){
     });
   });
 }
-  @override
-  void dispose() {
-    _tabController.removeListener(_handleTabIndex);
-    _tabController.dispose();
-    super.dispose();
-  }
 
-  void _handleTabIndex() {
-    setState(() {});
-  }
+
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 3,
-      child: Scaffold(
-          appBar: AppBar(
-            title: Text('Карточка договора'),
-            bottom: TabBar(controller: _tabController, tabs: _tabs, isScrollable: true,),
-            centerTitle: false,
-            actions: [IconButton(onPressed: () {}, icon: Icon(Icons.menu))],
-          ),
-          body: Column(
-            children: [
-              Text(
-                name,
-                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-              ),
-              Divider(),
-              //TabBar(tabs: _tabs, isScrollable: true,),
-              Expanded(
-                child: TabBarView(controller: _tabController, children: <Widget> [
-                  _pageGeneral(),
-                  _pageComplit(),
-                  _pageFinteh()
-                ]),
-              ),
-            ],
-          ),
-          floatingActionButton: _bottomButtons()
-          //backgroundColor: Colors.grey[900]),
-          ),
-    );
+    return Scaffold(
+        appBar: AppBar(
+          title: Text('Карточка договора'),
+          centerTitle: false,
+          actions: <Widget>[_menuAppBar()],
+        ),
+        body: _pageGeneral(),
+        floatingActionButton: _bottomButtons()
+        );
   }
 
   Widget? _bottomButtons() {
-    switch (_tabController.index) {
-      case 0:
-        if (Globals.anUserRoleId!=3)
+    if (Globals.anUserRoleId!=3)
           return null;
         else
           return FloatingActionButton(
@@ -258,327 +233,207 @@ _ref(){
             },
             child: Icon(Icons.edit),
           );
-      case 1:
-        return FloatingActionButton(
-          onPressed: () async {
-            await Navigator.push(context, MaterialPageRoute(builder: (context) => scrAktViewScreen(Akt('0', '', DateTime.now(), false, false, false, true, '956d8376-8b56-400a-ab32-1788d71dbb15', 'На согласовании', widget.id, smetaId, DateTime.now(), DateTime.now(), 0, 0))));
-            await httpGetInfoObject();
-            setState(() {
-
-            });
-          },
-          child: Icon(Icons.add),
-        );
-      case 2:
-        return FloatingActionButton(
-            onPressed: () {},
-            child: _AddMenuIcon());
-    }
-  }
-
-  _AddMenuIcon() {
-    return PopupMenuButton<Menu>(
-        icon: const Icon(Icons.add),
-        offset: const Offset(0, 40),
-        onSelected: (Menu item) async {
-          if (item.name=='check') //если покупка стройматериалов
-              {
-            Receipt recipientdata = Receipt('', '', DateTime.now(), true, false, false, idClient, nameClient, idObject, name, true, widget.id, name, DateTime.now(), 0, 0, 0, false, '', '', '', 'Расход', 0, '7fa144f2-14ca-11ed-80dd-00155d753c19', 'Покупка стройматериалов', '', '', defaultkassaSotr(Globals.anUserId, true), defaultkassaSotr(Globals.anUserName, false), (defaultkassaSotr(Globals.anUserId, true)=='') ? 0 : 1, 'Покупка стройматериалов', 0, []);
-            await Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => scrReceiptEditScreen(receiptData: recipientdata,)));
-          }
-          else
-            await Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => scrPlatEditScreen(plat2: ListPlat('', 'Новый платеж', DateTime.now(), false, '', true, '', idClient, nameClient, useDog(item.name), analyticId(item.name, true), analyticId(item.name, false), 0, 0, 0, idObject, address, widget.id, number, dateDog, useDog(item.name), '', '', defaultkassaSotr(Globals.anUserId, true), defaultkassaSotr(Globals.anUserName, false), (defaultkassaSotr(Globals.anUserId, true)=='') ? 0 : 1, '', '', '', platType(item.name), type(item.name), '', '', '', '', 0, 0, ''),)));
-          _ref();
-        },
-        itemBuilder: (BuildContext context) => <PopupMenuEntry<Menu>>[
-          const PopupMenuItem<Menu>(
-            value: Menu.oplataDog,
-            child: Text('Оплата от клиента по договору'),
-          ),
-          const PopupMenuItem<Menu>(
-            value: Menu.oplataMaterials,
-            child: Text('Оплата от клиента за материалы'),
-          ),
-          const PopupMenuItem<Menu>(
-            value: Menu.platUp,
-            child: Text('Поступление денег'),
-          ),
-          const PopupMenuItem<Menu>(
-            value: Menu.platDown,
-            child: Text('Списание денег'),
-          ),
-          const PopupMenuItem<Menu>(
-            value: Menu.check,
-            child: Text('Покупка стройматериалов'),
-          ),
-          const PopupMenuItem<Menu>(
-            value: Menu.platMove,
-            child: Text('Перемещение денег'),
-          ),
-          const PopupMenuItem<Menu>(
-            value: Menu.platDownSotr,
-            child: Text('Выдача в подотчет'),
-          ),
-          const PopupMenuItem<Menu>(
-            value: Menu.platUpSotr,
-            child: Text('Возврат из подотчета'),
-          ),
-        ]);
 
   }
 
   _pageGeneral() {
-    return ListView(
+    String nn = (name!='') ? name : '№${number} от ${date}';
+    return ListView(padding: EdgeInsets.symmetric(horizontal: 4),
       children: [
-        Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          //crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            ListTile(
-              title: Text(
-                nameClient,
-                style: TextStyle(fontWeight: FontWeight.w500, fontSize: 18),
-              ),
-              subtitle: Text('Посмотреть данные по клиенту'),
-              trailing: Icon(Icons.info_outlined),
-              leading: Icon(Icons.account_circle),
-              onTap: (){
-                Navigator.push(context, MaterialPageRoute(builder: (context) => scrProfileMan(id: idClient,)));
+        SizedBox(height: 8,),
+        Center(child: Text(nn, style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold))),
+        ObjectTileView(nameClient: nameClient,
+            idClient: idClient,
+            startDate: startDate,
+            stopDate: stopDate,
+            address: address,
+            area: area),
+        if (smetaId != '00000000-0000-0000-0000-000000000000') ...[
+          SizedBox(height: 4,),
+          Card(
+            child: ListTile(
+              title: Text('Открыть смету в PDF'),
+              leading: Icon(Icons.calculate),
+              trailing: Icon(Icons.navigate_next),
+              onTap: () {
+                printSmetaSelectPrice(context, smetaId);
               },
             ),
-            Divider(),
-            if (smetaId!='00000000-0000-0000-0000-000000000000')
-            Card(
-              child: ListTile(
-                  title: Text('Открыть смету в PDF'),
-                  leading: Icon(Icons.calculate),
-                  trailing: Icon(Icons.navigate_next),
-                onTap: () {
-                  printSmetaSelectPrice(context, smetaId);
-                },
-              ),
-            ),
-            SingleSection(
-              title: 'Основное',
-              children: [
-                _CustomListTile(
-                    title: '№' + number + ' от ' + date,
-                    icon: Icons.document_scanner,
-                    id: '', idType: ''),
-                _CustomListTile(
-                    title: startDate.toString() + ' - ' + stopDate.toString(),
-                    icon: Icons.calendar_month,
-                    id: '', idType: ''),
-                _CustomListTile(
-                    title: "Площадь объекта $area м2",
-                    icon: Icons.rectangle_outlined,
-                    id: '', idType: ''),
-                _CustomListTile(
-                    title: address,//InfoObject['address'],//ObjectData,  //infoObjectData['address'].toString()
-                    icon: Icons.location_on_outlined,
-                    id: '', idType: ''),
-                ListTile(
-                  title: Text('Настройки доступа'),
-                  leading: Icon(Icons.key),
-                  onTap: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => scrAccessObjectsScreen(widget.id, address)));
-                  },
-                )
-              ],
-            ),
-            Divider(),
-            SingleSection(
-              title: 'Ответственные за объект',
-              children: [
-                _CustomListTile(
-                    title: nameProrab,
-                    icon: Icons.hardware_sharp,
-                    id: idProrab, idType: 'scrProfileMan'),
-                _CustomListTile(
-                    title: nameManager,
-                    icon: Icons.headset_mic_sharp,
-                    id: idManager, idType: 'scrProfileMan'),
-              ],
-            ),
-            Divider(),
-            SingleSection(
-              title: 'Суммы',
-              children: [
-                _CustomListTile(
-                    title: "Сумма ${NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(summa)} руб.",
-                    icon: Icons.currency_ruble,
-                    id: '', idType: ''),
-                _CustomListTile(
-                    title: "Себестоимость ${NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(summaSeb)} руб.",
-                    icon: Icons.currency_ruble,
-                    id: '', idType: ''),
-                _CustomListTile(
-                    title: "Внесено клиентом ${NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(summaOpl)} руб.",
-                    icon: Icons.currency_ruble,
-                    id: '', idType: '')
-              ],
-            )
-          ],
-        )
-
-      ],
-    );
-  }
-
-  _pageComplit() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        //titleHeader('Общие показатели'),
-        // Container(height: 100,
-        //   child: ListView(scrollDirection: Axis.horizontal,
-        //       children: [
-        //         InkWell(
-        //           onTap: () {
-        //             Navigator.push(context, MaterialPageRoute(builder: (context) => scrCashListScreen(idCash: '0', cashName: 'Все', analytic: '', analyticName: '', objectId: widget.id, objectName: name, platType: '', dateRange: DateTimeRange(start: DateTime(2023), end: DateTime.now()), kassaSotrId: '', kassaSortName: '',  )));
-        //           },
-        //           child: _CustomRowTile(
-        //             title: 'Баланс',
-        //             subtitle: summaUp-summaDown,
-        //             icon: Icons.trending_neutral,
-        //             id: '',
-        //           ),
-        //         ),
-        //         InkWell(
-        //           onTap: () {Navigator.push(context, MaterialPageRoute(builder: (context) => scrCashListScreen(idCash: '0', cashName: 'Все', analytic: '', analyticName: '', objectId: widget.id, objectName: name, platType: 'Расход', dateRange: DateTimeRange(start: DateTime(2023), end: DateTime.now()), kassaSotrId: '', kassaSortName: '',  )));},
-        //           child: _CustomRowTile(
-        //             title: 'Расходы',
-        //             subtitle: -summaDown,
-        //             icon: Icons.trending_down,
-        //             id: '',
-        //           ),
-        //         ),
-        //         InkWell(
-        //           onTap: () {Navigator.push(context, MaterialPageRoute(builder: (context) => scrCashListScreen(idCash: '0', cashName: 'Все', analytic: '', analyticName: '', objectId: widget.id, objectName: name, platType: 'Приход', dateRange: DateTimeRange(start: DateTime(2023), end: DateTime.now()), kassaSotrId: '', kassaSortName: '',  )));},
-        //           child: _CustomRowTile(
-        //             title: 'Поступления',
-        //             subtitle: summaUp,
-        //             icon: Icons.trending_up,
-        //             id: '',
-        //           ),
-        //         ),
-        //         InkWell(
-        //           onTap: () {},
-        //           child: _CustomRowTile(
-        //             title: 'Маржа',
-        //             subtitle: (summaUp!=0) ? (summaUp-summaDown)/summaUp*100 : 0,
-        //             icon: Icons.trending_up,
-        //             id: '',
-        //           ),
-        //         ),
-        //       ]
-        //   ),
-        // ),
-        //Divider(),
-        titleHeader('Акты выполненных работ'),
-        Expanded(
-            child: ListView.builder(
-              padding: EdgeInsets.all(10),
-              physics: BouncingScrollPhysics(),
-              reverse: false,
-              itemCount: aktList.length,
-              itemBuilder: (_, index) =>
-                  Card(
-                    child: ListTile(
-                      title: Text('Акт ${aktList[index].number} от ${DateFormat('dd.MM.yyyy').format(aktList[index].date)}'),
-                      trailing: Column(
-                        children: [
-                          Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(aktList[index].summa), style: TextStyle(fontSize: 18, color: Colors.green)),
-                          Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(aktList[index].seb), style: TextStyle(fontSize: 18, color: Colors.red)),
-                        ],
-                      ),
-                      //subtitle: Text(objectList[index].name, textAlign: TextAlign.center,),
-                      onTap: () {
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => scrAktViewScreen(aktList[index])));
-                      },
-                    ),
-                  ),
-            )
+          )
+        ],
+        SizedBox(height: 4,),
+        Card(
+          child: ListTile(
+            title: Text('ППР (фактический)'),
+            //leading: Icon(Icons.calculate),
+            trailing: Icon(Icons.navigate_next),
+            onTap: () {
+              //printSmetaSelectPrice(context, smetaId);
+            },
+          ),
         ),
+        SizedBox(height: 4,),
+        Card(
+          child: ListTile(
+            title: Text('Выполнение'),
+            //leading: Icon(Icons.calculate),
+            trailing: Text('${NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format((summa!=0) ? summaAkt/summa*100 : 0)} %', style: TextStyle(fontSize: 14),),
+            onTap: () {
+              //printSmetaSelectPrice(context, smetaId);
+            },
+          ),
+        ),
+        SizedBox(height: 4,),
+        Card(
+          child: Column(
+            children: [
+              CustomListTile(
+                title: 'Баланс',
+                trailing: Text('${NumberFormat.decimalPatternDigits(
+                    locale: 'ru-RU', decimalDigits: 2).format(
+                    summaUp - summaDown)} руб.', style: TextStyle(
+                    fontSize: 14, color: textColors(summaUp - summaDown))),
+                icon: null,
+                //Icons.trending_neutral,
+                id: '',
+                idType: '',
+              ),
+              CustomListTile(
+                title: 'Поступления',
+                trailing: Text('${NumberFormat.decimalPatternDigits(
+                    locale: 'ru-RU', decimalDigits: 2).format(summaUp)} руб.',
+                  style: TextStyle(fontSize: 14, color: textColors(summaUp)),),
+                icon: null,
+                //Icons.trending_neutral,
+                id: '',
+                idType: '',
+              ),
+              CustomListTile(
+                title: 'Расходы',
+                trailing: Text('${NumberFormat.decimalPatternDigits(
+                    locale: 'ru-RU', decimalDigits: 2).format(summaDown)} руб.',
+                  style: TextStyle(
+                      fontSize: 14, color: textColors(-summaDown)),),
+                icon: null,
+                //Icons.trending_neutral,
+                id: '',
+                idType: '',
+              ),
+              CustomListTile(
+                title: 'Маржа',
+                trailing: Text('${NumberFormat.decimalPatternDigits(
+                    locale: 'ru-RU', decimalDigits: 2).format((summaUp != 0)
+                    ? (summaUp - summaDown) / summaUp * 100
+                    : 0)}%', style: TextStyle(fontSize: 14),),
+                icon: null,
+                //Icons.trending_neutral,
+                id: '',
+                idType: '',
+              ),
+              CustomListTile(
+                title: 'Сумма сметы',
+                trailing: Text('${NumberFormat.decimalPatternDigits(
+                    locale: 'ru-RU', decimalDigits: 2).format(summa)} руб.',
+                  style: TextStyle(fontSize: 14),),
+                icon: null,
+                //Icons.trending_neutral,
+                id: '',
+                idType: '',
+              ),
+              CustomListTile(
+                title: 'Остаток выплаты',
+                trailing: Text('${NumberFormat.decimalPatternDigits(
+                    locale: 'ru-RU', decimalDigits: 2).format(
+                    summa - summaOpl)} руб.', style: TextStyle(
+                    fontSize: 14, color: textColors(summaOpl - summa)),),
+                icon: null,
+                //Icons.trending_neutral,
+                id: '',
+                idType: '',
+              )
+            ],
+          ),
+        ),
+        SizedBox(height: 4,),
+        Card(
+          child: Column(
+            children: [
+              CustomListTile(
+                title: 'Стоимость работ м2',
+                trailing: Text('${NumberFormat.decimalPatternDigits(
+                    locale: 'ru-RU', decimalDigits: 2).format(avgRab)} руб.',
+                  style: TextStyle(fontSize: 14),),
+                icon: null,
+                //Icons.trending_neutral,
+                id: '',
+                idType: '',
+              ),
+              CustomListTile(
+                title: 'Стоимость материалов м2',
+                trailing: Text('${NumberFormat.decimalPatternDigits(
+                    locale: 'ru-RU', decimalDigits: 2).format(avgMat)} руб.',
+                  style: TextStyle(fontSize: 14),),
+                icon: null,
+                //Icons.trending_neutral,
+                id: '',
+                idType: '',
+              )
+            ],
+          ),
+        ),
+        SizedBox(height: 4,),
+        Card(
+          child: ListTile(
+            title: Text('Акты по этапу работ'),
+            //leading: Icon(Icons.calculate),
+            trailing: Icon(Icons.navigate_next),
+            onTap: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) => scrDogovorListAktScreen(id: widget.id, nameProrab: nameProrab,idProrab: idProrab, nameManager: nameManager, idManager: idManager,address: address,area: area,idClient: idClient,  nameClient: nameClient,startDate: startDate,stopDate: stopDate, name: nn)));
+            },
+          ),
+        ),
+        SizedBox(height: 4,),
+        Card(
+          child: ListTile(
+            title: Text('Аналитика ДДС'),
+            trailing: Icon(Icons.navigate_next),
+            onTap: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) => scrDogovorListDDSScreen(id: widget.id, idObject: idObject, number: number, dateDog: dateDog, nameProrab: nameProrab,idProrab: idProrab, nameManager: nameManager, idManager: idManager,address: address,area: area,idClient: idClient,  nameClient: nameClient,startDate: startDate,stopDate: stopDate, name: nn)));
+            },
+          ),
+        ),
+        SizedBox(height: 12,),
       ],
     );
   }
 
+  PopupMenuButton<Menu> _menuAppBar() {
+    return PopupMenuButton<Menu>(
+        icon: const Icon(Icons.menu, ),
+        offset: const Offset(0, 40),
+        onSelected: (Menu item) async {
+          if (item == Menu.itemAccess) {
+            Navigator.push(context, MaterialPageRoute(builder: (context) => scrAccessObjectsScreen(widget.id, address)));
+          }
+          if (item == Menu.itemOther) {
 
-  _pageFinteh() {
-    return (Globals.anFinTech==false) ? Center(child: Text('Нет доступа')) :
-    Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        titleHeader('Общие показатели'),
-        Container(height: 100,
-          child: ListView(scrollDirection: Axis.horizontal,
-              children: [
-                  InkWell(
-                    onTap: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => scrCashListScreen(idCash: '0', cashName: 'Все', analytic: '', analyticName: '', objectId: widget.id, objectName: name, platType: '', dateRange: DateTimeRange(start: DateTime(2023), end: DateTime.now()), kassaSotrId: '', kassaSortName: '',  )));
-                    },
-                    child: _CustomRowTile(
-                      title: 'Баланс',
-                      subtitle: summaUp-summaDown,
-                      icon: Icons.trending_neutral,
-                      id: '',
-                    ),
-                  ),
-                  InkWell(
-                    onTap: () {Navigator.push(context, MaterialPageRoute(builder: (context) => scrCashListScreen(idCash: '0', cashName: 'Все', analytic: '', analyticName: '', objectId: widget.id, objectName: name, platType: 'Расход', dateRange: DateTimeRange(start: DateTime(2023), end: DateTime.now()), kassaSotrId: '', kassaSortName: '',  )));},
-                    child: _CustomRowTile(
-                      title: 'Расходы',
-                      subtitle: -summaDown,
-                      icon: Icons.trending_down,
-                      id: '',
-                    ),
-                  ),
-                  InkWell(
-                    onTap: () {Navigator.push(context, MaterialPageRoute(builder: (context) => scrCashListScreen(idCash: '0', cashName: 'Все', analytic: '', analyticName: '', objectId: widget.id, objectName: name, platType: 'Приход', dateRange: DateTimeRange(start: DateTime(2023), end: DateTime.now()), kassaSotrId: '', kassaSortName: '',  )));},
-                    child: _CustomRowTile(
-                      title: 'Поступления',
-                      subtitle: summaUp,
-                      icon: Icons.trending_up,
-                      id: '',
-                    ),
-                  ),
-                  InkWell(
-                    onTap: () {},
-                    child: _CustomRowTile(
-                      title: 'Маржа',
-                      subtitle: (summaUp!=0) ? (summaUp-summaDown)/summaUp*100 : 0,
-                      icon: Icons.trending_up,
-                      id: '',
-                    ),
-                  ),
-                ]
-              ),
-            ),
-            Divider(),
-            titleHeader('Аналитика движения денег'),
-            Expanded(
-                child: ListView.builder(
-                  padding: EdgeInsets.all(10),
-                  physics: BouncingScrollPhysics(),
-                  reverse: false,
-                  itemCount: AnalyticObjectList.length,
-                  itemBuilder: (_, index) => CardObjectAnalyticList(event: AnalyticObjectList[index], onType: 'push', objectId: widget.id, objectName: address),
-                )
-            ),
-      ],
-    );
+          }
+        },
+        itemBuilder: (BuildContext context) => <PopupMenuEntry<Menu>>[
+          const PopupMenuItem<Menu>(
+            value: Menu.itemAccess,
+            child: Text('Настройки доступа'),
+          ),
+          // const PopupMenuItem<Menu>(
+          //   value: Menu.itemOther,
+          //   child: Text('Удалить'),
+          // ),
+        ].toList());
   }
 
 }
+
+enum Menu { itemAccess, itemOther }
 
 void printSmetaSelectPrice(context, smetaId) {
   showModalBottomSheet(isScrollControlled: true, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)), context: context, builder: (BuildContext bc) {
@@ -607,77 +462,3 @@ void printSmetaSelectPrice(context, smetaId) {
 }
 
 
-class _CustomListTile extends StatelessWidget {
-  final String title;
-  final IconData icon;
-  final Widget? trailing;
-  final String id;
-  final String idType;
-
-  const _CustomListTile(
-      {Key? key, required this.title, required this.icon, this.trailing, required this.id, required this.idType})
-      : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      title: Text(title ?? 'ggg'),
-      leading: Icon(icon),
-      trailing: trailing,
-      onTap: () {
-        if (id != '') {
-          if (idType=='objectsListSelectedDog')
-              Navigator.push(context, MaterialPageRoute(builder: (context) => objectsListSelectedDog(objectId: id, onType: 'push', objectName: '', clientId: '', clientName: '',)));
-          if (idType=='scrProfileMan')
-              Navigator.push(context, MaterialPageRoute(builder: (context) => scrProfileMan(id: id,)));
-        }
-      },
-    );
-  }
-
-}
-
-class _CustomRowTile extends StatelessWidget {
-  final String title;
-  final IconData? icon;
-  final num subtitle;
-  final String id;
-
-  const _CustomRowTile(
-      {Key? key, required this.title, this.icon, required this.subtitle, required this.id})
-      : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(2.0),
-      child: Card(
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(title, style: TextStyle(fontSize: 22, fontWeight: FontWeight.normal),),
-                Text(NumberFormat.decimalPatternDigits(locale: 'ru-RU', decimalDigits: 2).format(subtitle), style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: textColors(subtitle)))
-              ],
-            ),
-          )
-      ),
-    );
-  }
-
-}
-
-const _tabs = [
-  Tab(icon: Row(children:[Icon(Icons.home_rounded), Text(' Основное')]),
-    //text: "Основное"
-    iconMargin: EdgeInsets.zero
-  ),
-  Tab(icon: Row(children:[Icon(Icons.bar_chart), Text(' Акты')]),
-    //text: "Выполнение",
-    iconMargin: EdgeInsets.zero,),
-  Tab(icon: Row(children:[Icon(Icons.shopping_bag_rounded), Text(' Финансы')]),
-    //text: "Финансы",
-    iconMargin: EdgeInsets.zero,),
-];
-
-enum Menu { oplataDog, oplataMaterials, platUp, platDown, check, platDownSotr, platUpSotr , platMove}
